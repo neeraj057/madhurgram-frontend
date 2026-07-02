@@ -2,6 +2,7 @@
 import React from 'react';
 import { X, ShoppingBag, Trash2, Plus, Minus } from 'lucide-react';
 
+// 📦 स्टॉक फील्ड को यहाँ भी इंटरफ़ेस में जोड़ दिया है
 interface CartItem {
   id: number;
   name: string;
@@ -9,6 +10,7 @@ interface CartItem {
   volume: string;
   imageUrl: string;
   quantity: number;
+  stock: number; // 👈 वेयरहाउस स्टॉक
 }
 
 interface CartDrawerProps {
@@ -16,7 +18,8 @@ interface CartDrawerProps {
   onClose: () => void;
   cartItems: CartItem[];
   onRemoveItem: (id: number) => void;
-  onUpdateQuantity: (id: number, quantity: number) => void;
+  // 🔄 टाइप अपडेट: अब यह तीसरा पैरामीटर 'stock' भी लेगा
+  onUpdateQuantity: (id: number, quantity: number, stock: number) => void;
   onCheckout: () => void; // 💳 चेकआउट ओपन करने के लिए नया प्रोप
 }
 
@@ -55,50 +58,64 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
           {/* DYNAMIC CART ITEMS LIST */}
           {cartItems.length > 0 ? (
             <div className="mt-6 space-y-4 overflow-y-auto max-h-[60vh] pr-2">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between bg-[#161616] p-4 rounded-xl border border-gray-800/40">
-                  <div className="flex items-center space-x-4">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.name} 
-                      className="h-12 w-12 object-contain bg-gray-900 rounded-lg p-1"
-                      onError={(e) => { e.currentTarget.src = "https://placehold.co/100x100/e6e6e6/111111?text=MG"; }}
-                    />
-                    <div>
-                      <h4 className="text-xs font-bold font-serif max-w-[180px] truncate">{item.name}</h4>
-                      <p className="text-[10px] text-gray-500 mb-2">{item.volume}</p>
-                      
-                      <div className="flex items-center space-x-2 border border-gray-800 rounded-lg bg-black/30 p-0.5 w-max">
-                        <button 
-                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="font-mono text-xs px-2 min-w-[20px] text-center text-gray-200">
-                          {item.quantity}
-                        </span>
-                        <button 
-                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
+              {cartItems.map((item) => {
+                // 🚨 चेक करो कि क्या कस्टमर ने मैक्सिमम स्टॉक लिमिट टच कर ली है
+                const isMaxStockReached = item.quantity >= item.stock;
+
+                return (
+                  <div key={item.id} className="flex items-center justify-between bg-[#161616] p-4 rounded-xl border border-gray-800/40">
+                    <div className="flex items-center space-x-4">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.name} 
+                        className="h-12 w-12 object-contain bg-gray-900 rounded-lg p-1"
+                        onError={(e) => { e.currentTarget.src = "https://placehold.co/100x100/e6e6e6/111111?text=MG"; }}
+                      />
+                      <div>
+                        <h4 className="text-xs font-bold font-serif max-w-[180px] truncate">{item.name}</h4>
+                        <p className="text-[10px] text-gray-500 mb-2">{item.volume}</p>
+                        
+                        <div className="flex items-center space-x-2 border border-gray-800 rounded-lg bg-black/30 p-0.5 w-max">
+                          {/* ➖ Minus Button: यहाँ भी stock पास कर दिया है */}
+                          <button 
+                            onClick={() => onUpdateQuantity(item.id, item.quantity - 1, item.stock)}
+                            className="p-1 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          
+                          <span className="font-mono text-xs px-2 min-w-[20px] text-center text-gray-200">
+                            {item.quantity}
+                          </span>
+                          
+                          {/* ➕ Plus Button: लिमिट पहुँचने पर डिसेबल हो जाएगा और हुक को stock भेजेगा */}
+                          <button 
+                            disabled={isMaxStockReached}
+                            onClick={() => onUpdateQuantity(item.id, item.quantity + 1, item.stock)}
+                            className={`p-1 transition-colors ${
+                              isMaxStockReached 
+                                ? "text-gray-700 cursor-not-allowed" 
+                                : "text-gray-400 hover:text-[#D4AF37]"
+                            }`}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+                    
+                    <div className="text-right flex flex-col items-end justify-between h-full space-y-4">
+                      <p className="text-xs font-bold text-[#D4AF37]">₹{item.price * item.quantity}</p>
+                      <button 
+                        onClick={() => onRemoveItem(item.id)}
+                        className="p-1 text-gray-600 hover:text-red-400 transition-colors mt-1"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="text-right flex flex-col items-end justify-between h-full space-y-4">
-                    <p className="text-xs font-bold text-[#D4AF37]">₹{item.price * item.quantity}</p>
-                    <button 
-                      onClick={() => onRemoveItem(item.id)}
-                      className="p-1 text-gray-600 hover:text-red-400 transition-colors mt-1"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-32 text-center">

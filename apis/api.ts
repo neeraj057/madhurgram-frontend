@@ -9,4 +9,10 @@ export const API_ENDPOINTS = {
   placeOrder: `${BASE_URL}/api/orders/place`,
   getAllOrders: `${BASE_URL}/api/orders`,
   updateOrderStatus: (orderId: number, status: string) => `${BASE_URL}/api/orders/${orderId}/status?status=${status}`,
+  // 👤 Customer Endpoints
+  getCustomerProfile: (phone: string) => `${BASE_URL}/api/customers/${phone.trim()}`,
+  addCustomerAddress: (phone: string) => `${BASE_URL}/api/customers/${phone.trim()}/addresses`,
+  // 📊 Analytics Endpoints
+  getDailyAnalytics: `${BASE_URL}/api/admin/analytics/daily`,
+  
 };
