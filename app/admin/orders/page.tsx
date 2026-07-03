@@ -2,8 +2,8 @@
 import React from "react";
 import { ShoppingBag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useAdminOrders } from "../hooks/useAdminOrders"; // हुक इम्पोर्ट किया
-import { AdminOrderList } from "../../components/AdminOrderList"; // UI इम्पोर्ट किया
+import { useAdminOrders } from "../../hooks/useAdminOrders"; // हुक इम्पोर्ट किया
+import { AdminOrderList } from "../../../components/AdminOrderList"; // UI इम्पोर्ट किया
 
 export default function AdminDashboard() {
   // हुक से स्टेट्स और फंक्शन्स निकाले
