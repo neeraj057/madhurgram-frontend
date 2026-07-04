@@ -21,6 +21,8 @@ export const API_ENDPOINTS = {
   getDailyAnalytics: `${BASE_URL}/api/admin/analytics/daily`,
   adminProducts: `${BASE_URL}/api/admin/products`,
   adminCustomers: `${BASE_URL}/api/admin/customers`,
+  adminMarketingBroadcast: `${BASE_URL}/api/admin/marketing/broadcast`,
+  adminMarketingCampaigns: `${BASE_URL}/api/admin/marketing/campaigns`,
   adminLogin: `${BASE_URL}/api/auth/admin/login`,
   publicProducts: `${BASE_URL}/api/public/products`,
   customerHistory: (phone: string) =>
