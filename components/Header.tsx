@@ -7,9 +7,10 @@ interface HeaderProps {
   setActiveCategory: (category: string) => void;
   onCartClick: () => void; 
   cartCount: number; // लाइव कार्ट काउंट प्रोप
+  cartPulse?: boolean;
 }
 
-export default function Header({ activeCategory, setActiveCategory, onCartClick, cartCount }: HeaderProps) {
+export default function Header({ activeCategory, setActiveCategory, onCartClick, cartCount, cartPulse }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const categories = [
@@ -66,7 +67,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
         <div className="flex items-center text-[#FDFBF7]">
           <button 
             onClick={onCartClick} 
-            className="flex items-center space-x-2.5 px-3 py-1.5 hover:text-[#D4AF37] group transition-all"
+            className={`flex items-center space-x-2.5 px-3 py-1.5 transition-all group ${cartPulse ? 'animate-pulse text-[#D4AF37]' : 'hover:text-[#D4AF37]'}`}
           >
             <ShoppingBag className="h-5 w-5 text-[#FDFBF7] group-hover:text-[#D4AF37]" />
             <span className="font-mono text-sm tracking-widest text-[#FDFBF7] group-hover:text-[#D4AF37]">

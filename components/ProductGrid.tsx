@@ -16,6 +16,7 @@ import { API_ENDPOINTS } from '../apis/api';
 interface ProductGridProps {
   activeCategory: string; 
   onAddToCart: (product: Product) => void; 
+  addedProductId?: number | null;
 }
 
 interface Product {
@@ -29,7 +30,7 @@ interface Product {
   stock: number;
 }
 
-export default function ProductGrid({ activeCategory, onAddToCart }: ProductGridProps) {
+export default function ProductGrid({ activeCategory, onAddToCart, addedProductId }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,14 +109,20 @@ export default function ProductGrid({ activeCategory, onAddToCart }: ProductGrid
                     onClick={() => setSelectedProduct(product)}
                     className="mb-6 flex h-52 w-full items-center justify-center rounded-lg bg-gray-50 p-4 overflow-hidden cursor-pointer"
                   >
-                    <img 
-                      src={product.imageUrl} 
-                      alt={product.name}
-                      onError={(e) => { 
-                        e.currentTarget.src = "https://placehold.co/300x300/e6e6e6/111111?text=MadhurGram"; 
-                      }}
-                      className="h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {product.imageUrl ? (
+                      <img 
+                        src={product.imageUrl} 
+                        alt={product.name}
+                        onError={(e) => { 
+                          e.currentTarget.src = "https://placehold.co/300x300/e6e6e6/111111?text=MadhurGram"; 
+                        }}
+                        className="h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#e6e6e6] text-xs uppercase text-gray-500">
+                        Image unavailable
+                      </div>
+                    )}
                   </div>
 
                   {/* Info Section */}
@@ -134,13 +141,15 @@ export default function ProductGrid({ activeCategory, onAddToCart }: ProductGrid
                       <button 
                         disabled={product.stock === 0}
                         onClick={() => onAddToCart(product)}
-                        className={`rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-                          product.stock === 0 
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200/50' 
-                            : 'bg-[#D4AF37] text-[#111111] hover:bg-[#111111] hover:text-[#FDFBF7]'
+                        className={`rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                          product.stock === 0
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200/50'
+                            : product.id === addedProductId
+                              ? 'bg-[#111111] text-[#FDFBF7] opacity-90 cursor-default'
+                              : 'bg-[#D4AF37] text-[#111111] hover:bg-[#111111] hover:text-[#FDFBF7]'
                         }`}
                       >
-                        {product.stock === 0 ? 'Out of Stock' : 'Add To Cart'}
+                        {product.stock === 0 ? 'Out of Stock' : product.id === addedProductId ? 'Added!' : 'Add To Cart'}
                       </button>
                     </div>
                   </div>
@@ -174,12 +183,18 @@ export default function ProductGrid({ activeCategory, onAddToCart }: ProductGrid
 
               {/* Left Side: Product Image Showcase */}
               <div className="w-full md:w-1/2 bg-gray-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-200/60 min-h-[300px]">
-                <img 
-                  src={selectedProduct.imageUrl} 
-                  alt={selectedProduct.name} 
-                  className="max-h-64 object-contain"
-                  onError={(e) => { e.currentTarget.src = "https://placehold.co/400x400/e6e6e6/111111?text=MadhurGram"; }}
-                />
+                {selectedProduct.imageUrl ? (
+                  <img 
+                    src={selectedProduct.imageUrl} 
+                    alt={selectedProduct.name} 
+                    className="max-h-64 object-contain"
+                    onError={(e) => { e.currentTarget.src = "https://placehold.co/400x400/e6e6e6/111111?text=MadhurGram"; }}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#e6e6e6] text-center p-4 text-sm text-gray-500">
+                    Image unavailable
+                  </div>
+                )}
               </div>
 
               {/* Right Side: Luxury Heritage Story Details */}

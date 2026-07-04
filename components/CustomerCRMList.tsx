@@ -28,14 +28,15 @@ export const CustomerCRMList = ({ history, loading, onSearch }: any) => {
       {/* Result Section */}
       {history && (
         <div className="bg-[#161616] border border-gray-800 rounded-xl p-8 animate-in fade-in">
-          <div className="flex justify-between items-start mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-8">
             <div>
               <h3 className="text-2xl font-bold text-white">{history.name}</h3>
               <p className="text-[#D4AF37] font-mono">{history.phoneNumber}</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mt-2">{history.totalOrders} orders • ₹{history.totalSpent} spent</p>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest">Total Spent</p>
-              <p className="text-3xl font-bold text-white">₹{history.totalSpent}</p>
+            <div className="rounded-3xl bg-[#0f0f0f] px-4 py-3 text-right text-sm text-gray-300">
+              <p className="uppercase tracking-[0.2em] text-gray-500">Total Orders</p>
+              <p className="text-3xl font-semibold text-white">{history.totalOrders}</p>
             </div>
           </div>
 

@@ -73,7 +73,17 @@ export const AdminProductManager = () => {
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-gray-900/50 transition-colors">
                 <td className="px-6 py-4 flex items-center space-x-4">
-                  <img src={product.imageUrl} className="h-10 w-10 object-cover rounded bg-black border border-gray-800" />
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="h-10 w-10 object-cover rounded bg-black border border-gray-800"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-800 text-[10px] uppercase text-gray-400 border border-gray-700">
+                      No image
+                    </div>
+                  )}
                   <div>
                     <p className="font-bold text-[#FDFBF7]">{product.name}</p>
                     <p className="text-[10px] text-gray-500">{product.category} • {product.volume}</p>
