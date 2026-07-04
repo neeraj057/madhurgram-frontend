@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Users, ArrowLeft, RefreshCw, Search } from "lucide-react";
 import Link from "next/link";
-import { useCustomerCRM } from "@/hooks/useCustomerCRM";
+import { useCustomerCRM, CustomerStats } from "@/hooks/useCustomerCRM";
 import { CustomerCRMList } from "@/components/features/admin/CustomerCRMList";
 
 export default function AdminCustomersPage() {
@@ -91,7 +91,7 @@ export default function AdminCustomersPage() {
                   No customers loaded yet. Use the search box or refresh to fetch customer stats.
                 </div>
               ) : (
-                customers.map((customer: any) => (
+                customers.map((customer: CustomerStats) => (
                   <div key={customer.phoneNumber} className="group flex flex-col gap-3 rounded-2xl border border-gray-800 bg-[#0f0f0f] p-4 transition hover:border-[#D4AF37]/50 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-2">

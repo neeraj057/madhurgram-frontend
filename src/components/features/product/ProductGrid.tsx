@@ -51,9 +51,9 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
         
         const data = await response.json();
         setProducts(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("API Error:", err);
-        setError(err.message || "Something went wrong while connecting to Backend.");
+        setError(err instanceof Error ? err.message : "Something went wrong while connecting to Backend.");
       } finally {
         setLoading(false);
       }

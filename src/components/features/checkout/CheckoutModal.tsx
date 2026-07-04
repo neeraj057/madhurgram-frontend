@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, ShoppingBag, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map } from 'lucide-react'; 
+import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map } from 'lucide-react'; 
 import { API_ENDPOINTS } from '@/apis/api';
 import { fetchCustomerProfile, addCustomerAddress, CustomerProfile, Address, AddressType } from '@/apis/customerProfile';
 
@@ -42,16 +42,6 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     isDefault: true
   });
 
-  // 🔄 फोन नंबर 10 डिजिट का होते ही प्रोफाइल फेच करो
-  useEffect(() => {
-    if (phone.length === 10) {
-      loadProfile(phone);
-    } else {
-      setProfile(null);
-      setSelectedAddressId(null);
-    }
-  }, [phone]);
-
   const loadProfile = async (phoneNumber: string) => {
     setIsLoadingProfile(true);
     try {
@@ -73,6 +63,22 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
+  // 🔄 फोन नंबर 10 डिजिट का होते ही प्रोफाइल फेच करो
+  useEffect(() => {
+    if (phone.length === 10) {
+      // Run asynchronously to avoid calling setState synchronously within the effect body
+      Promise.resolve().then(() => {
+        loadProfile(phone);
+      });
+    } else {
+      // Run asynchronously to avoid calling setState synchronously within the effect body
+      Promise.resolve().then(() => {
+        setProfile(null);
+        setSelectedAddressId(null);
+      });
+    }
+  }, [phone]);
+
   const handleSaveNewAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoadingProfile(true);
@@ -83,7 +89,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       // नया ऐड हुआ एड्रेस सेलेक्ट कर लो
       const latestAddress = updatedProfile.addresses[updatedProfile.addresses.length - 1];
       if (latestAddress.id) setSelectedAddressId(latestAddress.id);
-    } catch (error) {
+    } catch {
       alert("Failed to save address. Please try again.");
     } finally {
       setIsLoadingProfile(false);

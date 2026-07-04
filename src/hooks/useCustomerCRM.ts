@@ -15,8 +15,23 @@ export interface CustomerStats {
   favoriteProductQuantity: number;
 }
 
+export interface CustomerHistoryItem {
+  orderId: number;
+  orderDate: string;
+  status: string;
+  totalAmount: number;
+}
+
+export interface CustomerHistory {
+  name: string;
+  phoneNumber: string;
+  totalOrders: number;
+  totalSpent: number;
+  orderHistory: CustomerHistoryItem[];
+}
+
 export const useCustomerCRM = () => {
-  const [history, setHistory] = useState<any>(null);
+  const [history, setHistory] = useState<CustomerHistory | null>(null);
   const [customers, setCustomers] = useState<CustomerStats[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -93,7 +108,10 @@ export const useCustomerCRM = () => {
   };
 
   useEffect(() => {
-    fetchCustomers();
+    // Run asynchronously to avoid calling setState synchronously within the effect body
+    Promise.resolve().then(() => {
+      fetchCustomers();
+    });
   }, []);
 
   return { history, customers, loading, fetchHistory, fetchCustomers, searchCustomers };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/apis/api";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { LIVE_POLLING_INTERVAL } from "@/utils/constants";
 
 export interface OrderItem {
   id: number;
@@ -46,12 +47,15 @@ export const useAdminOrders = () => {
 
   // 🔄 Live Polling: हर 30 सेकंड में डेटा रिफ्रेश करें
   useEffect(() => {
-    fetchOrders(); // पहली बार तुरंत लोड करें
+    // Run asynchronously to avoid calling setState synchronously within the effect body
+    Promise.resolve().then(() => {
+      fetchOrders();
+    });
 
     const interval = setInterval(() => {
       console.log("Refreshing live orders...");
       fetchOrders();
-    }, 30000); // 30 seconds
+    }, LIVE_POLLING_INTERVAL);
 
     return () => clearInterval(interval); // कंपोनेंट हटते ही इंटरवल बंद
   }, []);
@@ -79,7 +83,7 @@ export const useAdminOrders = () => {
           order.id === orderId ? { ...order, orderStatus: newStatus } : order
         )
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error("Network or Client Error:", error);
       alert("Something went wrong with the connection.");
       fetchOrders();

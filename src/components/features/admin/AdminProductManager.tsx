@@ -1,7 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { Plus, Edit2, Trash2, Package, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Plus, Edit2, Trash2, Package } from "lucide-react";
 import { Product, useAdminProducts } from "@/hooks/useAdminProducts";
+
+type ProductFormState = Omit<Product, 'price' | 'stock'> & {
+  price: string | number;
+  stock: string | number;
+};
 
 export const AdminProductManager = () => {
   const { products, loading, isSubmitting, saveProduct, deleteProduct } = useAdminProducts();
@@ -9,16 +14,16 @@ export const AdminProductManager = () => {
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const initialFormState: Product = {
+  const initialFormState: ProductFormState = {
     name: "",
-    price: "" as any,
+    price: "",
     volume: "",
     imageUrl: "",
-    stock: "" as any,
+    stock: "",
     category: "",
     isActive: true,
   };
-  const [formData, setFormData] = useState<Product>(initialFormState);
+  const [formData, setFormData] = useState<ProductFormState>(initialFormState);
 
   const openAddModal = () => {
     setEditingProduct(null);
@@ -34,7 +39,12 @@ export const AdminProductManager = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await saveProduct(formData);
+    const productToSave: Product = {
+      ...formData,
+      price: typeof formData.price === 'string' ? parseFloat(formData.price) || 0 : formData.price,
+      stock: typeof formData.stock === 'string' ? parseInt(formData.stock, 10) || 0 : formData.stock,
+    };
+    const success = await saveProduct(productToSave);
     if (success) setIsModalOpen(false);
   };
 

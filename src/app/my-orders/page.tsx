@@ -23,8 +23,8 @@ export default function MyOrdersPage() {
     try {
       const data = await fetchCustomerOrders(phone);
       setOrders(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch orders.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch orders.");
       setOrders(null);
     } finally {
       setLoading(false);

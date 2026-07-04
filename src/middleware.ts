@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { ADMIN_COOKIE_NAME } from '@/utils/constants';
 
 export function middleware(request: NextRequest) {
   // 1. यूज़र किस पाथ पर जाना चाहता है?
@@ -10,7 +11,7 @@ export function middleware(request: NextRequest) {
   const isLoginRoute = path === '/admin/login';
 
   // 3. Cookie से टोकन निकालो
-  const token = request.cookies.get('adminToken')?.value || '';
+  const token = request.cookies.get(ADMIN_COOKIE_NAME)?.value || '';
 
   // 🔴 नियम 1: अगर एडमिन पेज पर जा रहा है (लॉगिन छोड़कर) और चाबी (टोकन) नहीं है, तो उसे धक्के मार कर लॉगिन पर भेजो।
   if (isAdminRoute && !isLoginRoute && !token) {

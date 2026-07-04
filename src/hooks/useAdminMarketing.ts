@@ -42,9 +42,9 @@ export const useAdminMarketing = () => {
 
       const data = await response.json();
       setCampaigns(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Marketing load error:", err);
-      setError(err.message || "Unable to fetch marketing campaigns.");
+      setError(err instanceof Error ? err.message : "Unable to fetch marketing campaigns.");
     } finally {
       setLoading(false);
     }
@@ -67,9 +67,9 @@ export const useAdminMarketing = () => {
 
       const created = await response.json();
       return created as BroadcastCampaign;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Campaign submit error:", err);
-      setError(err.message || "Unable to send campaign.");
+      setError(err instanceof Error ? err.message : "Unable to send campaign.");
       return null;
     } finally {
       setSubmitting(false);

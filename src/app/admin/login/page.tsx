@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Store, Lock, Loader2 } from "lucide-react";
 import { API_ENDPOINTS } from "@/apis/api";
+import { ADMIN_TOKEN_KEY, ADMIN_COOKIE_NAME, ADMIN_COOKIE_MAX_AGE } from "@/utils/constants";
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
@@ -30,14 +31,15 @@ export default function AdminLoginPage() {
       const data = await response.json();
       
       // 🗝️ 1. टोकन को ब्राउज़र के LocalStorage में सेव करो
-      localStorage.setItem("adminToken", data.token);
+      localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
       // 🍪 2. Middleware के लिए टोकन को Cookie में भी सेट कर दो (10 घंटे की वैलिडिटी)
-      document.cookie = `adminToken=${data.token}; path=/; max-age=36000`;
+      document.cookie = `${ADMIN_COOKIE_NAME}=${data.token}; path=/; max-age=${ADMIN_COOKIE_MAX_AGE}`;
       
       // 🚀 2. सक्सेस होते ही सीधा प्रोडक्ट्स पेज पर भेज दो
       router.push("/admin/products");
-    } catch (err: any) {
-      setError(err.message || "Failed to connect to server");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to connect to server";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

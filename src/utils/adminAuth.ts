@@ -1,4 +1,6 @@
-export const ADMIN_TOKEN_KEY = "adminToken";
+import { ADMIN_TOKEN_KEY, ADMIN_COOKIE_NAME } from "@/utils/constants";
+
+export { ADMIN_TOKEN_KEY };
 
 export const getAdminToken = () => {
   if (typeof window === "undefined") return null;
@@ -14,7 +16,7 @@ export const clearAdminSession = () => {
   if (typeof window === "undefined") return;
 
   localStorage.removeItem(ADMIN_TOKEN_KEY);
-  document.cookie = `adminToken=; path=/; max-age=0`;
+  document.cookie = `${ADMIN_COOKIE_NAME}=; path=/; max-age=0`;
 
   if (!window.location.pathname.includes("/admin/login")) {
     window.location.href = "/admin/login";

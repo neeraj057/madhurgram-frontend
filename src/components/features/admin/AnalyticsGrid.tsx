@@ -32,7 +32,7 @@ export const AnalyticsGrid: React.FC<AnalyticsGridProps> = ({ metrics, loading, 
             <div className="p-2 bg-[#D4AF37]/10 rounded-lg border border-[#D4AF37]/20">
               <IndianRupee className="h-5 w-5 text-[#D4AF37]" />
             </div>
-            <h3 className="text-xs uppercase tracking-widest text-gray-500 font-bold">Today's Revenue</h3>
+            <h3 className="text-xs uppercase tracking-widest text-gray-500 font-bold">Today&apos;s Revenue</h3>
           </div>
           <div className="flex items-end space-x-2">
             <span className="text-3xl font-mono font-bold text-[#FDFBF7]">

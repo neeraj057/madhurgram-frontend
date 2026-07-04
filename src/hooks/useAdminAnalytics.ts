@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/apis/api";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { ANALYTICS_POLLING_INTERVAL } from "@/utils/constants";
 
 export interface AdminAnalytics {
   todayRevenue: number;
@@ -28,7 +29,7 @@ export const useAdminAnalytics = () => {
 
       const data = await response.json();
       setMetrics(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Dashboard Error:", err);
       setError("Unable to connect to the MadhurGram server.");
     } finally {
@@ -36,14 +37,17 @@ export const useAdminAnalytics = () => {
     }
   };
 
-    // पेज लोड होते ही डेटा सिंक करो और फिर हर 60 सेकंड में ऑटो-रिफ्रेश करो
+  // पेज लोड होते ही डेटा सिंक करो और फिर हर 60 सेकंड में ऑटो-रिफ्रेश करो
   useEffect(() => {
-    fetchAnalytics(); // पहली बार तुरंत
+    // Run asynchronously to avoid calling setState synchronously within the effect body
+    Promise.resolve().then(() => {
+      fetchAnalytics();
+    });
 
     const interval = setInterval(() => {
       console.log("Refreshing analytics data...");
       fetchAnalytics();
-    }, 60000); // 60 seconds
+    }, ANALYTICS_POLLING_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);

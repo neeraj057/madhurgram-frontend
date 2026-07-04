@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Send, Sparkles, Plus, RefreshCw } from "lucide-react";
+import { ArrowLeft, Send, Sparkles, RefreshCw } from "lucide-react";
 import { useAdminMarketing, BroadcastCampaignRequest } from "@/hooks/useAdminMarketing";
 import { useAdminProducts } from "@/hooks/useAdminProducts";
 
 export default function AdminMarketingPage() {
   const { campaigns, loading, submitting, error, fetchCampaigns, createCampaign } = useAdminMarketing();
-  const { products, loading: productsLoading, fetchProducts } = useAdminProducts();
+  const { products, fetchProducts } = useAdminProducts();
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -20,7 +20,7 @@ export default function AdminMarketingPage() {
   useEffect(() => {
     fetchCampaigns();
     fetchProducts();
-  }, []);
+  }, [fetchCampaigns, fetchProducts]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

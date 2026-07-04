@@ -1,8 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Search } from "lucide-react";
+import { CustomerHistory } from "@/hooks/useCustomerCRM";
 
-export const CustomerCRMList = ({ history, loading, onSearch }: any) => {
+interface CustomerCRMListProps {
+  history: CustomerHistory | null;
+  loading: boolean;
+  onSearch: (phone: string) => void;
+}
+
+export const CustomerCRMList: React.FC<CustomerCRMListProps> = ({ history, loading, onSearch }) => {
   const [phone, setPhone] = useState("");
 
   return (
@@ -50,7 +56,7 @@ export const CustomerCRMList = ({ history, loading, onSearch }: any) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
-              {history.orderHistory.map((o: any) => (
+              {history.orderHistory.map((o) => (
                 <tr key={o.orderId} className="hover:bg-gray-900/50">
                   <td className="py-4 font-mono">#{o.orderId}</td>
                   <td className="py-4">{new Date(o.orderDate).toLocaleDateString()}</td>

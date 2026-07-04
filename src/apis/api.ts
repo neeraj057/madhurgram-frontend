@@ -1,6 +1,8 @@
+import { API_BASE_URL_FALLBACK } from "@/utils/constants";
+
 // मथुरग्राम एपीआई कॉन्फ़िगरेशन मैनेजर
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL_FALLBACK;
 
 export const API_ENDPOINTS = {
   // 🛒 Product Endpoints

@@ -36,7 +36,10 @@ export const useAdminProducts = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    // Run asynchronously to avoid calling setState synchronously within the effect body
+    Promise.resolve().then(() => {
+      fetchProducts();
+    });
   }, []);
 
   const saveProduct = async (product: Product) => {
