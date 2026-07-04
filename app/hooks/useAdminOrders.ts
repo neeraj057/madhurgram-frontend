@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "../../apis/api"; // पाथ अपने हिसाब से चेक कर लेना भाई
+import { clearAdminSession } from "../utils/adminAuth";
 
 export interface OrderItem {
   id: number;
@@ -26,9 +27,20 @@ export const useAdminOrders = () => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  const fetchOrders = async () => {
+    const fetchOrders = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.getAllOrders);
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(API_ENDPOINTS.getAllOrders, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
@@ -40,17 +52,37 @@ export const useAdminOrders = () => {
     }
   };
 
+  // 🔄 Live Polling: हर 30 सेकंड में डेटा रिफ्रेश करें
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(); // पहली बार तुरंत लोड करें
+
+    const interval = setInterval(() => {
+      console.log("Refreshing live orders...");
+      fetchOrders();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval); // कंपोनेंट हटते ही इंटरवल बंद
   }, []);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     setUpdatingId(orderId);
     try {
+      const token = localStorage.getItem("adminToken");
       const response = await fetch(
         API_ENDPOINTS.updateOrderStatus(orderId, newStatus),
-        { method: "PATCH" }
+        { 
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
       );
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return;
+      }
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -74,5 +106,5 @@ export const useAdminOrders = () => {
     }
   };
 
-  return { orders, loading, updatingId, handleStatusChange };
+    return { orders, loading, updatingId, handleStatusChange, fetchOrders };
 };

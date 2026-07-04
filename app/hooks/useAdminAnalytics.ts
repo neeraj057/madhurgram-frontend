@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "../../apis/api";
+import { clearAdminSession } from "../utils/adminAuth";
 
 export interface AdminAnalytics {
   todayRevenue: number;
@@ -17,7 +18,19 @@ export const useAdminAnalytics = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_ENDPOINTS.getDailyAnalytics);
+            const token = localStorage.getItem("adminToken"); // 👈 टोकन निकाला
+
+      const response = await fetch(API_ENDPOINTS.getDailyAnalytics,{
+        headers: {
+          "Authorization": `Bearer ${token}` // 👈 हेडर में चिपका दिया
+        }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return;
+      }
+
       if (!response.ok) throw new Error("Failed to load analytics data.");
       
       const data = await response.json();
@@ -30,9 +43,16 @@ export const useAdminAnalytics = () => {
     }
   };
 
-  // पेज लोड होते ही डेटा सिंक करो
+    // पेज लोड होते ही डेटा सिंक करो और फिर हर 60 सेकंड में ऑटो-रिफ्रेश करो
   useEffect(() => {
-    fetchAnalytics();
+    fetchAnalytics(); // पहली बार तुरंत
+
+    const interval = setInterval(() => {
+      console.log("Refreshing analytics data...");
+      fetchAnalytics();
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   return { metrics, loading, error, fetchAnalytics };
