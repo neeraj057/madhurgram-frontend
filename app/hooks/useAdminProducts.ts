@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "../../apis/api";
+import { clearAdminSession } from "../utils/adminAuth";
 
 export interface Product {
   id?: number;
@@ -20,13 +21,18 @@ export const useAdminProducts = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("adminToken"); // 👈 टोकन निकाला
-      const response = await fetch(API_ENDPOINTS.adminProducts,{
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(API_ENDPOINTS.adminProducts, {
         headers: {
-          "Authorization": `Bearer ${token}` // 👈 हेडर में चिपका दिया
-        }
+          "Authorization": `Bearer ${token}`,
+        },
       });
-      
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
@@ -49,20 +55,25 @@ export const useAdminProducts = () => {
     const method = isUpdate ? "PUT" : "POST";
 
     try {
-      const token = localStorage.getItem("adminToken"); // 👈 टोकन निकाला
+      const token = localStorage.getItem("adminToken");
       const response = await fetch(url, {
         method,
         headers: {
-           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // 👈 हेडर में चिपका दिया
-         },
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(product),
       });
 
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return false;
+      }
+
       if (!response.ok) throw new Error("Failed to save product");
-      
-      await fetchProducts(); // लिस्ट रिफ्रेश करो
-      return true; // सक्सेस
+
+      await fetchProducts();
+      return true;
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Failed to save product details.");
@@ -72,5 +83,31 @@ export const useAdminProducts = () => {
     }
   };
 
-  return { products, loading, isSubmitting, saveProduct, fetchProducts };
+  // 🚀 नया डिलीट फंक्शन
+  const deleteProduct = async (id: number) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`${API_ENDPOINTS.adminProducts}/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        return false;
+      }
+
+      if (!response.ok) throw new Error("Failed to delete product");
+
+      await fetchProducts();
+      return true;
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      return false;
+    }
+  };
+
+  return { products, loading, isSubmitting, saveProduct, deleteProduct, fetchProducts };
 };

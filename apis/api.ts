@@ -20,6 +20,10 @@ export const API_ENDPOINTS = {
   // 📊 Analytics Endpoints
   getDailyAnalytics: `${BASE_URL}/api/admin/analytics/daily`,
   adminProducts: `${BASE_URL}/api/admin/products`,
+  adminCustomers: `${BASE_URL}/api/admin/customers`,
   adminLogin: `${BASE_URL}/api/auth/admin/login`,
-  publicProducts: `${BASE_URL}/api/public/products`
+  publicProducts: `${BASE_URL}/api/public/products`,
+  customerHistory: (phone: string) =>
+    `${BASE_URL}/api/admin/customers/${phone.trim()}/history`,
+  
 };
