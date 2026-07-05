@@ -11,7 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { Order } from "@/hooks/useAdminOrders"; // हुक से टाइप इम्पोर्ट किया
-import { downloadInvoicePDF } from "@/utils/invoiceGenerator"; // पाथ चेक कर लेना भाई
+import { downloadInvoicePDF, getFormattedOrderNumber } from "@/utils/invoiceGenerator"; // पाथ चेक कर लेना भाई
 
 interface AdminOrderListProps {
   orders: Order[];
@@ -43,7 +43,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
           <div className="flex-1 space-y-3">
             <div className="flex items-center space-x-4">
               <span className="bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-mono font-bold px-3 py-1 rounded-full border border-[#D4AF37]/20">
-                ID: MG-000{order.id}
+                ID: {getFormattedOrderNumber(order as any)}
               </span>
 
               {/* Dynamic Action Grid */}
@@ -55,7 +55,8 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
                       const nextStatusMap: { [key: string]: string } = {
                         PENDING: "CONFIRMED",
                         CONFIRMED: "SHIPPED",
-                        SHIPPED: "DELIVERED",
+                        SHIPPED: "OUT_FOR_DELIVERY",
+                        OUT_FOR_DELIVERY: "DELIVERED",
                       };
                       onStatusChange(order.id, nextStatusMap[order.orderStatus]);
                     }}
@@ -67,13 +68,15 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
                       <>
                         {order.orderStatus === "PENDING" && <CheckCircle className="h-3.5 w-3.5 text-[#111111]" />}
                         {order.orderStatus === "CONFIRMED" && <Truck className="h-3.5 w-3.5 text-[#111111]" />}
-                        {order.orderStatus === "SHIPPED" && <PackageCheck className="h-3.5 w-3.5 text-[#111111]" />}
+                        {order.orderStatus === "SHIPPED" && <Truck className="h-3.5 w-3.5 text-[#111111]" />}
+                        {order.orderStatus === "OUT_FOR_DELIVERY" && <PackageCheck className="h-3.5 w-3.5 text-[#111111]" />}
                       </>
                     )}
                     <span>
                       {order.orderStatus === "PENDING" && "Confirm Order"}
                       {order.orderStatus === "CONFIRMED" && "Dispatch Package"}
-                      {order.orderStatus === "SHIPPED" && "Mark Delivered"}
+                      {order.orderStatus === "SHIPPED" && "Out for Delivery"}
+                      {order.orderStatus === "OUT_FOR_DELIVERY" && "Mark Delivered"}
                     </span>
                   </button>
                 ) : (

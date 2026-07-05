@@ -36,4 +36,5 @@ export const API_ENDPOINTS = {
   adminAbandonedCarts: `${BASE_URL}/api/admin/abandoned-carts`,
   adminGetAutoRecovery: `${BASE_URL}/api/admin/settings/auto-recovery`,
   adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/admin/settings/auto-recovery?enabled=${enabled}`,
+  trackOrder: (orderId: number) => `${BASE_URL}/api/orders/${orderId}`,
 };
