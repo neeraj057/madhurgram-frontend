@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/common/Header";
 import HeroSection from "@/components/common/HeroSection";
 import ProductGrid from "@/components/features/product/ProductGrid";
@@ -7,11 +7,11 @@ import FooterSection from "@/components/common/FooterSection";
 import CartDrawer from "@/components/features/cart/CartDrawer";
 import CheckoutModal from "@/components/features/checkout/CheckoutModal"; // नया मॉड्यूल इम्पोर्ट किया
 import { useCart, CartItem } from "@/hooks/useCart";
+import { fetchRecoveredCart } from "@/apis/cartRecovery";
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("shop-all");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false); // चेकआउट मोडल कंट्रोल स्टेट
-  const [cartFeedback, setCartFeedback] = useState<string | null>(null);
   const [recentlyAddedId, setRecentlyAddedId] = useState<number | null>(null);
   const [cartPulse, setCartPulse] = useState(false);
 
@@ -22,8 +22,43 @@ export default function Home() {
     addToCart,
     updateQuantity,
     removeFromCart,
+    loadCart,
     totalCartCount,
   } = useCart();
+
+  // 📥 Recovery Deep Link Trigger
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const phone = params.get("recoverCart");
+      if (phone) {
+        const performRecovery = async () => {
+          try {
+            console.log("Restoring cart session for phone:", phone);
+            const cartSession = await fetchRecoveredCart(phone);
+            if (cartSession && cartSession.cartItemsJson) {
+              const parsedItems = JSON.parse(cartSession.cartItemsJson);
+              loadCart(parsedItems);
+              
+              // Pre-fill phone number in localStorage
+              localStorage.setItem("mg_customer_phone", cartSession.phoneNumber);
+              
+              // Open cart drawer immediately
+              setIsCartOpen(true);
+              
+              // Clean URL query parameters
+              const url = new URL(window.location.href);
+              url.searchParams.delete("recoverCart");
+              window.history.replaceState({}, "", url.toString());
+            }
+          } catch (err) {
+            console.error("Cart recovery failed:", err);
+          }
+        };
+        performRecovery();
+      }
+    }
+  }, [loadCart, setIsCartOpen]);
 
   // सबटोटल की गणना ताकि चेकआउट को अमाउंट भेजा जा सके
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -38,11 +73,10 @@ export default function Home() {
 
   const handleAddToCart = (product: Omit<CartItem, 'quantity'>) => {
     addToCart(product);
-    setCartFeedback(`${product.name} added to cart`);
+    setIsCartOpen(true); // 🛒 Automatically slide open the cart drawer!
     setRecentlyAddedId(product.id);
     setCartPulse(true);
 
-    window.setTimeout(() => setCartFeedback(null), 2200);
     window.setTimeout(() => setCartPulse(false), 600);
     window.setTimeout(() => setRecentlyAddedId(null), 1400);
   };
@@ -77,17 +111,7 @@ export default function Home() {
         }}
       />
 
-      {cartFeedback && (
-        <div className="fixed right-6 bottom-6 z-50 rounded-3xl border border-[#D4AF37]/30 bg-[#111111]/95 px-5 py-4 shadow-2xl backdrop-blur-sm text-white">
-          <p className="text-sm font-semibold tracking-wide">{cartFeedback}</p>
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="mt-3 inline-flex items-center rounded-full bg-[#D4AF37] px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-[#111111] font-bold"
-          >
-            View Cart
-          </button>
-        </div>
-      )}
+
 
       {/* 💳 चेकआउट मोडल एकदम सेपरेटेड और क्लीन */}
       <CheckoutModal 

@@ -30,4 +30,10 @@ export const API_ENDPOINTS = {
   customerHistory: (phone: string) =>
     `${BASE_URL}/api/admin/customers/${phone.trim()}/history`,
   
+  // 🛒 Abandoned Cart Retention Endpoints
+  updateCart: `${BASE_URL}/api/cart/update`,
+  recoverCart: (phone: string) => `${BASE_URL}/api/cart/recover?phone=${phone.trim()}`,
+  adminAbandonedCarts: `${BASE_URL}/api/admin/abandoned-carts`,
+  adminGetAutoRecovery: `${BASE_URL}/api/admin/settings/auto-recovery`,
+  adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/admin/settings/auto-recovery?enabled=${enabled}`,
 };

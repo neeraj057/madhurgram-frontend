@@ -71,6 +71,11 @@ export function useCart() {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  // 📥 कार्ट में मल्टीपल आइटम्स एक साथ लोड करने का फंक्शन (रिकवरी के लिए)
+  const loadCart = (items: CartItem[]) => {
+    setCartItems(items);
+  };
+
   // 🧮 कुल आइटम्स की संख्या गिनना (हेडर में कार्ट आइकॉन के ऊपर बैज दिखाने के लिए)
   const totalCartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -81,6 +86,7 @@ export function useCart() {
     addToCart,
     updateQuantity,
     removeFromCart,
+    loadCart,
     totalCartCount,
   };
 }

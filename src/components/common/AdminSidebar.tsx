@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import {
   Store,
   LogOut,
   Sparkles,
+  Clock,
 } from "lucide-react";
 
 export const AdminSidebar = () => {
@@ -21,6 +22,7 @@ export const AdminSidebar = () => {
     { name: "Products", href: "/admin/products", icon: Package },
     { name: "Customers", href: "/admin/customers", icon: Users },
     { name: "Marketing", href: "/admin/marketing", icon: Sparkles },
+    { name: "Recover Sales", href: "/admin/abandoned-carts", icon: Clock },
   ];
 
   return (
