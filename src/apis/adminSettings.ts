@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from "@/apis/api";
+import { handleAuthError } from "@/utils/adminAuth";
 
 // Fetch current Auto-Pilot recovery engine status from backend settings
 export const fetchAutoRecoveryStatus = async (token: string): Promise<boolean> => {
@@ -11,6 +12,9 @@ export const fetchAutoRecoveryStatus = async (token: string): Promise<boolean> =
   });
 
   if (!response.ok) {
+    if (await handleAuthError(response)) {
+      return false;
+    }
     throw new Error("Failed to fetch auto-recovery status.");
   }
   const data = await response.json();
@@ -28,6 +32,9 @@ export const updateAutoRecoveryStatus = async (token: string, enabled: boolean):
   });
 
   if (!response.ok) {
+    if (await handleAuthError(response)) {
+      return false;
+    }
     throw new Error("Failed to update auto-recovery status.");
   }
   const data = await response.json();

@@ -3,11 +3,18 @@ import { API_ENDPOINTS } from "@/apis/api";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
 import { ANALYTICS_POLLING_INTERVAL } from "@/utils/constants";
 
+export interface DailyRevenue {
+  date: string;
+  revenue: number;
+}
+
 export interface AdminAnalytics {
   todayRevenue: number;
   todayOrderCount: number;
   pendingOrderCount: number;
   lowStockProductCount: number;
+  conversionRate: number;
+  revenueGraph: DailyRevenue[];
 }
 
 export const useAdminAnalytics = () => {

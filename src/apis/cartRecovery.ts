@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from "@/apis/api";
+import { handleAuthError } from "@/utils/adminAuth";
 
 export interface SyncCartPayload {
   phoneNumber: string;
@@ -62,6 +63,9 @@ export const fetchAdminAbandonedCarts = async (token: string, minutesAgo = 30): 
   });
 
   if (!response.ok) {
+    if (await handleAuthError(response)) {
+      return [];
+    }
     throw new Error("Failed to fetch abandoned carts list.");
   }
   return response.json();
