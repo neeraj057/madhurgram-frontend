@@ -11,6 +11,8 @@ export interface Address {
   state: string;
   pincode: string;
   isDefault?: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface CustomerProfile {

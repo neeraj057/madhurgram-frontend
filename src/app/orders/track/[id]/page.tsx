@@ -199,6 +199,19 @@ export default function OrderTrackingPage() {
               {retryingPayment ? "Authorizing checkout..." : "Retry Stripe/Razorpay Payment"}
             </button>
           </div>
+        ) : order.paymentStatus === "COD" ? (
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 px-6 py-4 rounded-2xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              <div>
+                <p className="text-[10px] text-emerald-700 uppercase tracking-widest font-bold">Payment Method</p>
+                <p className="text-xs font-semibold text-emerald-900 mt-0.5">Cash on Delivery (COD)</p>
+              </div>
+            </div>
+            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-widest rounded-full">
+              COD
+            </span>
+          </div>
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-950 px-6 py-4 rounded-2xl flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">

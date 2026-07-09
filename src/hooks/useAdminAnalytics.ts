@@ -8,25 +8,36 @@ export interface DailyRevenue {
   revenue: number;
 }
 
+export interface LowStockProduct {
+  id: number;
+  name: string;
+  stock: number;
+  price: number;
+}
+
 export interface AdminAnalytics {
   todayRevenue: number;
   todayOrderCount: number;
   pendingOrderCount: number;
   lowStockProductCount: number;
   conversionRate: number;
+  activeUserCount: number;
+  salesGrowthPercent: number;
   revenueGraph: DailyRevenue[];
+  lowStockProducts: LowStockProduct[];
 }
 
 export const useAdminAnalytics = () => {
   const [metrics, setMetrics] = useState<AdminAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [days, setDays] = useState(7);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (queryDays: number = days) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_ENDPOINTS.getDailyAnalytics, getAuthFetchOptions());
+      const response = await fetch(API_ENDPOINTS.getDailyAnalytics(queryDays), getAuthFetchOptions());
 
       if (await handleAuthError(response)) return;
       if (!response.ok) {
@@ -44,20 +55,20 @@ export const useAdminAnalytics = () => {
     }
   };
 
-  // पेज लोड होते ही डेटा सिंक करो और फिर हर 60 सेकंड में ऑटो-रिफ्रेश करो
+  // Fetch immediately when days changes
   useEffect(() => {
-    // Run asynchronously to avoid calling setState synchronously within the effect body
-    Promise.resolve().then(() => {
-      fetchAnalytics();
-    });
+    fetchAnalytics(days);
+  }, [days]);
 
+  // Polling interval
+  useEffect(() => {
     const interval = setInterval(() => {
-      console.log("Refreshing analytics data...");
-      fetchAnalytics();
+      console.log("Refreshing analytics data for days:", days);
+      fetchAnalytics(days);
     }, ANALYTICS_POLLING_INTERVAL);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [days]);
 
-  return { metrics, loading, error, fetchAnalytics };
+  return { metrics, loading, error, days, setDays, fetchAnalytics: () => fetchAnalytics(days) };
 };

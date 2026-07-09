@@ -6,7 +6,7 @@ import { useAdminAnalytics } from "@/hooks/useAdminAnalytics";
 import { AnalyticsGrid } from "@/components/features/admin/AnalyticsGrid";
 
 export default function AdminAnalyticsPage() {
-  const { metrics, loading, error, fetchAnalytics } = useAdminAnalytics();
+  const { metrics, loading, error, days, setDays, fetchAnalytics } = useAdminAnalytics();
 
   return (
     <main className="min-h-screen bg-[#111111] text-[#FDFBF7] p-6 md:p-10 font-sans">
@@ -40,7 +40,7 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* 📊 Analytics Grid UI */}
-        <AnalyticsGrid metrics={metrics} loading={loading} error={error} />
+        <AnalyticsGrid metrics={metrics} loading={loading} error={error} days={days} setDays={setDays} />
 
       </div>
     </main>

@@ -20,13 +20,14 @@ export const API_ENDPOINTS = {
   addCustomerAddress: (phone: string) =>
     `${BASE_URL}/api/customers/${phone.trim()}/addresses`,
   // 📊 Analytics Endpoints
-  getDailyAnalytics: `${BASE_URL}/api/admin/analytics/daily`,
+  getDailyAnalytics: (days: number = 7) => `${BASE_URL}/api/admin/analytics/daily?days=${days}`,
   adminProducts: `${BASE_URL}/api/admin/products`,
   adminCustomers: `${BASE_URL}/api/admin/customers`,
   adminMarketingBroadcast: `${BASE_URL}/api/admin/marketing/broadcast`,
   adminMarketingCampaigns: `${BASE_URL}/api/admin/marketing/campaigns`,
   adminLogin: `${BASE_URL}/api/auth/admin/login`,
   publicProducts: `${BASE_URL}/api/public/products`,
+  publicHeartbeat: `${BASE_URL}/api/public/analytics/heartbeat`,
   customerHistory: (phone: string) =>
     `${BASE_URL}/api/admin/customers/${phone.trim()}/history`,
   

@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { ToastContainer } from "@/components/ui/Toast";
+import HeartbeatTracker from "@/components/features/analytics/HeartbeatTracker";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        <HeartbeatTracker />
         <ToastContainer />
       </body>
     </html>
