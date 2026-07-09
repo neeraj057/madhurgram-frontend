@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Clock, ArrowLeft, RefreshCw, MessageSquare, AlertCircle, ShoppingBag } from "lucide-react";
+import { Clock, ArrowLeft, RefreshCw, MessageSquare, AlertCircle, ShoppingBag, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getAdminToken, handleAuthError } from "@/utils/adminAuth";
-import { fetchAdminAbandonedCarts, AbandonedCartInfo } from "@/apis/cartRecovery";
+import { fetchAdminAbandonedCarts, deleteAdminAbandonedCart, AbandonedCartInfo } from "@/apis/cartRecovery";
 import { fetchAutoRecoveryStatus, updateAutoRecoveryStatus } from "@/apis/adminSettings";
+import { showToast } from "@/components/ui/Toast";
 
 export default function RecoverSalesDashboard() {
   const [carts, setCarts] = useState<AbandonedCartInfo[]>([]);
@@ -13,6 +14,7 @@ export default function RecoverSalesDashboard() {
   const [cutoffMinutes, setCutoffMinutes] = useState(30);
   const [autoPilotEnabled, setAutoPilotEnabled] = useState(false);
   const [togglingAutoPilot, setTogglingAutoPilot] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const loadAbandonedCarts = async () => {
     setLoading(true);
@@ -62,7 +64,7 @@ export default function RecoverSalesDashboard() {
       setAutoPilotEnabled(status);
     } catch (err) {
       console.error("Failed to toggle auto-recovery:", err);
-      alert("Failed to toggle Auto-Pilot state.");
+      showToast("Failed to toggle Auto-Pilot state.", "error");
     } finally {
       setTogglingAutoPilot(false);
     }
@@ -82,6 +84,27 @@ export default function RecoverSalesDashboard() {
 
     const waUrl = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
     window.open(waUrl, "_blank");
+  };
+
+  const handleDeleteCart = async (cartId: number) => {
+    if (!window.confirm("क्या आप वाकई इस कार्ट रिकवरी सेशन को हटाना चाहते हैं?")) return;
+    setDeletingId(cartId);
+    try {
+      const token = getAdminToken();
+      if (!token) return;
+      const success = await deleteAdminAbandonedCart(token, cartId);
+      if (success) {
+        showToast("कार्ट सेशन को सफलतापूर्वक हटा दिया गया है।", "success");
+        setCarts((prev) => prev.filter((c) => c.id !== cartId));
+      } else {
+        showToast("कार्ट सेशन हटाने में विफलता हुई।", "error");
+      }
+    } catch (err) {
+      console.error("Failed to delete cart:", err);
+      showToast("सर्वर से कनेक्ट करने में विफल।", "error");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const formatTimeAgo = (dateStr: string) => {
@@ -305,13 +328,24 @@ export default function RecoverSalesDashboard() {
 
                         {/* Action Link */}
                         <td className="p-5 text-right">
-                          <button
-                            onClick={() => handleWhatsAppSend(cart)}
-                            className="inline-flex items-center space-x-2 px-4 py-2.5 bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-600/30 hover:border-emerald-600 rounded-xl text-xs font-bold text-emerald-400 hover:text-[#111111] transition-all duration-300 group active:scale-95"
-                          >
-                            <MessageSquare className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-                            <span>WhatsApp Reminder</span>
-                          </button>
+                          <div className="flex items-center justify-end space-x-2">
+                            <button
+                              onClick={() => handleWhatsAppSend(cart)}
+                              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-600/30 hover:border-emerald-600 rounded-xl text-xs font-bold text-emerald-400 hover:text-[#111111] transition-all duration-300 group active:scale-95"
+                            >
+                              <MessageSquare className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
+                              <span>WhatsApp Reminder</span>
+                            </button>
+                            
+                            <button
+                              onClick={() => handleDeleteCart(cart.id)}
+                              disabled={deletingId === cart.id}
+                              className="inline-flex items-center justify-center p-2.5 bg-rose-600/10 hover:bg-rose-600 border border-rose-600/30 hover:border-rose-600 rounded-xl text-rose-500 hover:text-white transition-all duration-300 active:scale-95 disabled:opacity-50"
+                              title="Delete Session"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

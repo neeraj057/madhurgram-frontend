@@ -20,7 +20,8 @@ export default function AdminMarketingPage() {
   useEffect(() => {
     fetchCampaigns();
     fetchProducts();
-  }, [fetchCampaigns, fetchProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

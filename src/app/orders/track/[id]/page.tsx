@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "@/apis/api";
 import { ShoppingBag, ArrowLeft, Truck, Package, CheckCircle2, ShieldAlert, CreditCard, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import { getFormattedOrderNumber } from "@/utils/invoiceGenerator";
+import { showToast } from "@/components/ui/Toast";
 
 interface OrderItem {
   id: number;
@@ -102,7 +103,7 @@ export default function OrderTrackingPage() {
 
     } catch (err) {
       console.error(err);
-      alert("Failed to process payment retry.");
+      showToast("Failed to process payment retry.", "error");
       setRetryingPayment(false);
     }
   };
@@ -179,14 +180,14 @@ export default function OrderTrackingPage() {
               </p>
             </div>
           </div>
-        ) : order.paymentStatus === "FAILED" ? (
+        ) : (order.paymentStatus === "FAILED" || order.paymentStatus === "PENDING") ? (
           <div className="bg-amber-50 border border-amber-200 text-amber-900 px-6 py-5 rounded-2xl space-y-4">
             <div className="flex items-start gap-4">
               <CreditCard className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <h4 className="font-bold text-sm">Payment Failed</h4>
+                <h4 className="font-bold text-sm">Payment Pending / Failed</h4>
                 <p className="text-xs text-amber-800/90 leading-relaxed">
-                  Your last transaction was declined. Click below to simulate a successful Stripe/Razorpay payment intent update.
+                  Your last transaction was declined or is pending payment. Click below to simulate a successful Stripe/Razorpay payment intent update.
                 </p>
               </div>
             </div>

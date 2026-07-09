@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ADMIN_COOKIE_NAME } from '@/utils/constants';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // 1. यूज़र किस पाथ पर जाना चाहता है?
   const path = request.nextUrl.pathname;
 

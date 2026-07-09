@@ -70,3 +70,23 @@ export const fetchAdminAbandonedCarts = async (token: string, minutesAgo = 30): 
   }
   return response.json();
 };
+
+// 🗑️ Delete an abandoned cart session (Authenticated request)
+export const deleteAdminAbandonedCart = async (token: string, cartId: number): Promise<boolean> => {
+  const url = `${API_ENDPOINTS.adminAbandonedCarts}/${cartId}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (await handleAuthError(response)) {
+      return false;
+    }
+    throw new Error("Failed to delete abandoned cart session.");
+  }
+  return true;
+};

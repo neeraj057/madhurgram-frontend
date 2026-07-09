@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/apis/api";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
 import { LIVE_POLLING_INTERVAL } from "@/utils/constants";
+import { showToast } from "@/components/ui/Toast";
 
 export interface OrderItem {
   id: number;
@@ -72,7 +73,7 @@ export const useAdminOrders = () => {
 
       if (!response.ok) {
         const errorMessage = await parseApiError(response);
-        alert(`Business Rule Violation: ${errorMessage || "Invalid status transition."}`);
+        showToast(`Business Rule Violation: ${errorMessage || "Invalid status transition."}`, "error");
         fetchOrders();
         setUpdatingId(null);
         return false;
@@ -85,7 +86,7 @@ export const useAdminOrders = () => {
       );
     } catch (error) {
       console.error("Network or Client Error:", error);
-      alert("Something went wrong with the connection.");
+      showToast("Something went wrong with the connection.", "error");
       fetchOrders();
     } finally {
       setUpdatingId(null);

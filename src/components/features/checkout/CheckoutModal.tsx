@@ -4,6 +4,7 @@ import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map }
 import { API_ENDPOINTS } from '@/apis/api';
 import { fetchCustomerProfile, addCustomerAddress, CustomerProfile, Address, AddressType } from '@/apis/customerProfile';
 import { syncCart } from '@/apis/cartRecovery';
+import { showToast } from '@/components/ui/Toast';
 
 interface CartItem {
   id: number;
@@ -122,11 +123,11 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   // 🚀 फाइनल प्लेस आर्डर लॉजिक (Unified Single-Click Address Save + Checkout)
   const handlePlaceOrder = async () => {
     if (!fullName.trim()) {
-      alert("Please enter your full name.");
+      showToast("Please enter your full name.", "error");
       return;
     }
     if (!phone || phone.length < 10) {
-      alert("Please enter a valid 10-digit phone number.");
+      showToast("Please enter a valid 10-digit phone number.", "error");
       return;
     }
 
@@ -139,12 +140,12 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       if (isAddingNew) {
         // Validation check for new address fields
         if (!newAddress.fullAddress.trim() || !newAddress.city.trim() || !newAddress.state.trim() || !newAddress.pincode.trim()) {
-          alert("Please fill in all address details.");
+          showToast("Please fill in all address details.", "error");
           setIsSubmitting(false);
           return;
         }
         if (newAddress.pincode.trim().length !== 6) {
-          alert("Pincode must be exactly 6 digits.");
+          showToast("Pincode must be exactly 6 digits.", "error");
           setIsSubmitting(false);
           return;
         }
@@ -161,13 +162,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
         finalCityState = `${savedAddr.city}, ${savedAddr.state}`;
       } else {
         if (!selectedAddressId || !profile) {
-          alert("Please select a delivery address first.");
+          showToast("Please select a delivery address first.", "error");
           setIsSubmitting(false);
           return;
         }
         const selectedAddr = profile.addresses.find(a => a.id === selectedAddressId);
         if (!selectedAddr) {
-          alert("Selected address not found.");
+          showToast("Selected address not found.", "error");
           setIsSubmitting(false);
           return;
         }
@@ -207,7 +208,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       setPlacedOrderId(savedOrder.id);
     } catch (error) {
       console.error("Checkout Error:", error);
-      alert("Failed to connect with Server. Please check your inventory or try again.");
+      showToast("Failed to connect with Server. Please check your inventory or try again.", "error");
     } finally {
       setIsSubmitting(false);
     }

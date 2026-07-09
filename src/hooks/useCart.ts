@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { showToast } from "@/components/ui/Toast";
 
 // 📦 कार्ट आइटम का ग्लोबल डेटा स्ट्रक्चर (अब stock फील्ड के साथ ताकि लिमिट चेक हो सके)
 export interface CartItem {
@@ -22,17 +23,17 @@ export function useCart() {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
 
-      // 🚨 Inventory Guard 1: अगर प्रोडक्ट पूरी तरह से आउट ऑफ स्टॉक है
+      // 🚨 Inventory Guard 1: agar product poori tarah se out of stock hai
       if (product.stock <= 0) {
-        alert("माफ़ करना भाई, यह प्रोडक्ट अभी आउट ऑफ स्टॉक है!");
+        showToast("माफ़ करना भाई, यह प्रोडक्ट अभी आउट ऑफ स्टॉक है!", "error");
         return prevItems;
       }
 
-      // 🚨 Inventory Guard 2: अगर आइटम पहले से कार्ट में है, तो चेक करो कि नई क्वांटिटी स्टॉक से ज्यादा न हो जाए
+      // 🚨 Inventory Guard 2: agar item pehle se cart me hai, to check karo ki nayi quantity stock se jyada na ho jaye
       if (existingItem) {
         if (existingItem.quantity >= product.stock) {
-          alert(`बस भाई! वेयरहाउस में ${product.name} की केवल ${product.stock} यूनिट्स ही बची हैं।`);
-          return prevItems; // कार्ट अपडेट नहीं होगा, पुराना स्टेट ही रिटर्न कर देंगे
+          showToast(`बस भाई! वेयरहाउस में ${product.name} की केवल ${product.stock} यूनिट्स ही बची हैं।`, "error");
+          return prevItems; // cart update nahi hoga, purana state hi return kar denge
         }
         return prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
@@ -53,10 +54,10 @@ export function useCart() {
       return;
     }
 
-    // 🚨 Inventory Guard 3: कार्ट पेज पर प्लस (+) बटन दबाने पर बाउंड्री चेक करो
+    // 🚨 Inventory Guard 3: cart page par plus (+) button dabane par boundary check karo
     if (newQuantity > currentStock) {
-      alert(`माफ़ करना, स्टॉक में केवल ${currentStock} यूनिट्स ही उपलब्ध हैं।`);
-      return; // स्टेट अपडेट रोक दो
+      showToast(`माफ़ करना, स्टॉक में केवल ${currentStock} यूनिट्स ही उपलब्ध हैं।`, "error");
+      return; // state update rok do
     }
 
     setCartItems((prevItems) =>

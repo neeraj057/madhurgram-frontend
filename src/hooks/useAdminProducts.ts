@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/apis/api";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { showToast } from "@/components/ui/Toast";
 
 export interface Product {
   id?: number;
@@ -65,7 +66,7 @@ export const useAdminProducts = () => {
       return true;
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("Failed to save product details.");
+      showToast("Failed to save product details.", "error");
       return false;
     } finally {
       setIsSubmitting(false);
