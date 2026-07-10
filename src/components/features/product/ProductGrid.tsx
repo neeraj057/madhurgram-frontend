@@ -1,17 +1,7 @@
-/**
- * MADHURGRAM PREMIUM PRODUCT GRID COMPONENT
- * * USE CASE:
- * 1. यह कंपोनेंट स्प्रिंग बूट REST API (port 8080) से लाइव प्रोडक्ट्स का डेटा फेच करता है।
- * 2. 'activeCategory' प्रोप के चेंज होते ही यह ऑटोमैटिकली API को हिट करके प्रोडक्ट्स को फ़िल्टर करता है।
- * 3. इसमें लोडिंग स्टेट और एरर हैंडलिंग बाउंड्रीज़ लगाई गई हैं।
- * 4. अब इसमें 'Quick View Modal' इंटीग्रेट किया गया है ताकि यूजर प्रोडक्ट की ट्रेडिशनल स्टोरी और मेकिंग देख सके।
- */
-
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, ShieldCheck, Leaf, Flame } from 'lucide-react'; // मोडल के लिए नए आइकॉन्स
+import { X, ShieldCheck, Leaf, Flame } from 'lucide-react';
 import { API_ENDPOINTS } from '@/apis/api';
-
 
 interface ProductGridProps {
   activeCategory: string; 
@@ -34,9 +24,8 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // 🔍 क्विक व्यू मोडल के लिए स्टेट
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -74,7 +63,11 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
           <h2 className="mt-3 font-serif text-3xl font-bold tracking-wide md:text-5xl capitalize">
             {activeCategory === 'shop-all' ? 'Gaon Se Seedhe Aapke Ghar Tak' : `${activeCategory} Collection`}
           </h2>
-          <div className="mx-auto mt-4 h-[1px] w-20 bg-[#D4AF37]" />
+          <div className="flex items-center justify-center gap-2 mt-4 select-none">
+            <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
+            <span className="text-[#D4AF37] text-[10px]">✦</span>
+            <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4AF37]" />
+          </div>
         </div>
 
         {loading && (
@@ -95,67 +88,80 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
         {!loading && !error && (
           products.length > 0 ? (
             <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
-                <div 
-                  key={product.id} 
-                  className="group relative flex flex-col justify-between rounded-xl border border-gray-200/60 bg-white p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                >
-                  <span className="absolute top-4 right-4 rounded-full bg-[#111111] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
-                    {product.stock === 0 ? 'Sold Out' : product.tag}
-                  </span>
-
-                  {/* Image Box - Click to Open Modal */}
+              {products.map((product) => {
+                const isImageValid = product.imageUrl && !failedImages[product.id];
+                return (
                   <div 
-                    onClick={() => setSelectedProduct(product)}
-                    className="mb-6 flex h-52 w-full items-center justify-center rounded-lg bg-gray-50 p-4 overflow-hidden cursor-pointer"
+                    key={product.id} 
+                    className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/60 bg-white p-5 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.06)] hover:border-[#D4AF37]/45 hover:-translate-y-1"
                   >
-                    {product.imageUrl ? (
-                      <img 
-                        src={product.imageUrl} 
-                        alt={product.name}
-                        onError={(e) => { 
-                          e.currentTarget.src = "https://placehold.co/300x300/e6e6e6/111111?text=MadhurGram"; 
-                        }}
-                        className="h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#e6e6e6] text-xs uppercase text-gray-500">
-                        Image unavailable
-                      </div>
-                    )}
-                  </div>
+                    <span className="absolute top-4 right-4 rounded-full bg-[#111111] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
+                      {product.stock === 0 ? 'Sold Out' : product.tag}
+                    </span>
 
-                  {/* Info Section */}
-                  <div>
-                    <h3 
+                    {/* Image Box - Click to Open Modal */}
+                    <div 
                       onClick={() => setSelectedProduct(product)}
-                      className="font-serif text-base font-bold text-[#111111] tracking-wide min-h-[48px] cursor-pointer hover:text-[#D4AF37] transition-colors"
+                      className="mb-6 flex h-52 w-full items-center justify-center rounded-xl bg-gray-50/50 p-4 overflow-hidden cursor-pointer border border-gray-100/50"
                     >
-                      {product.name}
-                    </h3>
-                    <p className="mt-1 text-xs text-gray-500 font-medium">{product.volume}</p>
-                    
-                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                      <span className="text-xl font-bold text-[#111111]">₹{product.price}</span>
-                      
-                      <button 
-                        disabled={product.stock === 0}
-                        onClick={() => onAddToCart(product)}
-                        className={`rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
-                          product.stock === 0
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200/50'
-                            : product.id === addedProductId
-                              ? 'bg-[#111111] text-[#FDFBF7] opacity-90 cursor-default'
-                              : 'bg-[#D4AF37] text-[#111111] hover:bg-[#111111] hover:text-[#FDFBF7]'
-                        }`}
-                      >
-                        {product.stock === 0 ? 'Out of Stock' : product.id === addedProductId ? 'Added!' : 'Add To Cart'}
-                      </button>
+                      {isImageValid ? (
+                        <img 
+                          src={product.imageUrl} 
+                          alt={product.name}
+                          onError={() => { 
+                            setFailedImages(prev => ({ ...prev, [product.id]: true }));
+                          }}
+                          className="h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full w-full bg-[#FAF9F5]/40 rounded-lg p-4 select-none text-center">
+                          <svg className="h-12 w-12 text-[#D4AF37]/50 mb-2 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 18C38 18 33 26 33 38C33 50 37 78 50 78C63 78 67 50 67 38C67 26 62 18 50 18Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M31 34C31 34 40 40 50 40C60 40 69 34 69 34" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M37 20H63" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                            <path d="M46 14H54" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                            <circle cx="50" cy="52" r="4" fill="currentColor" opacity="0.5"/>
+                            <circle cx="43" cy="58" r="2.5" fill="currentColor" opacity="0.5"/>
+                            <circle cx="57" cy="58" r="2.5" fill="currentColor" opacity="0.5"/>
+                          </svg>
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#D4AF37]/75">Shuddh Bilona</span>
+                          <span className="text-[8px] text-gray-400 mt-0.5">Handcrafted batch preparing</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
 
-                </div>
-              ))}
+                    {/* Info Section */}
+                    <div>
+                      <h3 
+                        onClick={() => setSelectedProduct(product)}
+                        className="font-serif text-base font-bold text-[#111111] tracking-wide min-h-[48px] cursor-pointer hover:text-[#D4AF37] transition-colors"
+                      >
+                        {product.name}
+                      </h3>
+                      <p className="mt-1 text-xs text-gray-500 font-medium">{product.volume}</p>
+                      
+                      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                        <span className="text-xl font-bold text-[#111111]">₹{product.price}</span>
+                        
+                        <button 
+                          disabled={product.stock === 0}
+                          onClick={() => onAddToCart(product)}
+                          className={`rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md ${
+                            product.stock === 0
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200/50'
+                              : product.id === addedProductId
+                                ? 'bg-[#111111] text-[#FDFBF7] opacity-90 cursor-default'
+                                : 'bg-[#D4AF37] text-[#111111] hover:bg-[#111111] hover:text-[#FDFBF7] hover:-translate-y-0.5'
+                          }`}
+                        >
+                          {product.stock === 0 ? 'Out of Stock' : product.id === addedProductId ? 'Added!' : 'Add To Cart'}
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-16 text-gray-500 tracking-widest text-sm">
@@ -239,7 +245,7 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                     disabled={selectedProduct.stock === 0}
                     onClick={() => {
                       onAddToCart(selectedProduct);
-                      setSelectedProduct(null); // ऐड करते ही मोडल क्लोज
+                      setSelectedProduct(null);
                     }}
                     className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center ${
                       selectedProduct.stock === 0 
