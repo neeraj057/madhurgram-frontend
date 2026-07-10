@@ -87,7 +87,7 @@ export default function TestimonialsSection() {
   }
 
   return (
-    <section className="py-24 bg-[#111111] border-t border-gray-800/40 relative overflow-hidden">
+    <section className="py-24 bg-[#050505] border-t border-gray-800/40 relative overflow-hidden">
       {/* Luxury gold glowing backdrops */}
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
@@ -95,11 +95,14 @@ export default function TestimonialsSection() {
       <div className={`${maxContainerWidth} mx-auto px-6 relative z-10`}>
         <header className="text-center space-y-4 mb-16">
           <span className="text-[10px] sm:text-xs font-bold tracking-[0.35em] text-[#D4AF37] uppercase animate-pulse block">
-            SHUDDHATA KA ANUBHAV
+            शुद्धता का अनुभव
           </span>
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#FDFBF7] tracking-wide">
-            Our Customers Say (कस्टमर की पसंद)
+            Our Customers Say
           </h2>
+          <p className="text-lg sm:text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] select-none tracking-wide">
+            (कस्टमर की पसंद)
+          </p>
           <div className="flex items-center justify-center gap-2 mt-4 select-none">
             <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
             <span className="text-[#D4AF37] text-[10px]">✦</span>

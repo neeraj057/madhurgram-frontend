@@ -10,6 +10,28 @@ interface HeaderProps {
   cartPulse?: boolean;
 }
 
+const SwadeshiPitaraIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    className={className} 
+    stroke="currentColor" 
+    strokeWidth="1.5"
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    {/* Chest Lid */}
+    <path d="M3 10V6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5V10" />
+    {/* Chest Body */}
+    <path d="M2 10h20v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" />
+    {/* Structural iron bands */}
+    <path d="M7 4v18" strokeWidth="1" opacity="0.5" />
+    <path d="M17 4v18" strokeWidth="1" opacity="0.5" />
+    {/* Lock */}
+    <rect x="10.5" y="11" width="3" height="4" rx="0.5" fill="currentColor" />
+  </svg>
+);
+
 export default function Header({ activeCategory, setActiveCategory, onCartClick, cartCount, cartPulse }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,7 +99,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
             onClick={onCartClick} 
             className={`flex items-center space-x-2.5 px-3 py-1.5 transition-all group ${cartPulse ? 'animate-pulse text-[#D4AF37]' : 'hover:text-[#D4AF37]'}`}
           >
-            <ShoppingBag className="h-5 w-5 text-[#FDFBF7] group-hover:text-[#D4AF37]" />
+            <SwadeshiPitaraIcon className="h-5.5 w-5.5 text-[#FDFBF7] group-hover:text-[#D4AF37] transition-colors" />
             <span className="font-mono text-sm tracking-widest text-[#FDFBF7] group-hover:text-[#D4AF37]">
               [ <span className="text-[#D4AF37] font-bold">{cartCount}</span> ]
             </span>
