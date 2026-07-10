@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function FooterSection() {
   return (
-    <footer className="w-full bg-[#111111] text-[#FDFBF7] pt-20 pb-10 px-6 md:px-16 border-t border-gray-800/30">
+    <footer className="w-full bg-[#050505] text-[#FDFBF7] pt-20 pb-10 px-6 md:px-16 border-t border-gray-800/30">
       <div className="mx-auto max-w-7xl">
         
         {/* 1. OUR STORY / BRAND PHILOSOPHY BLOCK */}
@@ -35,9 +35,13 @@ export default function FooterSection() {
           
           {/* Column 1: Brand Info */}
           <div className="space-y-4">
-            <span className="font-serif font-bold text-[#FDFBF7] tracking-widest text-lg">
-              Madhur<span className="text-[#D4AF37]">Gram</span>
-            </span>
+            <div className="relative h-14 w-52 flex items-center justify-start">
+              <img 
+                src="/images/newlogo.svg?v=2" 
+                alt="MadhurGram Logo" 
+                className="h-full w-full object-contain object-left" 
+              />
+            </div>
             <p className="text-xs text-gray-400 leading-relaxed font-light">
               गोपीगंज (उत्तर प्रदेश) की पावन मिट्टी से सीधे आपके घर तक। हम पारंपरिक स्वाद, प्राचीन शुद्धता और जैविक गुणवत्ता को बनाए रखने के लिए समर्पित हैं।
             </p>

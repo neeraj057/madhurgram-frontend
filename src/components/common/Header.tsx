@@ -35,13 +35,21 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
   };
 
   return (
-    <header className="sticky top-0 left-0 z-50 w-full bg-[#111111] px-6 py-4 md:px-16 border-b border-gray-800/40">
+    <header className="sticky top-0 left-0 z-50 w-full bg-[#050505] px-6 py-4 md:px-16 border-b border-gray-800/40">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         
         {/* LEFT: LOGO */}
         <div className="flex items-center cursor-pointer" onClick={() => handleCategoryClick('shop-all')}>
-          <div className="relative h-14 w-48 flex items-center justify-start">
-            <img src="/images/newlogo.svg" alt="MadhurGram Logo" className="h-full w-full object-contain object-left" />
+          <div className="relative h-20 w-72 flex items-center justify-start group">
+            {/* Continuous subtle gold pulse aura */}
+            <div className="absolute inset-y-1 inset-x-2 bg-[#D4AF37]/5 rounded-xl blur-md animate-pulse pointer-events-none" />
+            {/* Additional glow on hover */}
+            <div className="absolute inset-0 bg-[#D4AF37]/8 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <img 
+              src="/images/newlogo.svg?v=2" 
+              alt="MadhurGram Logo" 
+              className="h-full w-full object-contain object-left relative z-10 transition-all duration-300 group-hover:scale-[1.04]" 
+            />
           </div>
         </div>
 

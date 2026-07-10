@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="1727" height="911" viewBox="0 0 1727 911"
+     viewBox="103 226 1542 413"
      role="img" aria-labelledby="title desc">
   <title id="title">MadhurGram — Gaon Ki Asli Mithaas</title>
   <desc id="desc">Editable website-header vector recreated from the supplied MadhurGram logo.</desc>
 
   <defs>
-    <linearGradient id="gold" x1="0%" y1="12%" x2="100%" y2="88%">
-      <stop offset="0%" stop-color="#8F5B00"/>
-      <stop offset="18%" stop-color="#F9D76B"/>
-      <stop offset="37%" stop-color="#C78B12"/>
-      <stop offset="56%" stop-color="#FFE58A"/>
-      <stop offset="76%" stop-color="#B77608"/>
-      <stop offset="100%" stop-color="#E8B83D"/>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3C3"/>
+      <stop offset="20%" stop-color="#F7D070"/>
+      <stop offset="40%" stop-color="#E2A638"/>
+      <stop offset="60%" stop-color="#FFF0BA"/>
+      <stop offset="80%" stop-color="#D4941E"/>
+      <stop offset="100%" stop-color="#FCE195"/>
     </linearGradient>
   </defs>
 
