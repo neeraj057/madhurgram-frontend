@@ -83,6 +83,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)} 
                 className="w-full bg-[#111111] border border-gray-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-[#D4AF37] transition-colors" 
                 placeholder="Enter admin username" 
+                suppressHydrationWarning
               />
             </div>
 
@@ -95,6 +96,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)} 
                 className="w-full bg-[#111111] border border-gray-800 rounded-xl p-3.5 text-sm text-white outline-none focus:border-[#D4AF37] transition-colors" 
                 placeholder="••••••••" 
+                suppressHydrationWarning
               />
             </div>
 
@@ -102,6 +104,7 @@ export default function AdminLoginPage() {
               type="submit" 
               disabled={isLoading} 
               className="w-full py-4 mt-4 bg-[#D4AF37] text-[#111111] font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-[#FDFBF7] transition-all flex justify-center items-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              suppressHydrationWarning
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

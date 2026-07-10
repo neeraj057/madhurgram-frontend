@@ -8,6 +8,7 @@ import CartDrawer from "@/components/features/cart/CartDrawer";
 import CheckoutModal from "@/components/features/checkout/CheckoutModal"; // नया मॉड्यूल इम्पोर्ट किया
 import { useCart, CartItem } from "@/hooks/useCart";
 import { fetchRecoveredCart } from "@/apis/cartRecovery";
+import TestimonialsSection from "@/components/features/feedback/TestimonialsSection";
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("shop-all");
@@ -96,6 +97,8 @@ export default function Home() {
       <div className="w-full">
         <ProductGrid activeCategory={activeCategory} onAddToCart={handleAddToCart} addedProductId={recentlyAddedId} />
       </div>
+
+      <TestimonialsSection />
 
       <FooterSection />
 

@@ -21,6 +21,8 @@ export interface Order {
   totalAmount: number;
   orderStatus: string;
   orderDate: string;
+  latitude?: number;
+  longitude?: number;
   orderItems: OrderItem[];
 }
 

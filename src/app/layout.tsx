@@ -19,6 +19,8 @@ export const metadata: Metadata = {
 
 import { ToastContainer } from "@/components/ui/Toast";
 import HeartbeatTracker from "@/components/features/analytics/HeartbeatTracker";
+import MaintenanceProvider from "@/components/common/MaintenanceProvider";
+import CookieConsent from "@/components/common/CookieConsent";
 
 export default function RootLayout({
   children,
@@ -31,9 +33,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <MaintenanceProvider>
+          {children}
+        </MaintenanceProvider>
         <HeartbeatTracker />
         <ToastContainer />
+        <CookieConsent />
       </body>
     </html>
   );

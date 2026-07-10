@@ -11,6 +11,7 @@ import {
   LogOut,
   Sparkles,
   Clock,
+  MessageSquare,
 } from "lucide-react";
 
 export const AdminSidebar = () => {
@@ -21,6 +22,7 @@ export const AdminSidebar = () => {
     { name: "Live Orders", href: "/admin/orders", icon: ShoppingCart },
     { name: "Products", href: "/admin/products", icon: Package },
     { name: "Customers", href: "/admin/customers", icon: Users },
+    { name: "Feedbacks", href: "/admin/feedback", icon: MessageSquare },
     { name: "Marketing", href: "/admin/marketing", icon: Sparkles },
     { name: "Recover Sales", href: "/admin/abandoned-carts", icon: Clock },
   ];
