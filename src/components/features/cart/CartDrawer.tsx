@@ -23,8 +23,8 @@ interface CartDrawerProps {
   onCheckout: () => void; // 💳 चेकआउट ओपन करने के लिए नया प्रोप
 }
 
-// 📦 Ornate traditional Indian sandook icon
-const SwadeshiPitaraIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
+// 📦 Traditional woven basket icon representing direct farm produce
+const SwadeshiBasketIcon = ({ className = "h-5 w-5" }: { className?: string }) => (
   <svg 
     viewBox="0 0 24 24" 
     fill="none" 
@@ -34,19 +34,17 @@ const SwadeshiPitaraIcon = ({ className = "h-5 w-5" }: { className?: string }) =
     strokeLinecap="round" 
     strokeLinejoin="round"
   >
-    {/* Chest Lid */}
-    <path d="M3 10V6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5V10" />
-    {/* Chest Body */}
-    <path d="M2 10h20v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" />
-    {/* Structural bands */}
-    <path d="M7 4v18" strokeWidth="1" opacity="0.5" />
-    <path d="M17 4v18" strokeWidth="1" opacity="0.5" />
-    {/* Lock */}
-    <rect x="10.5" y="11" width="3" height="4" rx="0.5" fill="currentColor" />
+    {/* Woven Basket Arch Handle */}
+    <path d="M19 10a7 7 0 0 0-14 0" />
+    {/* Basket Body */}
+    <path d="M3 10h18l-1.8 8.2A2 2 0 0 1 17.2 20H6.8a2 2 0 0 1-2-1.8z" />
+    {/* Simple clean woven line */}
+    <path d="M3 14h18" opacity="0.4" />
+    <path d="M8 10v10M16 10v10" opacity="0.4" />
   </svg>
 );
 
-// 🛡️ Decorative Brass Corner Bracket Component for Sandook framing
+// 🛡️ Decorative Brass Corner Bracket Component for Sandook/Kothar framing
 const BrassCorner = ({ className }: { className: string }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -76,7 +74,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
         onClick={onClose}
       />
 
-      {/* 2. Side Panel - Styled like a Traditional Wooden Chest (Sandook) */}
+      {/* 2. Side Panel - Styled like a Traditional Wooden Chest (Sandook/Kothar) */}
       <div className={`absolute top-0 right-0 h-full w-full max-w-md bg-gradient-to-b from-[#1F1109] via-[#160D07] to-[#0E0603] text-[#FDFBF7] p-8 shadow-2xl transition-transform duration-500 ease-out flex flex-col justify-between border-l border-[#D4AF37]/25 ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
@@ -98,11 +96,11 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
             <div className="flex items-center justify-between pb-6 border-b border-[#D4AF37]/25 relative">
               <div className="flex items-center space-x-3.5">
                 <div className="p-2 bg-[#25150E] border border-[#D4AF37]/35 rounded-xl">
-                  <SwadeshiPitaraIcon className="h-6 w-6 text-[#D4AF37]" />
+                  <SwadeshiBasketIcon className="h-6 w-6 text-[#D4AF37]" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-xl font-bold tracking-wide text-[#FDFBF7]">मधुरग्राम पिटारा</h3>
-                  <p className="text-[9px] uppercase tracking-widest text-[#D4AF37] font-semibold mt-0.5">Your Swadeshi Pitara</p>
+                  <h3 className="font-serif text-xl font-bold tracking-wide text-[#FDFBF7]">स्वदेशी कार्ट</h3>
+                  <p className="text-[9px] uppercase tracking-widest text-[#D4AF37] font-semibold mt-0.5">Swadeshi Cart</p>
                 </div>
               </div>
               <button 
@@ -183,11 +181,11 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
               <div className="flex flex-col items-center justify-center py-32 text-center">
                 <div className="h-20 w-20 rounded-full bg-[#25150E]/60 flex items-center justify-center mb-6 border border-[#D4AF37]/20 relative">
                   <div className="absolute inset-0 bg-[#D4AF37]/5 rounded-full blur-md" />
-                  <SwadeshiPitaraIcon className="h-8 w-8 text-[#D4AF37]/50" />
+                  <SwadeshiBasketIcon className="h-8 w-8 text-[#D4AF37]/50" />
                 </div>
-                <p className="text-sm tracking-widest text-[#D4AF37] uppercase font-bold font-serif">पिटारा अभी खाली है!</p>
+                <p className="text-sm tracking-widest text-[#D4AF37] uppercase font-bold font-serif">आपका कार्ट खाली है</p>
                 <p className="text-xs text-gray-400 mt-2.5 max-w-xs font-light px-4 leading-relaxed">
-                  गोपीगंज के खेतों की 100% शुद्धता और स्वाद से भरा अपना स्वदेशी पिटारा सजाएं।
+                  गोपीगंज के खेतों के 100% शुद्ध और पारंपरिक उत्पादों से अपना कार्ट सजाएं।
                 </p>
               </div>
             )}
@@ -209,7 +207,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
                   : "bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#111111] hover:brightness-110 active:scale-95 shadow-lg shadow-[#D4AF37]/10 border border-[#D4AF37]/35 cursor-pointer"
               }`}
             >
-              {cartItems.length === 0 ? 'पिटारा खाली है' : 'Secure Swadeshi Checkout'}
+              {cartItems.length === 0 ? 'कार्ट खाली है' : 'Secure Swadeshi Checkout'}
             </button>
             
             <p className="text-center text-[10px] text-gray-500 mt-4.5 tracking-wide">
