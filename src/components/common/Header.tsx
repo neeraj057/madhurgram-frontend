@@ -41,7 +41,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
         {/* LEFT: LOGO */}
         <div className="flex items-center cursor-pointer" onClick={() => handleCategoryClick('shop-all')}>
           <div className="relative h-14 w-48 flex items-center justify-start">
-            <img src="/images/logo.png" alt="MadhurGram Logo" className="h-full w-full object-contain object-left" />
+            <img src="/images/newlogo.svg" alt="MadhurGram Logo" className="h-full w-full object-contain object-left" />
           </div>
         </div>
 
