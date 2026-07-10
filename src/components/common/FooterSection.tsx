@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Link from 'next/link';
 
 export default function FooterSection() {
   return (
@@ -29,19 +30,82 @@ export default function FooterSection() {
           </div>
         </div>
 
-        {/* 2. NAVIGATION & COPYRIGHT FOOTER ROW */}
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-gray-500 tracking-wider">
-          <div className="flex items-center space-x-3">
-            <span className="font-serif font-bold text-[#FDFBF7] tracking-widest text-sm">
+        {/* 2. MULTI-COLUMN PRECISE SITEMAP & TRUST DETAILS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 py-16 border-b border-gray-800/50">
+          
+          {/* Column 1: Brand Info */}
+          <div className="space-y-4">
+            <span className="font-serif font-bold text-[#FDFBF7] tracking-widest text-lg">
               Madhur<span className="text-[#D4AF37]">Gram</span>
             </span>
-            <span>© {new Date().getFullYear()} All Rights Reserved.</span>
+            <p className="text-xs text-gray-400 leading-relaxed font-light">
+              गोपीगंज (उत्तर प्रदेश) की पावन मिट्टी से सीधे आपके घर तक। हम पारंपरिक स्वाद, प्राचीन शुद्धता और जैविक गुणवत्ता को बनाए रखने के लिए समर्पित हैं।
+            </p>
           </div>
-          
-          <div className="flex space-x-8">
-            <a href="#ghee" className="hover:text-[#D4AF37] transition-colors">Privacy Policy</a>
-            <a href="#story" className="hover:text-[#D4AF37] transition-colors">Terms of Service</a>
-            <a href="#products" className="hover:text-[#D4AF37] transition-colors">Contact Us</a>
+
+          {/* Column 2: Products Links */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Our Products</h4>
+            <ul className="space-y-2.5 text-xs text-gray-400">
+              <li>
+                <a href="#products" className="hover:text-[#D4AF37] transition-colors">A2 Cow Ghee</a>
+              </li>
+              <li>
+                <a href="#products" className="hover:text-[#D4AF37] transition-colors">Premium Buffalo Ghee</a>
+              </li>
+              <li>
+                <a href="#products" className="hover:text-[#D4AF37] transition-colors">Artisanal Pickles</a>
+              </li>
+              <li>
+                <a href="#products" className="hover:text-[#D4AF37] transition-colors">Cold-Pressed Oils</a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 3: Trust & Compliance Links */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Trust & Safety</h4>
+            <ul className="space-y-2.5 text-xs text-gray-400">
+              <li>
+                <Link href="/privacy-policy" className="hover:text-[#D4AF37] transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-[#D4AF37] transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="hover:text-[#D4AF37] transition-colors">
+                  Cancellation & Refund Policy
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Contact & Help */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Village Office</h4>
+            <p className="text-xs text-gray-400 leading-relaxed font-light">
+              Gopiganj, Bhadohi District,<br />
+              Uttar Pradesh - 221303, India
+            </p>
+            <p className="text-xs text-gray-400">
+              <span className="font-semibold text-gray-300">Helpline:</span> +91 99887 76655<br />
+              <span className="font-semibold text-gray-300">Email:</span> support@madhurgram.com
+            </p>
+          </div>
+
+        </div>
+
+        {/* 3. NAVIGATION & COPYRIGHT FOOTER ROW */}
+        <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-gray-500 tracking-wider">
+          <div>
+            <span>© {new Date().getFullYear()} MadhurGram Food Products. All Rights Reserved.</span>
+          </div>
+          <div className="text-[10px] text-gray-600 font-light">
+            Made with love in Uttar Pradesh, India 🌾
           </div>
         </div>
 

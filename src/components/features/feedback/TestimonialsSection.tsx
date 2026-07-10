@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Star, Loader2 } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface Testimonial {
   id: number;
@@ -70,13 +70,29 @@ export default function TestimonialsSection() {
     return null;
   }
 
+  // 📐 Centering layout grids dynamically based on active review count
+  const testimonialCount = testimonials.length;
+  let gridColsClass = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+  let maxContainerWidth = "max-w-7xl";
+
+  if (testimonialCount === 1) {
+    gridColsClass = "grid-cols-1";
+    maxContainerWidth = "max-w-md";
+  } else if (testimonialCount === 2) {
+    gridColsClass = "grid-cols-1 sm:grid-cols-2";
+    maxContainerWidth = "max-w-3xl";
+  } else if (testimonialCount === 3) {
+    gridColsClass = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+    maxContainerWidth = "max-w-5xl";
+  }
+
   return (
     <section className="py-24 bg-[#111111] border-t border-gray-800/40 relative overflow-hidden">
       {/* Luxury gold glowing backdrops */}
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className={`${maxContainerWidth} mx-auto px-6 relative z-10`}>
         <header className="text-center space-y-4 mb-16">
           <span className="text-[10px] sm:text-xs font-bold tracking-[0.35em] text-[#D4AF37] uppercase animate-pulse block">
             SHUDDHATA KA ANUBHAV
@@ -84,10 +100,14 @@ export default function TestimonialsSection() {
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#FDFBF7] tracking-wide">
             Our Customers Say (कस्टमर की पसंद)
           </h2>
-          <div className="mx-auto h-[1px] w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+          <div className="flex items-center justify-center gap-2 mt-4 select-none">
+            <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#D4AF37]" />
+            <span className="text-[#D4AF37] text-[10px]">✦</span>
+            <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#D4AF37]" />
+          </div>
         </header>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className={`grid gap-6 ${gridColsClass} justify-center`}>
           {testimonials.map((t) => {
             const hasComment = t.feedbackText && t.feedbackText.trim().length > 0;
             const textToDisplay = hasComment
