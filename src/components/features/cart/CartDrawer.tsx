@@ -128,7 +128,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
                             src={item.imageUrl} 
                             alt={item.name} 
                             className="h-full w-full object-contain"
-                            onError={(e) => { e.currentTarget.src = "https://placehold.co/100x100/e6e6e6/111111?text=MG"; }}
+                            onError={(e) => { e.currentTarget.src = "/images/newlogo.svg?v=2"; }}
                           />
                         </div>
                         <div>

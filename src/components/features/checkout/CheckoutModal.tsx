@@ -106,6 +106,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
   const [simulatingUpiApp, setSimulatingUpiApp] = useState<string | null>(null);
   const [upiCountdown, setUpiCountdown] = useState(3);
+  const [customUpiId, setCustomUpiId] = useState("");
   
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -121,6 +122,9 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   });
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [alternativePhone, setAlternativePhone] = useState("");
+  const [isAddressVerifying, setIsAddressVerifying] = useState(false);
+  const [isAddressVerified, setIsAddressVerified] = useState(false);
   
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -276,35 +280,93 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     });
     setSuggestions([]);
     setShowDropdown(false);
+    setIsAddressVerified(false); // reset verification on changing address
+  };
+
+  const handleVerifyAddress = () => {
+    if (!newAddress.fullAddress.trim()) {
+      showToast("Please enter a shipping address to verify.", "error");
+      return;
+    }
+    setIsAddressVerifying(true);
+    setTimeout(() => {
+      setIsAddressVerifying(false);
+      setIsAddressVerified(true);
+      showToast("Delivery address verified successfully with logistics boundaries!", "success");
+    }, 1200);
   };
 
   // 🔄 Reset states on close
   useEffect(() => {
     if (!isOpen) {
-      setPhone("");
-      setFullName("");
-      setProfile(null);
-      setSelectedAddressId(null);
-      setIsAddingNew(false);
-      setNewAddress({
-        addressType: "HOME",
-        fullAddress: "",
-        city: "",
-        state: "",
-        pincode: "",
-        isDefault: true,
-        latitude: undefined,
-        longitude: undefined
+      Promise.resolve().then(() => {
+        setPhone("");
+        setFullName("");
+        setProfile(null);
+        setSelectedAddressId(null);
+        setIsAddingNew(false);
+        setNewAddress({
+          addressType: "HOME",
+          fullAddress: "",
+          city: "",
+          state: "",
+          pincode: "",
+          isDefault: true,
+          latitude: undefined,
+          longitude: undefined
+        });
+        setPaymentMethod("ONLINE");
+        setShowPaymentSimulator(false);
+        setPaymentErrorMessage(null);
+        setTempOrderPayload(null);
+        setPaymentTab("UPI");
+        setSelectedUpiApp(null);
+        setSimulatingUpiApp(null);
+        setCustomUpiId("");
+        setAlternativePhone("");
+        setIsAddressVerifying(false);
+        setIsAddressVerified(false);
       });
-      setPaymentMethod("ONLINE");
-      setShowPaymentSimulator(false);
-      setPaymentErrorMessage(null);
-      setTempOrderPayload(null);
-      setPaymentTab("UPI");
-      setSelectedUpiApp(null);
-      setSimulatingUpiApp(null);
     }
   }, [isOpen]);
+
+  const handleSimulatedPaymentSuccess = async () => {
+    if (!tempOrderPayload) return;
+    setIsSubmitting(true);
+    setPaymentErrorMessage(null);
+
+    const finalPayload = {
+      ...tempOrderPayload,
+      paymentStatus: "COMPLETED",
+      orderStatus: "CONFIRMED",
+      paymentTransactionId: "txn_sim_" + Math.random().toString(36).substring(2, 10).toUpperCase()
+    };
+
+    try {
+      console.log("Placing Prepaid paid order via API...");
+      const response = await fetch(API_ENDPOINTS.placeOrder, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalPayload),
+      });
+
+      if (!response.ok) throw new Error("Server rejected simulated prepaid order placement.");
+
+      const savedOrder = await response.json();
+      setPlacedOrderId(savedOrder.id);
+      setShowPaymentSimulator(false);
+      setTempOrderPayload(null);
+      setSimulatingUpiApp(null);
+      setSelectedUpiApp(null);
+      setCustomUpiId("");
+    } catch (error) {
+      console.error("Simulated Checkout Error:", error);
+      setPaymentErrorMessage("Payment verification failed on the server. Please try again.");
+      setSimulatingUpiApp(null);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // ⏳ UPI Simulation Countdown Timer Hook
   useEffect(() => {
@@ -381,7 +443,11 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     const nameRegex = /^[a-zA-Z\s]{2,50}$/;
     const locationRegex = /^[a-zA-Z\s]{2,40}$/;
 
-    if (!fullName.trim() || !nameRegex.test(fullName.trim())) {
+    if (!fullName.trim()) {
+      showToast("Please enter your Full Name.", "error");
+      return;
+    }
+    if (!nameRegex.test(fullName.trim())) {
       showToast("Full Name must contain letters only (at least 2 characters).", "error");
       return;
     }
@@ -462,7 +528,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       const orderPayload = {
         customerName: fullName,
         phoneNumber: phone,
-        address: finalAddress,
+        address: alternativePhone.trim() ? `${finalAddress} (Alt: ${alternativePhone})` : finalAddress,
         pincode: finalPincode,
         cityState: finalCityState,
         totalAmount: subtotal,
@@ -500,48 +566,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
-  const handleSimulatedPaymentSuccess = async () => {
-    if (!tempOrderPayload) return;
-    setIsSubmitting(true);
-    setPaymentErrorMessage(null);
 
-    const finalPayload = {
-      ...tempOrderPayload,
-      paymentStatus: "COMPLETED",
-      orderStatus: "CONFIRMED",
-      paymentTransactionId: "txn_sim_" + Math.random().toString(36).substring(2, 10).toUpperCase()
-    };
-
-    try {
-      console.log("Placing Prepaid paid order via API...");
-      const response = await fetch(API_ENDPOINTS.placeOrder, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalPayload),
-      });
-
-      if (!response.ok) throw new Error("Server rejected simulated prepaid order placement.");
-
-      const savedOrder = await response.json();
-      setPlacedOrderId(savedOrder.id);
-      setShowPaymentSimulator(false);
-      setTempOrderPayload(null);
-      setSimulatingUpiApp(null);
-      setSelectedUpiApp(null);
-    } catch (error) {
-      console.error("Simulated Checkout Error:", error);
-      setPaymentErrorMessage("Payment verification failed on the server. Please try again.");
-      setSimulatingUpiApp(null);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handlePayClick = () => {
     if (paymentTab === "UPI") {
-      if (!selectedUpiApp) return;
+      if (!selectedUpiApp && !customUpiId.trim()) return;
       setUpiCountdown(3);
-      setSimulatingUpiApp(selectedUpiApp);
+      setSimulatingUpiApp(selectedUpiApp || customUpiId);
     } else {
       handleSimulatedPaymentSuccess();
     }
@@ -552,6 +583,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     setTempOrderPayload(null);
     setSimulatingUpiApp(null);
     setSelectedUpiApp(null);
+    setCustomUpiId("");
     setPaymentErrorMessage("Payment was cancelled. You can retry or select Cash on Delivery.");
   };
 
@@ -566,7 +598,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300">
       <div className="absolute inset-0" onClick={!placedOrderId && !isSubmitting ? onClose : undefined} />
       
-      <div className="relative w-full max-w-lg bg-[#111111] text-[#FDFBF7] rounded-2xl p-8 border border-gray-800/80 shadow-2xl z-10 max-h-[90vh] flex flex-col transition-all duration-500">
+      <div className="relative w-full max-w-lg bg-[#111111]/70 backdrop-blur-xl text-[#FDFBF7] rounded-3xl p-8 border border-[#D4AF37]/30 shadow-[0_0_50px_rgba(212,175,55,0.15)] z-10 max-h-[90vh] flex flex-col transition-all duration-500">
         
         {/* 🎉 Success Screen */}
         {placedOrderId ? (
@@ -602,9 +634,19 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
               
               <div className="space-y-2">
                 <span className="text-[9px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase">Secure Processing</span>
-                <h4 className="font-serif text-xl font-bold tracking-wide text-white">Opening {simulatingUpiApp}...</h4>
+                <h4 className="font-serif text-xl font-bold tracking-wide text-white">
+                  {selectedUpiApp ? `Opening ${selectedUpiApp}...` : `Request Sent`}
+                </h4>
                 <p className="text-xs text-gray-400 max-w-xs mx-auto leading-relaxed font-light">
-                  We have sent a transaction request of <strong>₹{subtotal}.00</strong> to your mobile app. Please verify and approve it on your phone.
+                  {selectedUpiApp ? (
+                    <>
+                      We have sent a transaction request of <strong>₹{subtotal}.00</strong> to your mobile app. Please verify and approve it on your phone.
+                    </>
+                  ) : (
+                    <>
+                      We have sent a collect request of <strong>₹{subtotal}.00</strong> to your UPI ID <strong>{customUpiId}</strong>. Please check your UPI app and approve the request.
+                    </>
+                  )}
                 </p>
               </div>
 
@@ -664,37 +706,69 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 <div className="max-w-sm mx-auto space-y-4">
                   <div className="grid grid-cols-3 gap-2.5">
                     <div 
-                      onClick={() => setSelectedUpiApp("PhonePe")} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-1.5 active:scale-95 ${
-                        selectedUpiApp === "PhonePe" ? "border-[#D4AF37] bg-[#D4AF37]/5" : "border-gray-800 hover:border-gray-700"
+                      onClick={() => {
+                        setSelectedUpiApp("PhonePe");
+                        setCustomUpiId("");
+                      }} 
+                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "PhonePe" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
                       }`}
                     >
-                      <div className="h-6 w-6 rounded-full bg-indigo-600/10 flex items-center justify-center font-bold text-[9px] text-indigo-400">PP</div>
-                      <span className="text-[9px] font-bold text-gray-400">PhonePe</span>
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <svg viewBox="0 0 100 100" className="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="100" height="100" rx="20" fill="#5F259F"/>
+                          <path d="M50 20C33.4 20 20 33.4 20 50C20 66.6 33.4 80 50 80C66.6 80 80 66.6 80 50C80 33.4 66.6 20 50 20ZM53 62H42V38H53C58 38 61 40 61 44C61 48 58 50 53 50H49V56H53C55.8 56 57.5 57.5 57.5 60C57.5 61.2 57 62 53 62Z" fill="white"/>
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-300">PhonePe</span>
                     </div>
                     <div 
-                      onClick={() => setSelectedUpiApp("Google Pay")} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-1.5 active:scale-95 ${
-                        selectedUpiApp === "Google Pay" ? "border-[#D4AF37] bg-[#D4AF37]/5" : "border-gray-800 hover:border-gray-700"
+                      onClick={() => {
+                        setSelectedUpiApp("Google Pay");
+                        setCustomUpiId("");
+                      }} 
+                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "Google Pay" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
                       }`}
                     >
-                      <div className="h-6 w-6 rounded-full bg-blue-600/10 flex items-center justify-center font-bold text-[9px] text-blue-400">GP</div>
-                      <span className="text-[9px] font-bold text-gray-400">Google Pay</span>
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <svg viewBox="0 0 24 24" className="w-7 h-7" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21.35 11.1c0-.7-.06-1.35-.17-2H12v3.8h5.25c-.23 1.2-1 2.2-2.05 2.9v2.4h3.3c1.9-1.75 3-4.35 3-7.1z" fill="#4285F4"/>
+                          <path d="M12 20.6c2.7 0 5-.9 6.6-2.4l-3.3-2.4c-.9.6-2.05 1-3.3 1-2.55 0-4.7-1.7-5.45-4H3.2v2.5c1.6 3.2 4.9 5.3 8.8 5.3z" fill="#34A853"/>
+                          <path d="M6.55 12.8c-.2-.6-.3-1.25-.3-1.9s.1-1.3.3-1.9V6.5H3.2C2.4 8.1 2 9.8 2 11.6s.4 3.5 1.2 5.1l3.35-2.9z" fill="#FBBC05"/>
+                          <path d="M12 6.4c1.45 0 2.75.5 3.8 1.5l2.85-2.85C16.9 3.4 14.65 2.5 12 2.5c-3.9 0-7.2 2.1-8.8 5.3l3.35 2.9c.75-2.3 2.9-4.1 5.45-4.1z" fill="#EA4335"/>
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-300">Google Pay</span>
                     </div>
                     <div 
-                      onClick={() => setSelectedUpiApp("Paytm")} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-1.5 active:scale-95 ${
-                        selectedUpiApp === "Paytm" ? "border-[#D4AF37] bg-[#D4AF37]/5" : "border-gray-800 hover:border-gray-700"
+                      onClick={() => {
+                        setSelectedUpiApp("Paytm");
+                        setCustomUpiId("");
+                      }} 
+                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "Paytm" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
                       }`}
                     >
-                      <div className="h-6 w-6 rounded-full bg-cyan-600/10 flex items-center justify-center font-bold text-[9px] text-cyan-400">PT</div>
-                      <span className="text-[9px] font-bold text-gray-400">Paytm</span>
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                        <span className="text-[#002970] font-black font-sans text-xs italic tracking-tighter">pay<span className="text-[#00BAF2]">tm</span></span>
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-300">Paytm</span>
                     </div>
                   </div>
 
                   <div className="text-left bg-[#161616]/40 p-4 rounded-xl border border-gray-800/40 space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">Or Enter UPI ID</label>
-                    <input type="text" disabled value="customer@okaxis" className="w-full bg-black/60 border border-gray-800 rounded-lg p-2.5 text-xs text-gray-400 font-mono focus:outline-none" />
+                    <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">Or Enter UPI ID</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. customer@okaxis" 
+                      value={customUpiId}
+                      onChange={(e) => {
+                        setCustomUpiId(e.target.value);
+                        setSelectedUpiApp(null);
+                      }}
+                      className="w-full bg-black/60 border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-xs text-gray-200 font-mono focus:outline-none transition-colors" 
+                    />
                   </div>
                 </div>
               ) : (
@@ -733,7 +807,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                   Cancel
                 </button>
                 <button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (paymentTab === "UPI" && !selectedUpiApp && !customUpiId.trim())}
                   onClick={handlePayClick}
                   className="flex-1 py-3.5 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
@@ -753,9 +827,12 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
           
           /* 📦 Smart Shipping Flow */
           <div className="flex flex-col h-full max-h-full overflow-hidden">
-            <h3 className="font-serif text-2xl font-bold tracking-wide text-[#D4AF37] border-b border-gray-800 pb-4 shrink-0">
+            <h3 className="font-serif text-3xl font-bold tracking-wide text-center bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] bg-clip-text text-transparent pb-1 shrink-0">
               Shipping Information
             </h3>
+            <p className="text-[11px] text-gray-500 text-center uppercase tracking-widest border-b border-gray-800/80 pb-4 shrink-0 font-light">
+              Please provide your accurate shipping details to place your order.
+            </p>
             
             <div className="mt-6 space-y-6 overflow-y-auto flex-1 pr-2 custom-scrollbar">
               
@@ -764,29 +841,29 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 <div>
                   <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">Phone Number</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-mono">+91</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-mono">+91</span>
                     <input 
                       required type="tel" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      className="w-full bg-[#161616] border border-gray-800 rounded-lg pl-10 pr-3 py-3 text-sm text-[#FDFBF7] focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700" placeholder="10-digit number" 
+                      className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl pl-12 pr-3 py-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono" placeholder="10-digit number" 
                     />
-                    {isLoadingProfile && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#D4AF37]" />}
+                    {isLoadingProfile && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#D4AF37]" />}
                   </div>
                 </div>
                 <div>
                   <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">Full Name</label>
                   <input 
                     required type="text" value={fullName} onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
-                    className="w-full bg-[#161616] border border-gray-800 rounded-lg p-3 text-sm text-[#FDFBF7] focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700" placeholder="Enter your name" 
+                    className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700" placeholder="Enter your name" 
                   />
                 </div>
               </div>
-
+ 
               {/* Locked/Guidance State */}
               {phone.length < 10 && (
-                <div className="bg-[#161616]/50 border border-gray-800/40 rounded-2xl p-6 text-center space-y-3 opacity-60">
-                  <MapPin className="h-8 w-8 text-gray-600 mx-auto" />
-                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Delivery Destination</h4>
-                  <p className="text-[11px] text-gray-500 max-w-xs mx-auto leading-relaxed">
+                <div className="bg-[#161616]/40 backdrop-blur-md border border-gray-800/80 rounded-2xl p-8 text-center space-y-4 shadow-inner">
+                  <MapPin className="h-10 w-10 text-gray-600 mx-auto animate-pulse" />
+                  <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Delivery Destination</h4>
+                  <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed font-light">
                     Enter your name and a valid 10-digit phone number above to proceed with the delivery address.
                   </p>
                 </div>
@@ -854,7 +931,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
               {phone.length === 10 && profile && isAddingNew && (
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] uppercase tracking-widest text-[#D4AF37] block font-bold">Delivery Address</label>
+                    <label className="text-[10px] uppercase tracking-widest text-[#D4AF37] block font-bold font-serif">Delivery Address</label>
                     {profile.addresses.length > 0 && (
                       <button 
                         type="button" 
@@ -866,10 +943,10 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     )}
                   </div>
                   
-                  <div className="space-y-4 bg-[#161616] p-5 rounded-2xl border border-gray-800/80 shadow-inner">
+                  <div className="space-y-4 bg-[#161616]/40 backdrop-blur-md p-5 rounded-2xl border border-[#D4AF37]/20 shadow-inner">
                     {/* Address Type Selection */}
                     <div>
-                      <label className="text-[9px] uppercase tracking-widest text-gray-500 block mb-2 font-bold">Address Type</label>
+                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-2 font-bold">Address Type</label>
                       <div className="flex gap-2">
                         {['HOME', 'OFFICE', 'OTHER'].map((type) => (
                           <button 
@@ -878,8 +955,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                             onClick={() => setNewAddress({...newAddress, addressType: type as AddressType})} 
                             className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all duration-200 ${
                               newAddress.addressType === type 
-                                ? "bg-[#D4AF37] text-black border-[#D4AF37]" 
-                                : "bg-black text-gray-400 border-gray-800 hover:border-gray-700"
+                                ? "bg-[#D4AF37] text-[#111111] border-[#D4AF37]" 
+                                : "bg-black/40 text-gray-400 border-gray-800 hover:border-gray-700"
                             }`}
                           >
                             {type}
@@ -889,79 +966,114 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     </div>
 
                     {/* Full Address */}
-                    <div className="relative">
-                      <label className="text-[9px] uppercase tracking-widest text-gray-500 block mb-1 font-bold">Full Address</label>
-                      <input 
-                        ref={inputRef}
-                        required 
-                        type="text" 
-                        placeholder="Street address, Flat, House no., Area" 
-                        value={newAddress.fullAddress} 
-                        onChange={(e) => handleAddressChange(e.target.value)} 
-                        onFocus={() => {
-                          if (newAddress.fullAddress.trim().length >= 3 && suggestions.length > 0) {
-                            setShowDropdown(true);
-                          }
-                        }}
-                        onBlur={() => {
-                          setTimeout(() => setShowDropdown(false), 200);
-                        }}
-                        className="w-full bg-black border border-gray-800 rounded-lg p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
-                      />
-                      {showDropdown && suggestions.length > 0 && !googleMapsKey && (
-                        <div className="absolute left-0 right-0 mt-1 bg-[#161616] border border-gray-800 rounded-xl overflow-hidden shadow-2xl z-50 divide-y divide-gray-900/60 max-h-48 overflow-y-auto">
-                          {suggestions.map((loc, idx) => (
-                            <div
-                              key={idx}
-                              onClick={() => handleSelectSuggestion(loc)}
-                              className="px-4 py-2.5 text-xs text-gray-300 hover:text-white hover:bg-[#D4AF37]/10 cursor-pointer transition-all flex items-center gap-2"
-                            >
-                              <MapPin className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
-                              <span className="truncate">{loc.description}</span>
+                    <div>
+                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Shipping Address (Smart Auto-complete)</label>
+                      <div className="flex gap-2 items-center">
+                        <div className="relative flex-1">
+                          <input 
+                            ref={inputRef}
+                            required 
+                            type="text" 
+                            placeholder="Street address, Flat, House no., Area" 
+                            value={newAddress.fullAddress} 
+                            onChange={(e) => handleAddressChange(e.target.value)} 
+                            onFocus={() => {
+                              if (newAddress.fullAddress.trim().length >= 3 && suggestions.length > 0) {
+                                setShowDropdown(true);
+                              }
+                            }}
+                            onBlur={() => {
+                              setTimeout(() => setShowDropdown(false), 200);
+                            }}
+                            className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                          />
+                          {showDropdown && suggestions.length > 0 && !googleMapsKey && (
+                            <div className="absolute left-0 right-0 mt-1 bg-[#161616] border border-gray-800 rounded-xl overflow-hidden shadow-2xl z-50 divide-y divide-gray-900/60 max-h-48 overflow-y-auto">
+                              {suggestions.map((loc, idx) => (
+                                <div
+                                  key={idx}
+                                  onClick={() => handleSelectSuggestion(loc)}
+                                  className="px-4 py-2.5 text-xs text-gray-300 hover:text-white hover:bg-[#D4AF37]/10 cursor-pointer transition-all flex items-center gap-2"
+                                >
+                                  <MapPin className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                                  <span className="truncate">{loc.description}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
+                        
+                        <button 
+                          type="button"
+                          onClick={handleVerifyAddress}
+                          disabled={isAddressVerifying || !newAddress.fullAddress.trim()}
+                          className={`px-3 py-3 rounded-xl font-bold text-[9px] uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1.5 shrink-0 ${
+                            isAddressVerified 
+                              ? "bg-green-500/20 border border-green-500 text-green-400" 
+                              : "bg-[#E5C158] hover:bg-[#D4AF37] text-[#111111] disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                          }`}
+                        >
+                          {isAddressVerifying ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <MapPin className="h-3.5 w-3.5" />
+                          )}
+                          <span>{isAddressVerified ? "Verified" : "Verify Address"}</span>
+                        </button>
+                      </div>
                     </div>
 
                     {/* City and State Grid */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[9px] uppercase tracking-widest text-gray-500 block mb-1.5 font-bold">City</label>
+                        <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">City</label>
                         <input 
                           required 
                           type="text" 
                           placeholder="City" 
                           value={newAddress.city} 
                           onChange={(e) => setNewAddress({...newAddress, city: e.target.value.replace(/[^a-zA-Z\s]/g, "")})} 
-                          className="w-full bg-black border border-gray-800/80 rounded-lg p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] uppercase tracking-widest text-gray-500 block mb-1.5 font-bold">State</label>
+                        <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">State</label>
                         <input 
                           required 
                           type="text" 
                           placeholder="State" 
                           value={newAddress.state} 
                           onChange={(e) => setNewAddress({...newAddress, state: e.target.value.replace(/[^a-zA-Z\s]/g, "")})} 
-                          className="w-full bg-black border border-gray-800/80 rounded-lg p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
                         />
                       </div>
                     </div>
 
-                    {/* Pincode */}
-                    <div>
-                      <label className="text-[9px] uppercase tracking-widest text-gray-500 block mb-1 font-bold">Pincode</label>
-                      <input 
-                        required 
-                        type="text" 
-                        placeholder="6-digit pincode" 
-                        maxLength={6} 
-                        value={newAddress.pincode} 
-                        onChange={(e) => setNewAddress({...newAddress, pincode: e.target.value.replace(/\D/g, "")})} 
-                        className="w-full bg-black border border-gray-800 rounded-lg p-3 text-sm text-[#FDFBF7] font-mono placeholder-gray-700 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
-                      />
+                    {/* Pincode & Alternative Phone Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Pincode</label>
+                        <input 
+                          required 
+                          type="text" 
+                          placeholder="6-digit pincode" 
+                          maxLength={6} 
+                          value={newAddress.pincode} 
+                          onChange={(e) => setNewAddress({...newAddress, pincode: e.target.value.replace(/\D/g, "")})} 
+                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Alternative Phone (Optional)</label>
+                        <input 
+                          type="tel" 
+                          maxLength={10} 
+                          placeholder="Optional contact" 
+                          value={alternativePhone} 
+                          onChange={(e) => setAlternativePhone(e.target.value.replace(/\D/g, ""))} 
+                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1003,17 +1115,17 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
             </div>
 
             {/* 💵 Footer: Pricing & Action Buttons */}
-            <div className="border-t border-gray-800 pt-4 mt-6 shrink-0 bg-[#111111]">
-              <div className="flex justify-between text-sm mb-2 text-gray-400">
-                <span>Total Payable:</span>
-                <span className="font-mono text-[#FDFBF7] font-bold text-lg">₹{subtotal}.00</span>
+            <div className="border-t border-gray-800/80 pt-4 mt-6 shrink-0 bg-transparent">
+              <div className="flex justify-between items-center text-sm mb-3 text-gray-400">
+                <span className="font-medium">Total Payable:</span>
+                <span className="font-mono text-[#D4AF37] font-bold text-xl drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]">₹{subtotal}.00</span>
               </div>
               
-              <div className="max-h-24 overflow-y-auto space-y-1 mb-4 bg-black/20 p-2 rounded-lg border border-gray-900 custom-scrollbar">
+              <div className="max-h-24 overflow-y-auto space-y-1 mb-4 bg-black/30 p-3 rounded-xl border border-gray-900 custom-scrollbar">
                 {cartItems && cartItems.map(item => (
-                  <div key={item.id} className="flex justify-between text-[11px] text-gray-500">
+                  <div key={item.id} className="flex justify-between text-[11px] text-gray-400">
                     <span>{item.name} (x{item.quantity})</span>
-                    <span>₹{item.price * item.quantity}</span>
+                    <span className="font-mono">₹{item.price * item.quantity}</span>
                   </div>
                 ))}
               </div>
@@ -1024,20 +1136,32 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 </p>
               )}
 
-              <p className="text-[10px] text-gray-500 mb-4">
-                Payment Method: {paymentMethod === "COD" ? "Cash on Delivery (COD)" : "Online Payment (Prepaid)"}
+              <p className="text-[10px] text-gray-500 mb-4 tracking-wide font-light">
+                Payment Method: <span className="text-gray-300 font-medium">{paymentMethod === "COD" ? "Cash on Delivery (COD)" : "Online Payment (Prepaid)"}</span>
               </p>
               
               <div className="flex space-x-3">
-                <button disabled={isSubmitting} type="button" onClick={onClose} className="flex-1 py-3.5 border border-gray-800 text-gray-400 rounded-lg text-xs uppercase tracking-wider hover:bg-gray-900 transition-colors disabled:opacity-50">
+                <button 
+                  disabled={isSubmitting} 
+                  type="button" 
+                  onClick={onClose} 
+                  className="flex-1 py-3.5 border border-gray-800 text-gray-400 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-900/60 hover:text-white transition-all disabled:opacity-50 active:scale-95 font-bold"
+                >
                   Cancel
                 </button>
                 <button 
                   onClick={handlePlaceOrder}
                   disabled={isSubmitting || !phone || phone.length < 10 || (!selectedAddressId && !isAddingNew)} 
-                  className="flex-1 py-3.5 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-700 disabled:cursor-not-allowed"
+                  className="flex-1 py-3.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] hover:from-[#F3E5AB] hover:to-[#D4AF37] text-[#111111] font-bold rounded-xl text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all active:scale-95 disabled:from-gray-800 disabled:to-gray-900 disabled:text-gray-600 disabled:shadow-none disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "Placing Order..." : "Place Order"}
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-1.5">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Placing Order...
+                    </span>
+                  ) : (
+                    "Place Order"
+                  )}
                 </button>
               </div>
             </div>

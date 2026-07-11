@@ -114,18 +114,12 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                           className="h-full object-contain transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full w-full bg-[#FAF9F5]/40 rounded-lg p-4 select-none text-center">
-                          <svg className="h-12 w-12 text-[#D4AF37]/50 mb-2 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M50 18C38 18 33 26 33 38C33 50 37 78 50 78C63 78 67 50 67 38C67 26 62 18 50 18Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M31 34C31 34 40 40 50 40C60 40 69 34 69 34" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                            <path d="M37 20H63" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                            <path d="M46 14H54" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                            <circle cx="50" cy="52" r="4" fill="currentColor" opacity="0.5"/>
-                            <circle cx="43" cy="58" r="2.5" fill="currentColor" opacity="0.5"/>
-                            <circle cx="57" cy="58" r="2.5" fill="currentColor" opacity="0.5"/>
-                          </svg>
-                          <span className="text-[9px] font-bold uppercase tracking-wider text-[#D4AF37]/75">Shuddh Bilona</span>
-                          <span className="text-[8px] text-gray-400 mt-0.5">Handcrafted batch preparing</span>
+                        <div className="flex items-center justify-center h-full w-full bg-[#FAF9F5]/40 rounded-lg p-6 select-none">
+                          <img 
+                            src="/images/newlogo.svg?v=2" 
+                            alt="MadhurGram Logo" 
+                            className="max-h-24 max-w-[80%] object-contain opacity-40 transition-all duration-300 group-hover:scale-105 group-hover:opacity-60" 
+                          />
                         </div>
                       )}
                     </div>
@@ -194,11 +188,15 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                     src={selectedProduct.imageUrl} 
                     alt={selectedProduct.name} 
                     className="max-h-64 object-contain"
-                    onError={(e) => { e.currentTarget.src = "https://placehold.co/400x400/e6e6e6/111111?text=MadhurGram"; }}
+                    onError={(e) => { e.currentTarget.src = "/images/newlogo.svg?v=2"; }}
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#e6e6e6] text-center p-4 text-sm text-gray-500">
-                    Image unavailable
+                  <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#FAF9F5]/40 text-center p-8 select-none">
+                    <img 
+                      src="/images/newlogo.svg?v=2" 
+                      alt="MadhurGram Logo" 
+                      className="max-h-32 max-w-[85%] object-contain opacity-40 transition-all duration-300 hover:scale-105 hover:opacity-60" 
+                    />
                   </div>
                 )}
               </div>
