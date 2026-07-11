@@ -22,6 +22,7 @@ export const AdminProductManager = () => {
     stock: "",
     category: "",
     isActive: true,
+    hsnCode: "",
   };
   const [formData, setFormData] = useState<ProductFormState>(initialFormState);
 
@@ -96,7 +97,9 @@ export const AdminProductManager = () => {
                   )}
                   <div>
                     <p className="font-bold text-[#FDFBF7]">{product.name}</p>
-                    <p className="text-[10px] text-gray-500">{product.category} • {product.volume}</p>
+                    <p className="text-[10px] text-gray-500">
+                      {product.category} • {product.volume} {product.hsnCode ? `• HSN: ${product.hsnCode}` : ""}
+                    </p>
                   </div>
                 </td>
                 <td className="px-6 py-4 font-mono text-[#D4AF37]">₹{product.price}</td>
@@ -133,12 +136,36 @@ export const AdminProductManager = () => {
             <h3 className="text-lg font-bold text-[#D4AF37] mb-4">{editingProduct ? "Edit Product" : "Add New Product"}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" value={formData.name || ""} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Product Name" />
-              <input type="text" value={formData.category || ""} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Category" />
+              <input type="text" value={formData.volume || ""} onChange={(e) => setFormData({...formData, volume: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Volume (e.g. 500ml, 1kg)" />
+              <div className="grid grid-cols-2 gap-4">
+                <input type="text" value={formData.category || ""} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Category" />
+                <select 
+                  value={formData.hsnCode || ""} 
+                  onChange={(e) => setFormData({...formData, hsnCode: e.target.value})} 
+                  className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white"
+                >
+                  <option value="">Select HSN / GST Code</option>
+                  <option value="0405">0405 - Ghee (12% GST)</option>
+                  <option value="1701">1701 - Sweeteners (5% GST)</option>
+                  <option value="1512">1512 - Oils (5% GST)</option>
+                  <option value="2001">2001 - Pickles (12% GST)</option>
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <input type="number" value={formData.price ?? ""} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Price" />
                 <input type="number" value={formData.stock ?? ""} onChange={(e) => setFormData({...formData, stock: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Stock" />
               </div>
               <input type="text" value={formData.imageUrl || ""} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Image URL" />
+              <div className="flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  id="isActive"
+                  checked={formData.isActive ?? true} 
+                  onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
+                  className="h-4 w-4 rounded border-gray-800 text-[#D4AF37] focus:ring-[#D4AF37] bg-[#161616]" 
+                />
+                <label htmlFor="isActive" className="text-xs text-gray-400 font-medium cursor-pointer">Product is Active</label>
+              </div>
               <button type="submit" className="w-full py-3 bg-[#D4AF37] text-[#111111] font-bold rounded-lg">{isSubmitting ? "Saving..." : "Save Product"}</button>
             </form>
           </div>

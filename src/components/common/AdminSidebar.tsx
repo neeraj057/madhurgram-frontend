@@ -14,6 +14,7 @@ import {
   MessageSquare,
   ClipboardList,
   Undo2,
+  Percent,
 } from "lucide-react";
 
 export const AdminSidebar = () => {
@@ -23,6 +24,7 @@ export const AdminSidebar = () => {
     { name: "Analytics", href: "/admin/analytics", icon: LayoutDashboard },
     { name: "Live Orders", href: "/admin/orders", icon: ShoppingCart },
     { name: "Products", href: "/admin/products", icon: Package },
+    { name: "Tax Settings", href: "/admin/tax-settings", icon: Percent },
     { name: "Customers", href: "/admin/customers", icon: Users },
     { name: "Feedbacks", href: "/admin/feedback", icon: MessageSquare },
     { name: "Procurement", href: "/admin/procurement", icon: ClipboardList },

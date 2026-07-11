@@ -12,6 +12,7 @@ export interface Product {
   stock: number;
   category: string;
   isActive: boolean;
+  hsnCode?: string;
 }
 
 export const useAdminProducts = () => {

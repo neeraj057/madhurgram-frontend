@@ -12,6 +12,12 @@ interface OrderItem {
   productName: string;
   quantity: number;
   price: number;
+  hsnCode?: string;
+  gstRate?: number;
+  taxableAmount?: number;
+  cgstAmount?: number;
+  sgstAmount?: number;
+  igstAmount?: number;
 }
 
 interface OrderDetails {
@@ -28,6 +34,10 @@ interface OrderDetails {
   courierName: string | null;
   paymentStatus: string;
   paymentTransactionId: string | null;
+  taxableAmount?: number;
+  cgstTotal?: number;
+  sgstTotal?: number;
+  igstTotal?: number;
   orderItems: OrderItem[];
 }
 
@@ -347,7 +357,12 @@ export default function OrderTrackingPage() {
                 <div key={item.id} className="flex justify-between items-center text-xs">
                   <div className="flex items-center space-x-2">
                     <div className="h-2 w-2 rounded-full bg-[#D4AF37]" />
-                    <p className="font-semibold text-gray-700">{item.productName}</p>
+                    <div>
+                      <p className="font-semibold text-gray-700">{item.productName}</p>
+                      {item.hsnCode && (
+                        <p className="text-[9px] text-gray-400 font-mono leading-none mt-0.5">HSN: {item.hsnCode}</p>
+                      )}
+                    </div>
                     <p className="text-gray-400 font-mono">x {item.quantity}</p>
                   </div>
                   <p className="font-bold text-gray-800">₹{(item.price * item.quantity).toLocaleString()}</p>
@@ -355,6 +370,33 @@ export default function OrderTrackingPage() {
               ))}
             </div>
             
+            {order.taxableAmount !== undefined && order.taxableAmount !== null && (
+              <div className="border-t border-gray-100 pt-3 space-y-1.5 text-xs text-gray-500 font-light">
+                <div className="flex justify-between">
+                  <span>Base Amount</span>
+                  <span className="font-mono">₹{order.taxableAmount.toLocaleString()}</span>
+                </div>
+                {order.cgstTotal !== undefined && order.cgstTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span>CGST</span>
+                    <span className="font-mono">₹{order.cgstTotal.toLocaleString()}</span>
+                  </div>
+                )}
+                {order.sgstTotal !== undefined && order.sgstTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span>SGST</span>
+                    <span className="font-mono">₹{order.sgstTotal.toLocaleString()}</span>
+                  </div>
+                )}
+                {order.igstTotal !== undefined && order.igstTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span>IGST</span>
+                    <span className="font-mono">₹{order.igstTotal.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="border-t border-gray-100 pt-4 flex justify-between items-center">
               <p className="text-xs uppercase tracking-widest text-gray-400 font-bold">Total Bill</p>
               <p className="text-lg font-serif font-bold text-[#D4AF37]">₹{order.totalAmount.toLocaleString()}</p>

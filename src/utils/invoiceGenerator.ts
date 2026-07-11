@@ -7,6 +7,12 @@ export interface OrderItem {
   productName: string;
   quantity: number;
   price: number;
+  hsnCode?: string;
+  gstRate?: number;
+  taxableAmount?: number;
+  cgstAmount?: number;
+  sgstAmount?: number;
+  igstAmount?: number;
 }
 
 export interface Order {
@@ -23,6 +29,10 @@ export interface Order {
   paymentTransactionId?: string | null;
   trackingNumber?: string | null;
   courierName?: string | null;
+  taxableAmount?: number;
+  cgstTotal?: number;
+  sgstTotal?: number;
+  igstTotal?: number;
   orderItems: OrderItem[];
 }
 
@@ -54,11 +64,12 @@ export const downloadInvoicePDF = async (order: Order) => {
     ? `<div style="font-size: 10px; color: #555555; margin-top: 2px;">Txn ID: ${order.paymentTransactionId}</div>`
     : "";
 
-  // GST Calculation (Simulated inclusive taxes breakdown: 5% total tax rate for food/sweets)
-  const totalBill = order.totalAmount;
-  const baseValue = totalBill / 1.05;
-  const gstValue = totalBill - baseValue;
-  const splitGst = gstValue / 2;
+  // Dynamic GST Resolution
+  const baseValue = order.taxableAmount !== undefined ? order.taxableAmount : (order.totalAmount / 1.05);
+  const cgstTotal = order.cgstTotal || 0;
+  const sgstTotal = order.sgstTotal || 0;
+  const igstTotal = order.igstTotal || 0;
+  const placeOfSupply = order.cityState || "Uttar Pradesh";
 
   element.innerHTML = `
     <div style="padding: 45px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #111111; background-color: #ffffff; width: 720px; box-sizing: border-box; border: 1px solid #EAEAEA;">
@@ -98,40 +109,25 @@ export const downloadInvoicePDF = async (order: Order) => {
           <td style="width: 50%; vertical-align: top; padding-left: 25px; line-height: 1.5; font-size: 12px; border-left: 1px solid #F4F4F4;">
             <strong style="color: #D4AF37; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; font-weight: bold;">Deliver To:</strong>
             <span style="font-size: 13px; font-weight: 700; color: #111111; display: block; margin-bottom: 2px;">${order.customerName}</span>
-            <span style="color: #555555; font-weight: 400; display: block; min-height: 40px;">
+            <span style="color: #666666; font-weight: 400;">
               ${order.address}<br/>
-              ${order.cityState} - ${order.pincode}
+              ${order.cityState} - ${order.pincode}<br/>
+              Phone: ${order.phoneNumber}<br/>
+              <strong>Place of Supply:</strong> ${placeOfSupply}
             </span>
-            <span style="font-weight: 700; color: #111111; display: block; margin-top: 6px; font-family: monospace;">Phone: +91 ${order.phoneNumber}</span>
           </td>
         </tr>
       </table>
 
-      <!-- Shipment Meta Details Bar -->
-      <div style="background-color: #FDFBF7; border: 1px solid #D4AF37/10; border-radius: 12px; padding: 12px 20px; margin-bottom: 35px; display: flex; justify-content: space-between; font-size: 12px;">
-        <div>
-          <span style="color: #888888;">Order Status:</span>
-          <strong style="color: #111111; text-transform: uppercase; margin-left: 6px; font-family: monospace;">${order.orderStatus}</strong>
-        </div>
-        ${order.trackingNumber ? `
-        <div>
-          <span style="color: #888888;">Carrier:</span>
-          <strong style="color: #111111; margin-left: 6px;">${order.courierName}</strong>
-          <span style="color: #888888; margin-left: 10px; margin-right: 5px;">|</span>
-          <span style="color: #888888;">AWB:</span>
-          <strong style="color: #111111; font-family: monospace; margin-left: 6px;">${order.trackingNumber}</strong>
-        </div>
-        ` : ""}
-      </div>
-
-      <!-- Itemized Receipt Table -->
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; color: #111111;">
+      <!-- Table Header -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 35px; text-align: left; font-size: 13px;">
         <thead>
-          <tr style="background-color: #111111; color: #FFFFFF; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-            <th style="padding: 12px 15px; border-top-left-radius: 8px; border-bottom-left-radius: 8px;">Product details</th>
-            <th style="padding: 12px 15px; text-align: center; width: 60px;">Qty</th>
-            <th style="padding: 12px 15px; text-align: right; width: 100px;">Price</th>
-            <th style="padding: 12px 15px; text-align: right; width: 120px; border-top-right-radius: 8px; border-bottom-right-radius: 8px;">Subtotal</th>
+          <tr style="background-color: #FDFBF7; border-bottom: 2px solid #EAEAEA;">
+            <th style="padding: 12px 15px; font-weight: 700; color: #111111;">Description</th>
+            <th style="padding: 12px 15px; text-align: center; font-weight: 700; color: #111111;">HSN</th>
+            <th style="padding: 12px 15px; text-align: center; font-weight: 700; color: #111111;">Qty</th>
+            <th style="padding: 12px 15px; text-align: right; font-weight: 700; color: #111111;">Unit Price</th>
+            <th style="padding: 12px 15px; text-align: right; font-weight: 700; color: #111111;">Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -139,12 +135,13 @@ export const downloadInvoicePDF = async (order: Order) => {
             ? order.orderItems.map((item, index) => `
                 <tr style="border-bottom: 1px solid #F0F0F0; background-color: ${index % 2 === 0 ? "#FFFFFF" : "#FCFCFC"};">
                   <td style="padding: 14px 15px; font-weight: 600; font-family: 'Georgia', serif; font-size: 14px;">${item.productName}</td>
+                  <td style="padding: 14px 15px; text-align: center; color: #555555; font-family: monospace;">${item.hsnCode || "—"}</td>
                   <td style="padding: 14px 15px; text-align: center; font-weight: 700; font-family: monospace;">${item.quantity}</td>
                   <td style="padding: 14px 15px; text-align: right; color: #555555; font-family: monospace;">₹${item.price.toFixed(2)}</td>
                   <td style="padding: 14px 15px; text-align: right; font-weight: 700; font-family: monospace;">₹${(item.price * item.quantity).toFixed(2)}</td>
                 </tr>
               `).join('')
-            : `<tr><td colspan="4" style="padding: 25px; text-align: center; color: #888888; font-weight: 600;">No items declared in invoice.</td></tr>`
+            : `<tr><td colspan="5" style="padding: 25px; text-align: center; color: #888888; font-weight: 600;">No items declared in invoice.</td></tr>`
           }
         </tbody>
       </table>
@@ -155,7 +152,7 @@ export const downloadInvoicePDF = async (order: Order) => {
           <!-- Policy Terms Notes -->
           <td style="width: 55%; vertical-align: top; padding-right: 40px; color: #777777; line-height: 1.6;">
             <strong style="color: #111111; display: block; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Terms & Conditions:</strong>
-            - All prices are inclusive of applicable GST (CGST 2.5% + SGST 2.5%).<br/>
+            - All prices are inclusive of applicable GST (${cgstTotal > 0 || sgstTotal > 0 ? "CGST + SGST" : "IGST"}).<br/>
             - 100% natural, farm-fresh village crafted sweets and pantry essentials.<br/>
             - For return queries or shelf-life reports, reach out to contact@madhurgram.com.
           </td>
@@ -167,14 +164,26 @@ export const downloadInvoicePDF = async (order: Order) => {
                   <td style="color: #666666;">Base Value:</td>
                   <td style="text-align: right; font-weight: 600; font-family: monospace;">₹${baseValue.toFixed(2)}</td>
                 </tr>
+                ${cgstTotal > 0 || sgstTotal > 0 ? `
                 <tr>
-                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">CGST (2.5%):</td>
-                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${splitGst.toFixed(2)}</td>
+                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">CGST:</td>
+                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${cgstTotal.toFixed(2)}</td>
                 </tr>
                 <tr>
-                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">SGST (2.5%):</td>
-                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${splitGst.toFixed(2)}</td>
+                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">SGST:</td>
+                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${sgstTotal.toFixed(2)}</td>
                 </tr>
+                ` : igstTotal > 0 ? `
+                <tr>
+                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">IGST:</td>
+                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${igstTotal.toFixed(2)}</td>
+                </tr>
+                ` : `
+                <tr>
+                  <td style="color: #888888; font-size: 11px; padding-left: 10px;">Estimated GST (5%):</td>
+                  <td style="text-align: right; color: #666666; font-family: monospace; font-size: 11px;">₹${(order.totalAmount - baseValue).toFixed(2)}</td>
+                </tr>
+                `}
                 <tr style="border-bottom: 1px dashed #DDD; padding-bottom: 6px;">
                   <td style="color: #666666;">Payment Method:</td>
                   <td style="text-align: right; font-weight: bold; color: #111111;">
@@ -184,7 +193,7 @@ export const downloadInvoicePDF = async (order: Order) => {
                 </tr>
                 <tr style="line-height: 2.5;">
                   <td style="font-size: 14px; font-weight: bold; color: #111111; padding-top: 10px;">Grand Total:</td>
-                  <td style="text-align: right; font-size: 18px; font-weight: 800; color: #D4AF37; font-family: monospace; padding-top: 10px;">₹${totalBill.toFixed(2)}</td>
+                  <td style="text-align: right; font-size: 18px; font-weight: 800; color: #D4AF37; font-family: monospace; padding-top: 10px;">₹${order.totalAmount.toFixed(2)}</td>
                 </tr>
               </table>
             </div>
