@@ -38,4 +38,20 @@ export const API_ENDPOINTS = {
   adminGetAutoRecovery: `${BASE_URL}/api/admin/settings/auto-recovery`,
   adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/admin/settings/auto-recovery?enabled=${enabled}`,
   trackOrder: (orderId: number) => `${BASE_URL}/api/orders/${orderId}`,
+
+  // 📦 Procurement & Returns Endpoints
+  adminProcurementPOs: `${BASE_URL}/api/admin/procurement/pos`,
+  adminProcurementApprovePO: (id: number) => `${BASE_URL}/api/admin/procurement/pos/${id}/approve`,
+  adminReturnsAll: `${BASE_URL}/api/returns/admin/all`,
+  adminReturnsApprove: (id: number) => `${BASE_URL}/api/returns/admin/${id}/approve`,
+  adminReturnsReject: (id: number) => `${BASE_URL}/api/returns/admin/${id}/reject`,
+  publicReturnRequest: `${BASE_URL}/api/returns`,
+  publicReturnRequestByOrder: (orderId: number) => `${BASE_URL}/api/returns/order/${orderId}`,
+  publicReturnShippingLabel: (id: number) => `${BASE_URL}/api/returns/label/${id}`,
+
+  // 📝 Google Reviews Endpoints
+  adminMarketingReviews: `${BASE_URL}/api/admin/marketing/reviews`,
+  adminMarketingReviewsConfig: `${BASE_URL}/api/admin/marketing/reviews/config`,
+  adminMarketingReviewsSendNow: (id: number) => `${BASE_URL}/api/admin/marketing/reviews/${id}/send-now`,
+  adminMarketingReviewsSendTest: `${BASE_URL}/api/admin/marketing/reviews/send-test`,
 };

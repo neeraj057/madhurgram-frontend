@@ -29,7 +29,7 @@ export default function HeroSection() {
         
         {/* Subtle Subtitle Token */}
         <span className="mb-5 text-[10px] font-bold tracking-[0.35em] text-[#D4AF37] uppercase md:text-xs animate-pulse">
-          100% Pure Traditional Bilona Craft
+          100% PURE & TRADITIONAL HANDCRAFTED GOODS
         </span>
         
         {/* Main Brand Tagline */}

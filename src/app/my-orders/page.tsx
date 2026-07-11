@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ShoppingBag, ArrowLeft, Search, RefreshCw, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { fetchCustomerOrders, CustomerOrder } from "@/apis/customerOrders";
@@ -11,18 +11,13 @@ export default function MyOrdersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phone || phone.trim().length < 10) {
-      setError("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-
+  const performSearch = async (phoneNumber: string) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchCustomerOrders(phone);
+      const data = await fetchCustomerOrders(phoneNumber);
       setOrders(data);
+      sessionStorage.setItem("trackedPhone", phoneNumber);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch orders.");
       setOrders(null);
@@ -30,6 +25,24 @@ export default function MyOrdersPage() {
       setLoading(false);
     }
   };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone || phone.trim().length < 10) {
+      setError("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+    performSearch(phone);
+  };
+
+  // Restore search state if previously tracked
+  useEffect(() => {
+    const savedPhone = sessionStorage.getItem("trackedPhone");
+    if (savedPhone) {
+      setPhone(savedPhone);
+      performSearch(savedPhone);
+    }
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#111111] text-[#FDFBF7] p-6 md:p-16 font-sans">

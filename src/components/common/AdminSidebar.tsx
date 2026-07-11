@@ -12,6 +12,8 @@ import {
   Sparkles,
   Clock,
   MessageSquare,
+  ClipboardList,
+  Undo2,
 } from "lucide-react";
 
 export const AdminSidebar = () => {
@@ -23,6 +25,8 @@ export const AdminSidebar = () => {
     { name: "Products", href: "/admin/products", icon: Package },
     { name: "Customers", href: "/admin/customers", icon: Users },
     { name: "Feedbacks", href: "/admin/feedback", icon: MessageSquare },
+    { name: "Procurement", href: "/admin/procurement", icon: ClipboardList },
+    { name: "Returns Portal", href: "/admin/returns", icon: Undo2 },
     { name: "Marketing", href: "/admin/marketing", icon: Sparkles },
     { name: "Recover Sales", href: "/admin/abandoned-carts", icon: Clock },
   ];

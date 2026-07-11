@@ -144,9 +144,9 @@ export default function OrderTrackingPage() {
           <p className="text-sm text-gray-500 leading-relaxed">
             We couldn&apos;t retrieve shipment records for Order ID #{orderId}. Please check the tracking link or contact customer care.
           </p>
-          <Link href="/" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#111111] hover:bg-[#D4AF37] text-white hover:text-black font-bold text-xs uppercase tracking-wider rounded-full transition-all duration-300">
+          <Link href="/my-orders" className="inline-flex items-center space-x-2 px-6 py-3 bg-[#111111] hover:bg-[#D4AF37] text-white hover:text-black font-bold text-xs uppercase tracking-wider rounded-full transition-all duration-300">
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Storefront</span>
+            <span>Back to Track Orders</span>
           </Link>
         </div>
       </div>
@@ -159,9 +159,9 @@ export default function OrderTrackingPage() {
         
         {/* Top Navigation */}
         <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-2 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#D4AF37] transition-colors">
+          <Link href="/my-orders" className="flex items-center space-x-2 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#D4AF37] transition-colors">
             <ArrowLeft className="h-4 w-4" />
-            <span>MadhurGram Store</span>
+            <span>Back to Track Orders</span>
           </Link>
           <div className="text-right">
             <p className="text-[10px] text-gray-400 uppercase tracking-widest">Order ID</p>
@@ -180,7 +180,7 @@ export default function OrderTrackingPage() {
               </p>
             </div>
           </div>
-        ) : (order.paymentStatus === "FAILED" || order.paymentStatus === "PENDING") ? (
+        ) : (order.orderStatus === "PENDING" && (order.paymentStatus === "FAILED" || order.paymentStatus === "PENDING")) ? (
           <div className="bg-amber-50 border border-amber-200 text-amber-900 px-6 py-5 rounded-2xl space-y-4">
             <div className="flex items-start gap-4">
               <CreditCard className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -217,8 +217,15 @@ export default function OrderTrackingPage() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               <div>
-                <p className="text-[10px] text-emerald-700 uppercase tracking-widest font-bold">Payment Verified</p>
-                <p className="text-xs font-semibold font-mono text-emerald-900 mt-0.5">Txn ID: {order.paymentTransactionId}</p>
+                <p className="text-[10px] text-emerald-700 uppercase tracking-widest font-bold">
+                  {order.paymentStatus === "COMPLETED" ? "Payment Verified" : "Payment Status"}
+                </p>
+                <p className="text-xs font-semibold font-mono text-emerald-900 mt-0.5">
+                  {order.paymentStatus === "COMPLETED" 
+                    ? `Txn ID: ${order.paymentTransactionId || "N/A"}`
+                    : `Status: ${order.paymentStatus}`
+                  }
+                </p>
               </div>
             </div>
             <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-[9px] font-bold uppercase tracking-widest rounded-full">

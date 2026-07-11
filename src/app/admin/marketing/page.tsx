@@ -2,9 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Send, Sparkles, RefreshCw } from "lucide-react";
+import { ArrowLeft, Send, Sparkles, RefreshCw, Star } from "lucide-react";
 import { useAdminMarketing, BroadcastCampaignRequest } from "@/hooks/useAdminMarketing";
 import { useAdminProducts } from "@/hooks/useAdminProducts";
+import { showToast } from "@/components/ui/Toast";
+import { API_ENDPOINTS } from "@/apis/api";
+import { getAuthFetchOptions, handleAuthError } from "@/utils/adminAuth";
 
 export default function AdminMarketingPage() {
   const { campaigns, loading, submitting, error, fetchCampaigns, createCampaign } = useAdminMarketing();
@@ -17,9 +20,97 @@ export default function AdminMarketingPage() {
   const [productKeyword, setProductKeyword] = useState("oil");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
+  // Google Review Reputation Engine states
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewUrl, setReviewUrl] = useState("https://g.page/r/MadhurGramGhee/review");
+  const [testName, setTestName] = useState("");
+  const [testPhone, setTestPhone] = useState("");
+  const [testSubmitting, setTestSubmitting] = useState(false);
+
+  const fetchReviewsQueue = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminMarketingReviews, getAuthFetchOptions());
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data);
+      }
+    } catch (e) {
+      console.error("Error fetching reviews queue:", e);
+    }
+  };
+
+  const fetchReviewConfig = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminMarketingReviewsConfig, getAuthFetchOptions());
+      if (res.ok) {
+        const data = await res.json();
+        setReviewUrl(data.googleReviewUrl || "");
+      }
+    } catch (e) {
+      console.error("Error fetching review config:", e);
+    }
+  };
+
+  const handleSaveConfig = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminMarketingReviewsConfig, getAuthFetchOptions("PUT", JSON.stringify({ googleReviewUrl: reviewUrl }), "application/json"));
+      if (res.ok) {
+        showToast("Review link template updated.", "success");
+        fetchReviewConfig();
+      } else {
+        showToast("Failed to update config.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Error updating review URL.", "error");
+    }
+  };
+
+  const handleSendNow = async (id: number) => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminMarketingReviewsSendNow(id), getAuthFetchOptions("POST"));
+      if (res.ok) {
+        showToast("Review solicitation transmitted instantly!", "success");
+        fetchReviewsQueue();
+      } else {
+        showToast("Failed to send review request.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Error sending review request.", "error");
+    }
+  };
+
+  const handleSendTest = async () => {
+    if (!testName || !testPhone) {
+      showToast("Name and Phone are required for test send.", "error");
+      return;
+    }
+    setTestSubmitting(true);
+    try {
+      const url = `${API_ENDPOINTS.adminMarketingReviewsSendTest}?name=${encodeURIComponent(testName)}&phone=${encodeURIComponent(testPhone)}`;
+      const res = await fetch(url, getAuthFetchOptions("POST"));
+      if (res.ok) {
+        showToast("Test Google Review invite sent!", "success");
+        setTestName("");
+        setTestPhone("");
+        fetchReviewsQueue();
+      } else {
+        showToast("Failed to send test invite.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Error sending test invitation.", "error");
+    } finally {
+      setTestSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     fetchCampaigns();
     fetchProducts();
+    fetchReviewsQueue();
+    fetchReviewConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -210,6 +301,138 @@ export default function AdminMarketingPage() {
             )}
           </section>
         </div>
+
+        {/* Google Review Reputation Engine Section */}
+        <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-5 mb-6 gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <Star className="h-5 w-5 text-[#D4AF37] fill-[#D4AF37]" />
+                Google Review Automation (Reputation Engine)
+              </h2>
+              <p className="text-sm text-gray-400">Manage review invitations sent 24h post-delivery, tweak template link, or trigger instant tests.</p>
+            </div>
+            
+            {/* Quick config */}
+            <div className="flex items-center gap-3">
+              <input 
+                type="text"
+                value={reviewUrl}
+                onChange={(e) => setReviewUrl(e.target.value)}
+                placeholder="Google Business Profile Link"
+                className="rounded-xl border border-gray-800 bg-[#111111] px-4 py-2 text-xs text-white outline-none w-60 focus:border-[#D4AF37]"
+              />
+              <button 
+                onClick={handleSaveConfig}
+                className="px-4 py-2 bg-[#D4AF37] hover:bg-[#F7D070] text-[#111] text-xs font-bold uppercase tracking-wider rounded-xl transition-all"
+              >
+                Save Url
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[0.4fr_0.6fr]">
+            {/* Left side: Send Test Form */}
+            <div className="space-y-5 bg-[#111111]/40 border border-gray-800/80 p-5 rounded-2xl">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[#D4AF37]">Send Instant Test Invite</h3>
+              
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Customer Name</label>
+                  <input 
+                    type="text"
+                    value={testName}
+                    onChange={(e) => setTestName(e.target.value)}
+                    placeholder="e.g. Ramesh Kumar"
+                    className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Phone Number (with WhatsApp/SMS)</label>
+                  <input 
+                    type="text"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+                  />
+                </div>
+                <button 
+                  onClick={handleSendTest}
+                  disabled={testSubmitting}
+                  className="w-full py-2.5 bg-[#D4AF37]/10 hover:bg-[#D4AF37] border border-[#D4AF37]/20 hover:text-[#111] text-[#D4AF37] text-xs font-bold uppercase tracking-widest rounded-xl transition-all"
+                >
+                  {testSubmitting ? "Sending..." : "Send Test Invite"}
+                </button>
+              </div>
+            </div>
+
+            {/* Right side: Queue table */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-gray-300">Invitation Logs Queue</h3>
+                <button 
+                  onClick={fetchReviewsQueue}
+                  className="text-[10px] text-[#D4AF37] hover:underline"
+                >
+                  Refresh Queue
+                </button>
+              </div>
+
+              <div className="max-h-64 overflow-y-auto border border-gray-800 rounded-2xl bg-black/30 scrollbar-thin">
+                {reviews.length === 0 ? (
+                  <p className="p-10 text-center text-gray-500 text-xs">No reviews scheduled in the reputation queue. Complete an order to trigger.</p>
+                ) : (
+                  <table className="w-full text-left text-xs text-gray-400">
+                    <thead className="bg-[#0e0e0e] text-[9px] uppercase text-gray-500 font-bold tracking-wider sticky top-0 border-b border-gray-800">
+                      <tr>
+                        <th className="px-4 py-3">Customer</th>
+                        <th className="px-4 py-3">Phone</th>
+                        <th className="px-4 py-3">Scheduled / Sent</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-800/80">
+                      {reviews.map((req) => (
+                        <tr key={req.id} className="hover:bg-gray-900/30 transition-colors">
+                          <td className="px-4 py-3 font-semibold text-[#FDFBF7]">{req.customerName}</td>
+                          <td className="px-4 py-3 font-mono text-gray-500">{req.customerPhone}</td>
+                          <td className="px-4 py-3 font-mono text-gray-500">
+                            {req.status === "SENT" && req.sentAt 
+                              ? new Date(req.sentAt).toLocaleString() 
+                              : new Date(req.scheduledAt).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                              req.status === "SENT" 
+                                ? "bg-green-950/40 text-green-400" 
+                                : req.status === "FAILED"
+                                  ? "bg-red-950/40 text-red-400"
+                                  : "bg-amber-950/40 text-amber-400"
+                            }`}>
+                              {req.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {req.status === "PENDING" && (
+                              <button 
+                                onClick={() => handleSendNow(req.id)}
+                                className="px-2.5 py-1 bg-[#D4AF37] hover:bg-[#F7D070] text-[#111] font-bold uppercase tracking-wider text-[9px] rounded-lg transition-all"
+                              >
+                                Send Now
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

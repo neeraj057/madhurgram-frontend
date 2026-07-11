@@ -95,9 +95,15 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                     key={product.id} 
                     className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/60 bg-white p-5 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.06)] hover:border-[#D4AF37]/45 hover:-translate-y-1"
                   >
-                    <span className="absolute top-4 right-4 rounded-full bg-[#111111] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
-                      {product.stock === 0 ? 'Sold Out' : product.tag}
-                    </span>
+                    {product.stock === 0 ? (
+                      <span className="absolute top-4 right-4 rounded-full bg-red-500/10 border border-red-500/25 px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-red-400 z-10">
+                        Sold Out
+                      </span>
+                    ) : (product.tag && product.tag.toLowerCase() !== "out of stock") ? (
+                      <span className="absolute top-4 right-4 rounded-full bg-[#111111] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
+                        {product.tag}
+                      </span>
+                    ) : null}
 
                     {/* Image Box - Click to Open Modal */}
                     <div 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Calendar, MapPin, Package, Tag } from "lucide-react";
 import { CustomerOrder } from "@/apis/customerOrders";
+import Link from "next/link";
 
 interface OrderCardProps {
   order: CustomerOrder;
@@ -55,14 +56,22 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         </div>
       </div>
 
-      {/* Card Footer: Total Amount */}
+      {/* Card Footer: Total Amount & Link */}
       <div className="border-t border-gray-900 pt-4 flex justify-between items-center bg-gradient-to-r from-transparent to-black/10 px-2 rounded-lg">
         <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold flex items-center gap-1">
           <Tag className="h-3 w-3 text-[#D4AF37]" /> Net Payable (COD)
         </span>
-        <span className="text-base font-bold font-mono text-[#D4AF37]">
-          ₹{order.totalAmount}.00
-        </span>
+        <div className="flex items-center space-x-4">
+          <Link 
+            href={`/orders/track/${order.id}`}
+            className="text-[11px] font-bold uppercase tracking-wider text-[#D4AF37] hover:underline"
+          >
+            Track Live Status →
+          </Link>
+          <span className="text-base font-bold font-mono text-[#D4AF37]">
+            ₹{order.totalAmount}.00
+          </span>
+        </div>
       </div>
     </div>
   );

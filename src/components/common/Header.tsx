@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { ShoppingBag, Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface HeaderProps {
   activeCategory: string;
@@ -91,8 +93,9 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
           ))}
         </nav>
 
-        {/* RIGHT: CART STATUS */}
+        {/* RIGHT: CART STATUS & QUICK LINKS */}
         <div className="flex items-center text-[#FDFBF7]">
+
           <button 
             onClick={onCartClick} 
             className={`relative p-2.5 transition-all group ${cartPulse ? 'scale-105' : 'hover:scale-105'}`}
@@ -127,6 +130,17 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
                 {cat.name}
               </button>
             ))}
+            
+            {/* Quick Links divider for mobile */}
+            <div className="border-t border-gray-800/80 pt-6 flex flex-col space-y-4">
+              <Link
+                href="/returns"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-left text-xs font-bold tracking-[0.2em] uppercase text-[#FDFBF7] hover:text-[#D4AF37] transition-colors"
+              >
+                Easy Returns
+              </Link>
+            </div>
           </nav>
         </div>
       )}

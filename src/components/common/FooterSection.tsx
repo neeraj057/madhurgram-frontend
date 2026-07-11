@@ -68,8 +68,18 @@ export default function FooterSection() {
 
           {/* Column 3: Trust & Compliance Links */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Trust & Safety</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Customer Care</h4>
             <ul className="space-y-2.5 text-xs text-gray-400">
+              <li>
+                <Link href="/my-orders" className="hover:text-[#D4AF37] transition-colors">
+                  Track My Orders
+                </Link>
+              </li>
+              <li>
+                <Link href="/returns" className="hover:text-[#D4AF37] transition-colors">
+                  Easy Returns
+                </Link>
+              </li>
               <li>
                 <Link href="/privacy-policy" className="hover:text-[#D4AF37] transition-colors">
                   Privacy Policy
