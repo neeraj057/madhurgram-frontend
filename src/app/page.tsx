@@ -27,10 +27,16 @@ export default function Home() {
     totalCartCount,
   } = useCart();
 
-  // 📥 Recovery Deep Link Trigger
+  // 📥 Recovery Deep Link & Promo Auto-Redeem Trigger
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const couponParam = params.get("coupon");
+      if (couponParam) {
+        console.log("Saving coupon code from QR scan URL:", couponParam);
+        localStorage.setItem("active_coupon", couponParam.trim().toUpperCase());
+      }
+
       const phone = params.get("recoverCart");
       if (phone) {
         const performRecovery = async () => {

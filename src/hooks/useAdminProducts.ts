@@ -7,6 +7,7 @@ export interface Product {
   id?: number;
   name: string;
   price: number;
+  originalPrice?: number | null;
   volume: string;
   imageUrl: string;
   stock: number;

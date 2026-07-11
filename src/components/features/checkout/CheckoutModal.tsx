@@ -126,6 +126,12 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const [isAddressVerifying, setIsAddressVerifying] = useState(false);
   const [isAddressVerified, setIsAddressVerified] = useState(false);
   
+  // 🎟️ Coupon & Discount States
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isCouponValidating, setIsCouponValidating] = useState(false);
+
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -330,6 +336,59 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   }, [isOpen]);
 
+  // 🎟️ Auto-Apply Coupon from LocalStorage on open
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      const savedCoupon = localStorage.getItem("active_coupon");
+      if (savedCoupon) {
+        setCouponInput(savedCoupon);
+        handleValidateCoupon(savedCoupon);
+      }
+    } else if (!isOpen) {
+      // Clear coupon states when closing modal
+      setCouponInput("");
+      setAppliedCoupon(null);
+      setCouponError(null);
+    }
+  }, [isOpen]);
+
+  const handleValidateCoupon = async (codeToValidate: string) => {
+    if (!codeToValidate.trim()) return;
+    setIsCouponValidating(true);
+    setCouponError(null);
+    try {
+      const response = await fetch(API_ENDPOINTS.validateCoupon(codeToValidate.trim().toUpperCase(), phone, subtotal));
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Invalid coupon code.");
+      }
+      const data = await response.json();
+      setAppliedCoupon(data);
+      showToast(`Coupon "${data.code}" applied successfully!`, "success");
+    } catch (err) {
+      console.warn("Coupon validation:", err instanceof Error ? err.message : err);
+      setCouponError(err instanceof Error ? err.message : "Failed to apply coupon.");
+      setAppliedCoupon(null);
+    } finally {
+      setIsCouponValidating(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("active_coupon");
+    }
+    showToast("Coupon removed.", "info");
+  };
+
+  const discountAmount = appliedCoupon 
+    ? Math.round((subtotal * appliedCoupon.discountPercentage) / 100)
+    : 0;
+  const finalPayable = subtotal - discountAmount;
+
   const handleSimulatedPaymentSuccess = async () => {
     if (!tempOrderPayload) return;
     setIsSubmitting(true);
@@ -531,12 +590,14 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
         address: alternativePhone.trim() ? `${finalAddress} (Alt: ${alternativePhone})` : finalAddress,
         pincode: finalPincode,
         cityState: finalCityState,
-        totalAmount: subtotal,
+        totalAmount: subtotal - discountAmount,
         orderStatus: paymentMethod === "COD" ? "CONFIRMED" : "PENDING",
         paymentStatus: paymentMethod === "COD" ? "COD" : "PENDING",
         orderItems: mappedOrderItems,
         latitude: finalLat,
-        longitude: finalLng
+        longitude: finalLng,
+        couponCode: appliedCoupon ? appliedCoupon.code : null,
+        discountAmount: discountAmount
       };
 
       if (paymentMethod === "ONLINE") {
@@ -640,11 +701,11 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 <p className="text-xs text-gray-400 max-w-xs mx-auto leading-relaxed font-light">
                   {selectedUpiApp ? (
                     <>
-                      We have sent a transaction request of <strong>₹{subtotal}.00</strong> to your mobile app. Please verify and approve it on your phone.
+                      We have sent a transaction request of <strong>₹{finalPayable}.00</strong> to your mobile app. Please verify and approve it on your phone.
                     </>
                   ) : (
                     <>
-                      We have sent a collect request of <strong>₹{subtotal}.00</strong> to your UPI ID <strong>{customUpiId}</strong>. Please check your UPI app and approve the request.
+                      We have sent a collect request of <strong>₹{finalPayable}.00</strong> to your UPI ID <strong>{customUpiId}</strong>. Please check your UPI app and approve the request.
                     </>
                   )}
                 </p>
@@ -698,7 +759,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
             <div className="mt-6 space-y-6 overflow-y-auto flex-1 pr-2 custom-scrollbar text-center py-4">
               <div className="bg-[#161616] border border-gray-800/80 p-5 rounded-2xl max-w-sm mx-auto space-y-3">
                 <span className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">MadhurGram Checkout</span>
-                <p className="text-2xl font-mono font-bold text-white">₹{subtotal}.00</p>
+                <p className="text-2xl font-mono font-bold text-white">₹{finalPayable}.00</p>
                 <div className="text-[10px] text-gray-500">Simulated Test Mode</div>
               </div>
 
@@ -817,7 +878,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                       <span>Authorizing...</span>
                     </>
                   ) : (
-                    <span>Pay ₹{subtotal}.00</span>
+                    <span>Pay ₹{finalPayable}.00</span>
                   )}
                 </button>
               </div>
@@ -1112,13 +1173,76 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 </div>
               )}
 
+              {/* Step 5: Coupon Code Input Section */}
+              {phone.length === 10 && profile && (
+                <div className="space-y-2 mt-6 border-t border-gray-900 pt-4 animate-fadeIn">
+                  <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">Promo / Coupon Code</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      placeholder="Enter code (e.g. PURE10)"
+                      value={couponInput}
+                      disabled={isCouponValidating || appliedCoupon !== null}
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                      className="flex-1 bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-xs text-[#FDFBF7] font-mono uppercase placeholder-gray-800 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all"
+                    />
+                    {appliedCoupon ? (
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="px-4 bg-red-950/40 border border-red-500/35 hover:bg-red-950/60 text-red-400 font-bold rounded-xl text-xs uppercase tracking-wider transition-all"
+                      >
+                        Remove
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={isCouponValidating || !couponInput.trim()}
+                        onClick={() => handleValidateCoupon(couponInput)}
+                        className="px-5 bg-[#D4AF37] hover:bg-[#FDFBF7] text-[#111111] font-bold rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                      >
+                        {isCouponValidating ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          "Apply"
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  {couponError && (
+                    <p className="text-[10px] text-red-500 font-medium mt-1 leading-relaxed">
+                      {couponError}
+                    </p>
+                  )}
+                  {appliedCoupon && (
+                    <p className="text-[10px] text-green-400 font-medium mt-1 flex items-center gap-1 animate-fadeIn">
+                      ✓ Coupon "{appliedCoupon.code}" applied successfully! ({appliedCoupon.discountPercentage}% discount)
+                    </p>
+                  )}
+                </div>
+              )}
+
             </div>
 
             {/* 💵 Footer: Pricing & Action Buttons */}
             <div className="border-t border-gray-800/80 pt-4 mt-6 shrink-0 bg-transparent">
-              <div className="flex justify-between items-center text-sm mb-3 text-gray-400">
-                <span className="font-medium">Total Payable:</span>
-                <span className="font-mono text-[#D4AF37] font-bold text-xl drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]">₹{subtotal}.00</span>
+              <div className="space-y-1.5 border-b border-gray-950 pb-3 mb-3 text-xs text-gray-400 font-light">
+                <div className="flex justify-between">
+                  <span>Cart Subtotal:</span>
+                  <span className="font-mono">₹{subtotal}.00</span>
+                </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-amber-500 font-medium">
+                    <span>Coupon Discount ({appliedCoupon.code} - {appliedCoupon.discountPercentage}%):</span>
+                    <span className="font-mono">-₹{discountAmount}.00</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center text-sm pt-1.5 text-white border-t border-gray-900/60 font-semibold mt-1">
+                  <span>Total Payable:</span>
+                  <span className="font-mono text-[#D4AF37] font-bold text-xl drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]">
+                    ₹{finalPayable}.00
+                  </span>
+                </div>
               </div>
               
               <div className="max-h-24 overflow-y-auto space-y-1 mb-4 bg-black/30 p-3 rounded-xl border border-gray-900 custom-scrollbar">

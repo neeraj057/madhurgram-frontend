@@ -39,6 +39,12 @@ export const API_ENDPOINTS = {
   adminGetAutoRecovery: `${BASE_URL}/api/admin/settings/auto-recovery`,
   adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/admin/settings/auto-recovery?enabled=${enabled}`,
   trackOrder: (orderId: number) => `${BASE_URL}/api/orders/${orderId}`,
+  
+  // 🎟️ Coupon Endpoints
+  validateCoupon: (code: string, phone: string, amount: number) =>
+    `${BASE_URL}/api/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`,
+  adminCoupons: `${BASE_URL}/api/admin/coupons`,
+  adminCouponById: (id: number) => `${BASE_URL}/api/admin/coupons/${id}`,
 
   // 📦 Procurement & Returns Endpoints
   adminProcurementPOs: `${BASE_URL}/api/admin/procurement/pos`,

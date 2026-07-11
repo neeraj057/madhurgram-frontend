@@ -13,6 +13,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
+  originalPrice?: number;
   volume: string;
   imageUrl: string; 
   tag: string;
@@ -105,6 +106,12 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                       </span>
                     ) : null}
 
+                    {product.stock > 0 && product.originalPrice && product.originalPrice > product.price ? (
+                      <span className="absolute top-4 left-4 rounded-full bg-[#D4AF37] px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-[#111111] z-10 shadow-sm">
+                        {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                      </span>
+                    ) : null}
+
                     {/* Image Box - Click to Open Modal */}
                     <div 
                       onClick={() => setSelectedProduct(product)}
@@ -141,7 +148,12 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                       <p className="mt-1 text-xs text-gray-500 font-medium">{product.volume}</p>
                       
                       <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                        <span className="text-xl font-bold text-[#111111]">₹{product.price}</span>
+                        <div className="flex flex-col">
+                          {product.originalPrice && product.originalPrice > product.price ? (
+                            <span className="text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
+                          ) : null}
+                          <span className="text-xl font-bold text-[#111111]">₹{product.price}</span>
+                        </div>
                         
                         <button 
                           disabled={product.stock === 0}
@@ -218,7 +230,12 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                   </h3>
                   <p className="text-xs text-gray-500 mt-1 font-mono">{selectedProduct.volume}</p>
                   
-                  <div className="text-2xl font-bold mt-4 text-[#111111]">₹{selectedProduct.price}</div>
+                  <div className="flex flex-col mt-4">
+                    {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price ? (
+                      <span className="text-xs text-gray-400 line-through">MRP: ₹{selectedProduct.originalPrice}</span>
+                    ) : null}
+                    <div className="text-2xl font-bold text-[#111111]">₹{selectedProduct.price}</div>
+                  </div>
                   
                   <div className="mt-6 border-t border-gray-200/60 pt-4 space-y-4">
                     <p className="text-xs text-gray-600 font-light leading-relaxed">

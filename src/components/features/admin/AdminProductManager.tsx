@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { Plus, Edit2, Trash2, Package } from "lucide-react";
 import { Product, useAdminProducts } from "@/hooks/useAdminProducts";
 
-type ProductFormState = Omit<Product, 'price' | 'stock'> & {
+type ProductFormState = Omit<Product, 'price' | 'stock' | 'originalPrice'> & {
   price: string | number;
   stock: string | number;
+  originalPrice: string | number | null;
 };
 
 export const AdminProductManager = () => {
@@ -17,6 +18,7 @@ export const AdminProductManager = () => {
   const initialFormState: ProductFormState = {
     name: "",
     price: "",
+    originalPrice: "",
     volume: "",
     imageUrl: "",
     stock: "",
@@ -34,7 +36,10 @@ export const AdminProductManager = () => {
 
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
-    setFormData(product);
+    setFormData({
+      ...product,
+      originalPrice: product.originalPrice ?? null,
+    });
     setIsModalOpen(true);
   };
 
@@ -44,6 +49,9 @@ export const AdminProductManager = () => {
       ...formData,
       price: typeof formData.price === 'string' ? parseFloat(formData.price) || 0 : formData.price,
       stock: typeof formData.stock === 'string' ? parseInt(formData.stock, 10) || 0 : formData.stock,
+      originalPrice: formData.originalPrice !== null && formData.originalPrice !== ""
+        ? (typeof formData.originalPrice === 'string' ? parseFloat(formData.originalPrice) || null : formData.originalPrice)
+        : null,
     };
     const success = await saveProduct(productToSave);
     if (success) setIsModalOpen(false);
@@ -74,7 +82,7 @@ export const AdminProductManager = () => {
           <thead className="bg-[#111111] text-[10px] uppercase tracking-widest text-gray-500 border-b border-gray-800">
             <tr>
               <th className="px-6 py-4">Product Info</th>
-              <th className="px-6 py-4">Price</th>
+              <th className="px-6 py-4">Price / MRP</th>
               <th className="px-6 py-4">Stock</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4 text-right">Actions</th>
@@ -102,7 +110,17 @@ export const AdminProductManager = () => {
                     </p>
                   </div>
                 </td>
-                <td className="px-6 py-4 font-mono text-[#D4AF37]">₹{product.price}</td>
+                <td className="px-6 py-4">
+                  <span className="font-mono text-[#D4AF37] font-bold">₹{product.price}</span>
+                  {product.originalPrice && product.originalPrice > product.price && (
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <s className="text-[10px] text-gray-600 font-mono">₹{product.originalPrice}</s>
+                      <span className="text-[9px] bg-amber-500/15 text-amber-400 border border-amber-500/25 px-1.5 py-0.5 rounded-full font-bold">
+                        {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                      </span>
+                    </div>
+                  )}
+                </td>
                 <td className="px-6 py-4 font-mono">{product.stock} units</td>
                 <td className="px-6 py-4 text-xs">{product.isActive ? "Active" : "Inactive"}</td>
                 <td className="px-6 py-4 text-right">
@@ -152,8 +170,18 @@ export const AdminProductManager = () => {
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <input type="number" value={formData.price ?? ""} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Price" />
-                <input type="number" value={formData.stock ?? ""} onChange={(e) => setFormData({...formData, stock: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Stock" />
+                <div>
+                  <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Selling Price (₹)</label>
+                  <input type="number" value={formData.price ?? ""} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none" placeholder="e.g. 300" required />
+                </div>
+                <div>
+                  <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">MRP / Original Price (₹) <span className="text-gray-600 normal-case">(optional)</span></label>
+                  <input type="number" value={formData.originalPrice ?? ""} onChange={(e) => setFormData({...formData, originalPrice: e.target.value === "" ? null : Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none" placeholder="e.g. 400" />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Stock (Units)</label>
+                <input type="number" value={formData.stock ?? ""} onChange={(e) => setFormData({...formData, stock: Number(e.target.value)})} className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none" placeholder="e.g. 100" required />
               </div>
               <input type="text" value={formData.imageUrl || ""} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} className="w-full bg-[#161616] border border-gray-800 rounded-lg p-2.5 text-white" placeholder="Image URL" />
               <div className="flex items-center space-x-2">
