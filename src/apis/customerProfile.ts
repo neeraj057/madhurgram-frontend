@@ -31,7 +31,17 @@ export const fetchCustomerProfile = async (phone: string): Promise<CustomerProfi
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch customer profile.");
+    // Try to extract a meaningful error message from the response body
+    let errorMessage = "Failed to fetch customer profile.";
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        errorMessage = errorBody.message;
+      }
+    } catch {
+      // Response body wasn't JSON, keep default message
+    }
+    throw new Error(errorMessage);
   }
   return response.json();
 };

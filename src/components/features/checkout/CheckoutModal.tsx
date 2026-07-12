@@ -441,6 +441,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   }, [simulatingUpiApp, upiCountdown]);
 
   const loadProfile = async (phoneNumber: string) => {
+    // 🛡️ Frontend validation: only valid Indian mobile numbers (starting with 6-9)
+    const indianMobileRegex = /^[6-9]\d{9}$/;
+    if (!indianMobileRegex.test(phoneNumber)) {
+      showToast("Please enter a valid 10-digit mobile number", "error");
+      return;
+    }
+
     setIsLoadingProfile(true);
     try {
       const data = await fetchCustomerProfile(phoneNumber);
@@ -456,6 +463,11 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       }
     } catch (error) {
       console.error("Profile fetch error:", error);
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      showToast(message, "error");
+      setProfile(null);
+      setSelectedAddressId(null);
+      setIsAddingNew(true);
     } finally {
       setIsLoadingProfile(false);
     }
