@@ -7,7 +7,8 @@ interface Product {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
 
   // Base routes
   const routes = [
@@ -27,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Dynamic Product Routes
-    const res = await fetch('http://localhost:8080/api/products?category=shop-all', {
+    const res = await fetch(`${apiBaseUrl}/api/products?category=shop-all`, {
       next: { revalidate: 3600 } // Cache for 1 hour
     });
     

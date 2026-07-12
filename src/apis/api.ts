@@ -61,4 +61,12 @@ export const API_ENDPOINTS = {
   adminMarketingReviewsConfig: `${BASE_URL}/api/admin/marketing/reviews/config`,
   adminMarketingReviewsSendNow: (id: number) => `${BASE_URL}/api/admin/marketing/reviews/${id}/send-now`,
   adminMarketingReviewsSendTest: `${BASE_URL}/api/admin/marketing/reviews/send-test`,
+
+  // 📝 Feedback Endpoints
+  adminFeedback: `${BASE_URL}/api/admin/feedback`,
+  publicFeedbackTestimonials: `${BASE_URL}/api/public/feedback/testimonials`,
+  publicFeedbackSuggestions: (orderId?: string | number) => 
+    `${BASE_URL}/api/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`,
+  publicFeedbackUpload: `${BASE_URL}/api/public/feedback/upload`,
+  publicFeedbackSubmit: `${BASE_URL}/api/public/feedback`,
 };

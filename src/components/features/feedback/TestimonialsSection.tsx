@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import { API_ENDPOINTS } from "@/apis/api";
 
 interface Testimonial {
   id: number;
@@ -21,7 +22,7 @@ export default function TestimonialsSection() {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/public/feedback/testimonials");
+        const res = await fetch(API_ENDPOINTS.publicFeedbackTestimonials);
         if (res.ok) {
           const data = await res.json();
           setTestimonials(data);

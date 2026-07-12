@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { API_ENDPOINTS } from "@/apis/api";
 
 export interface CustomerFeedback {
   id: number;
@@ -22,7 +23,7 @@ export const useAdminFeedback = () => {
     setLoading(true);
     setError(null);
     try {
-      const url = "http://localhost:8080/api/admin/feedback";
+      const url = API_ENDPOINTS.adminFeedback;
       const response = await fetch(url, getAuthFetchOptions());
 
       if (await handleAuthError(response)) return;

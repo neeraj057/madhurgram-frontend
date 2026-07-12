@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/apis/api";
 import { Heart, Sparkles, Check, Loader2, ArrowRight, MessageSquare, PenTool, Camera, X } from "lucide-react";
 
 interface OrderResponse {
@@ -44,7 +45,7 @@ function FeedbackContent() {
       try {
         // 1. Fetch customer order info if orderId is present
         if (orderId) {
-          const orderResponse = await fetch(`http://localhost:8080/api/orders/${orderId}`);
+          const orderResponse = await fetch(API_ENDPOINTS.trackOrder(orderId));
           if (orderResponse.ok) {
             const orderData: OrderResponse = await orderResponse.json();
             setCustomerName(orderData.customerName);
@@ -52,9 +53,7 @@ function FeedbackContent() {
         }
 
         // 2. Fetch context suggestion chips
-        const suggResponse = await fetch(
-          `http://localhost:8080/api/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`
-        );
+        const suggResponse = await fetch(API_ENDPOINTS.publicFeedbackSuggestions(orderId || undefined));
         if (suggResponse.ok) {
           const chips: string[] = await suggResponse.json();
           setSuggestions(chips);
@@ -102,7 +101,7 @@ function FeedbackContent() {
 
     setUploadingImage(true);
     try {
-      const res = await fetch("http://localhost:8080/api/public/feedback/upload", {
+      const res = await fetch(API_ENDPOINTS.publicFeedbackUpload, {
         method: "POST",
         body: formData,
       });
@@ -137,7 +136,7 @@ function FeedbackContent() {
         productImageUrl: productImageUrl,
       };
 
-      const response = await fetch("http://localhost:8080/api/public/feedback", {
+      const response = await fetch(API_ENDPOINTS.publicFeedbackSubmit, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
