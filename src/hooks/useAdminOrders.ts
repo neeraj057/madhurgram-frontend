@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "@/apis/api";
-import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { apiClient } from "@/apis/apiClient";
 import { LIVE_POLLING_INTERVAL } from "@/utils/constants";
 import { showToast } from "@/components/ui/Toast";
 
@@ -31,16 +30,10 @@ export const useAdminOrders = () => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-    const fetchOrders = async () => {
+  const fetchOrders = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.getAllOrders, getAuthFetchOptions());
-
-      if (await handleAuthError(response)) return;
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data);
-      }
+      const data = await apiClient<Order[]>("/api/orders");
+      setOrders(data);
     } catch (error) {
       console.error("Error fetching admin orders:", error);
     } finally {
@@ -66,20 +59,9 @@ export const useAdminOrders = () => {
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     setUpdatingId(orderId);
     try {
-      const response = await fetch(
-        API_ENDPOINTS.updateOrderStatus(orderId, newStatus),
-        getAuthFetchOptions("PATCH", undefined, "application/json")
-      );
-
-      if (await handleAuthError(response)) return false;
-
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        showToast(`Business Rule Violation: ${errorMessage || "Invalid status transition."}`, "error");
-        fetchOrders();
-        setUpdatingId(null);
-        return false;
-      }
+      await apiClient<Order>(`/api/orders/${orderId}/status?status=${encodeURIComponent(newStatus)}`, {
+        method: "PATCH"
+      });
 
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -88,12 +70,12 @@ export const useAdminOrders = () => {
       );
     } catch (error) {
       console.error("Network or Client Error:", error);
-      showToast("Something went wrong with the connection.", "error");
+      showToast(error instanceof Error ? error.message : "Something went wrong with the connection.", "error");
       fetchOrders();
     } finally {
       setUpdatingId(null);
     }
   };
 
-    return { orders, loading, updatingId, handleStatusChange, fetchOrders };
+  return { orders, loading, updatingId, handleStatusChange, fetchOrders };
 };

@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map, CreditCard, Trash2 } from 'lucide-react'; 
-import { API_ENDPOINTS } from '@/apis/api';
-import { fetchCustomerProfile, addCustomerAddress, deleteCustomerAddress, CustomerProfile, Address, AddressType } from '@/apis/customerProfile';
-import { syncCart } from '@/apis/cartRecovery';
+import { CustomerService, CustomerProfile, Address, AddressType } from '@/services/customerService';
 import { showToast } from '@/components/ui/Toast';
 
 interface CartItem {
@@ -358,12 +356,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     setIsCouponValidating(true);
     setCouponError(null);
     try {
-      const response = await fetch(API_ENDPOINTS.validateCoupon(codeToValidate.trim().toUpperCase(), phone, subtotal));
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Invalid coupon code.");
-      }
-      const data = await response.json();
+      const data = await CustomerService.validateCoupon(codeToValidate.trim().toUpperCase(), phone, subtotal);
       setAppliedCoupon(data);
       showToast(`Coupon "${data.code}" applied successfully!`, "success");
     } catch (err) {
@@ -404,15 +397,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
     try {
       console.log("Placing Prepaid paid order via API...");
-      const response = await fetch(API_ENDPOINTS.placeOrder, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalPayload),
-      });
-
-      if (!response.ok) throw new Error("Server rejected simulated prepaid order placement.");
-
-      const savedOrder = await response.json();
+      const savedOrder = await CustomerService.placeOrder(finalPayload);
       setPlacedOrderId(savedOrder.id);
       setShowPaymentSimulator(false);
       setTempOrderPayload(null);
@@ -451,7 +436,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
     setIsLoadingProfile(true);
     try {
-      const data = await fetchCustomerProfile(phoneNumber);
+      const data = await CustomerService.fetchProfile(phoneNumber);
       setProfile(data);
       if (data.fullName) setFullName(data.fullName);
       
@@ -481,7 +466,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const performAddressDelete = async (addressId: number) => {
     try {
       showToast("Deleting address...", "info");
-      const updatedProfile = await deleteCustomerAddress(phone, addressId);
+      const updatedProfile = await CustomerService.deleteAddress(phone, addressId);
       setProfile(updatedProfile);
       showToast("Address deleted successfully.", "success");
       
@@ -521,7 +506,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     if (phone.length === 10 && cartItems && cartItems.length > 0) {
       const triggerSync = async () => {
         try {
-          await syncCart({
+          await CustomerService.syncCart({
             phoneNumber: phone,
             customerName: fullName,
             cartItemsJson: JSON.stringify(cartItems),
@@ -587,9 +572,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
           return;
         }
 
-        // 🔄 Automatically save the address to their profile in the background
         console.log("Saving new address to customer profile...");
-        const updatedProfile = await addCustomerAddress(phone, newAddress);
+        const updatedProfile = await CustomerService.addAddress(phone, newAddress);
         setProfile(updatedProfile);
         
         // Find the newly saved address
@@ -650,15 +634,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       }
 
       console.log("Placing COD order via API...");
-      const response = await fetch(API_ENDPOINTS.placeOrder, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload),
-      });
-
-      if (!response.ok) throw new Error("Backend server rejected the order.");
-      
-      const savedOrder = await response.json();
+      const savedOrder = await CustomerService.placeOrder(orderPayload);
       setPlacedOrderId(savedOrder.id);
     } catch (error) {
       console.error("Checkout Error:", error);

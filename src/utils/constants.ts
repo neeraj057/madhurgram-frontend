@@ -17,3 +17,6 @@ export const DEFAULT_MARKETING_SEGMENT = "oil buyers";
 
 // 🌐 API Configuration Fallbacks
 export const API_BASE_URL_FALLBACK = "http://localhost:8080";
+
+// ✦ Product Defaults
+export const DEFAULT_PRODUCT_RATING = "4.8";

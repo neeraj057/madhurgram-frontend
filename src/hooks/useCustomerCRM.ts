@@ -1,7 +1,6 @@
 // hooks/useCustomerCRM.ts
 import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "@/apis/api";
-import { getAdminToken, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { apiClient } from "@/apis/apiClient";
 
 export interface CustomerStats {
   name: string;
@@ -38,18 +37,7 @@ export const useCustomerCRM = () => {
   const fetchHistory = async (phone: string) => {
     setLoading(true);
     try {
-      const token = getAdminToken();
-      const res = await fetch(API_ENDPOINTS.customerHistory(phone), {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-
-      if (await handleAuthError(res)) return;
-      if (!res.ok) {
-        const errorMessage = await parseApiError(res);
-        throw new Error(errorMessage || "Failed to load customer history.");
-      }
-
-      const data = await res.json();
+      const data = await apiClient<CustomerHistory>(`/api/admin/customers/${phone.trim()}/history`);
       setHistory(data);
     } catch (err) {
       console.error("Failed to fetch history", err);
@@ -61,18 +49,7 @@ export const useCustomerCRM = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const token = getAdminToken();
-      const res = await fetch(API_ENDPOINTS.adminCustomers, {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-
-      if (await handleAuthError(res)) return;
-      if (!res.ok) {
-        const errorMessage = await parseApiError(res);
-        throw new Error(errorMessage || "Failed to load customers.");
-      }
-
-      const data = await res.json();
+      const data = await apiClient<CustomerStats[]>("/api/admin/customers");
       setCustomers(data);
     } catch (err) {
       console.error("Failed to fetch customers", err);
@@ -84,21 +61,10 @@ export const useCustomerCRM = () => {
   const searchCustomers = async (search: string) => {
     setLoading(true);
     try {
-      const token = getAdminToken();
       const url = search.trim()
-        ? `${API_ENDPOINTS.adminCustomers}?search=${encodeURIComponent(search)}`
-        : API_ENDPOINTS.adminCustomers;
-      const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` },
-      });
-
-      if (await handleAuthError(res)) return;
-      if (!res.ok) {
-        const errorMessage = await parseApiError(res);
-        throw new Error(errorMessage || "Failed to search customers.");
-      }
-
-      const data = await res.json();
+        ? `/api/admin/customers?search=${encodeURIComponent(search)}`
+        : "/api/admin/customers";
+      const data = await apiClient<CustomerStats[]>(url);
       setCustomers(data);
     } catch (err) {
       console.error("Failed to search customers", err);

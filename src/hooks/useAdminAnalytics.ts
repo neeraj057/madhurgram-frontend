@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "@/apis/api";
-import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { apiClient } from "@/apis/apiClient";
 import { ANALYTICS_POLLING_INTERVAL } from "@/utils/constants";
 
 export interface DailyRevenue {
@@ -37,19 +36,11 @@ export const useAdminAnalytics = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_ENDPOINTS.getDailyAnalytics(queryDays), getAuthFetchOptions());
-
-      if (await handleAuthError(response)) return;
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        throw new Error(errorMessage || "Failed to load analytics data.");
-      }
-
-      const data = await response.json();
+      const data = await apiClient<AdminAnalytics>(`/api/admin/analytics/daily?days=${queryDays}`);
       setMetrics(data);
     } catch (err) {
       console.error("Dashboard Error:", err);
-      setError("Unable to connect to the MadhurGram server.");
+      setError(err instanceof Error ? err.message : "Unable to connect to the MadhurGram server.");
     } finally {
       setLoading(false);
     }

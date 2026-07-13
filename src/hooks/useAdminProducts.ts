@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { API_ENDPOINTS } from "@/apis/api";
-import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { apiClient } from "@/apis/apiClient";
 import { showToast } from "@/components/ui/Toast";
 
 export interface Product {
@@ -14,6 +13,7 @@ export interface Product {
   category: string;
   isActive: boolean;
   hsnCode?: string;
+  rating?: number;
 }
 
 export const useAdminProducts = () => {
@@ -24,13 +24,8 @@ export const useAdminProducts = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_ENDPOINTS.adminProducts, getAuthFetchOptions());
-
-      if (await handleAuthError(response)) return;
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
-      }
+      const data = await apiClient<Product[]>("/api/admin/products");
+      setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -48,52 +43,37 @@ export const useAdminProducts = () => {
   const saveProduct = async (product: Product) => {
     setIsSubmitting(true);
     const isUpdate = !!product.id;
-    const url = isUpdate ? `${API_ENDPOINTS.adminProducts}/${product.id}` : API_ENDPOINTS.adminProducts;
+    const url = isUpdate ? `/api/admin/products/${product.id}` : "/api/admin/products";
     const method = isUpdate ? "PUT" : "POST";
 
     try {
-      const response = await fetch(
-        url,
-        getAuthFetchOptions(method, JSON.stringify(product), "application/json")
-      );
-
-      if (await handleAuthError(response)) return false;
-
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        throw new Error(errorMessage || "Failed to save product");
-      }
+      await apiClient<Product>(url, {
+        method,
+        body: JSON.stringify(product),
+      });
 
       await fetchProducts();
       return true;
     } catch (error) {
       console.error("Error saving product:", error);
-      showToast("Failed to save product details.", "error");
+      showToast(error instanceof Error ? error.message : "Failed to save product details.", "error");
       return false;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 🚀 नया डिलीट फंक्शन
   const deleteProduct = async (id: number) => {
     try {
-      const response = await fetch(
-        `${API_ENDPOINTS.adminProducts}/${id}`,
-        getAuthFetchOptions("DELETE")
-      );
-
-      if (await handleAuthError(response)) return false;
-
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        throw new Error(errorMessage || "Failed to delete product");
-      }
+      await apiClient<void>(`/api/admin/products/${id}`, {
+        method: "DELETE",
+      });
 
       await fetchProducts();
       return true;
     } catch (error) {
       console.error("Error deleting product:", error);
+      showToast(error instanceof Error ? error.message : "Failed to delete product.", "error");
       return false;
     }
   };

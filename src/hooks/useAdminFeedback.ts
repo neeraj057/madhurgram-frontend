@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
-import { API_ENDPOINTS } from "@/apis/api";
+import { apiClient } from "@/apis/apiClient";
 
 export interface CustomerFeedback {
   id: number;
@@ -23,16 +22,7 @@ export const useAdminFeedback = () => {
     setLoading(true);
     setError(null);
     try {
-      const url = API_ENDPOINTS.adminFeedback;
-      const response = await fetch(url, getAuthFetchOptions());
-
-      if (await handleAuthError(response)) return;
-      if (!response.ok) {
-        const errMsg = await parseApiError(response);
-        throw new Error(errMsg || "Failed to fetch feedbacks.");
-      }
-
-      const data = await response.json();
+      const data = await apiClient<CustomerFeedback[]>("/api/admin/feedback");
       setFeedbacks(data);
     } catch (err: any) {
       console.error("Feedback fetch error:", err);

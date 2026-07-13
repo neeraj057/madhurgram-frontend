@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, ShieldCheck, Leaf, Flame } from 'lucide-react';
-import { API_ENDPOINTS } from '@/apis/api';
+import ProductQuickViewModal from './ProductQuickViewModal';
+import { useProducts } from '@/hooks/useProducts';
+import { Product } from '@/services/productService';
+import { DEFAULT_PRODUCT_RATING } from '@/utils/constants';
 
 interface ProductGridProps {
   activeCategory: string; 
@@ -9,49 +11,10 @@ interface ProductGridProps {
   addedProductId?: number | null;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  volume: string;
-  imageUrl: string; 
-  tag: string;
-  category: string;
-  stock: number;
-  rating?: number;
-}
-
 export default function ProductGrid({ activeCategory, onAddToCart, addedProductId }: ProductGridProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { products, loading, error } = useProducts(activeCategory);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(API_ENDPOINTS.getProducts(activeCategory));
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch products from MadhurGram Java Server");
-        }
-        
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        console.error("API Error:", err);
-        setError(err instanceof Error ? err.message : "Something went wrong while connecting to Backend.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [activeCategory]);
 
   return (
     <section id="products" className="py-20 px-6 md:px-16 bg-[#FDFBF7] text-[#111111]">
@@ -89,26 +52,26 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
 
         {!loading && !error && (
           products.length > 0 ? (
-            <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-10 lg:grid-cols-4">
               {products.map((product) => {
                 const isImageValid = product.imageUrl && !failedImages[product.id];
                 return (
                   <div 
                     key={product.id} 
-                    className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/60 bg-white p-5 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.06)] hover:border-[#D4AF37]/45 hover:-translate-y-1"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/60 bg-white p-3 sm:p-5 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.06)] hover:border-[#D4AF37]/45 hover:-translate-y-1"
                   >
                     {product.stock === 0 ? (
-                      <span className="absolute top-4 right-4 rounded-full bg-red-500/10 border border-red-500/25 px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-red-400 z-10">
+                      <span className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-full bg-red-500/10 border border-red-500/25 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-red-400 z-10">
                         Sold Out
                       </span>
                     ) : (product.tag && product.tag.toLowerCase() !== "out of stock") ? (
-                      <span className="absolute top-4 right-4 rounded-full bg-[#111111] px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
+                      <span className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-full bg-[#111111] px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
                         {product.tag}
                       </span>
                     ) : null}
 
                     {product.stock > 0 && product.originalPrice && product.originalPrice > product.price ? (
-                      <span className="absolute top-4 left-4 rounded-full bg-[#D4AF37] px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-[#111111] z-10 shadow-sm">
+                      <span className="absolute top-3 left-3 sm:top-4 sm:left-4 rounded-full bg-[#D4AF37] px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-widest text-[#111111] z-10 shadow-sm">
                         {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
                       </span>
                     ) : null}
@@ -116,7 +79,7 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                     {/* Image Box - Click to Open Modal */}
                     <div 
                       onClick={() => setSelectedProduct(product)}
-                      className="mb-6 flex h-52 w-full items-center justify-center rounded-xl bg-gray-50/50 p-4 overflow-hidden cursor-pointer border border-gray-100/50"
+                      className="mb-4 sm:mb-6 flex h-36 sm:h-52 w-full items-center justify-center rounded-xl bg-gray-50/50 p-2 sm:p-4 overflow-hidden cursor-pointer border border-gray-100/50"
                     >
                       {isImageValid ? (
                         <img 
@@ -142,7 +105,7 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                     <div>
                       <h3 
                         onClick={() => setSelectedProduct(product)}
-                        className="font-serif text-base font-bold text-[#111111] tracking-wide min-h-[48px] cursor-pointer hover:text-[#D4AF37] transition-colors"
+                        className="font-serif text-sm sm:text-base font-bold text-[#111111] tracking-wide min-h-[40px] sm:min-h-[48px] cursor-pointer hover:text-[#D4AF37] transition-colors line-clamp-2"
                       >
                         {product.name}
                       </h3>
@@ -152,23 +115,23 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                         <div className="flex items-center gap-0.5 text-xs text-[#D4AF37]">
                           <span className="text-sm leading-none">★</span>
                           <span className="font-bold text-gray-800 text-[11px] font-mono leading-none">
-                            {product.rating ? Number(product.rating).toFixed(1) : "4.8"}
+                            {product.rating ? Number(product.rating).toFixed(1) : DEFAULT_PRODUCT_RATING}
                           </span>
                         </div>
                       </div>
                       
-                      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                      <div className="mt-4 flex flex-col xs:flex-row xs:items-center xs:justify-between border-t border-gray-100 pt-4 gap-2">
                         <div className="flex flex-col">
                           {product.originalPrice && product.originalPrice > product.price ? (
-                            <span className="text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
+                            <span className="text-[10px] sm:text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
                           ) : null}
-                          <span className="text-xl font-bold text-[#111111]">₹{product.price}</span>
+                          <span className="text-base sm:text-xl font-bold text-[#111111]">₹{product.price}</span>
                         </div>
                         
                         <button 
                           disabled={product.stock === 0}
                           onClick={() => onAddToCart(product)}
-                          className={`rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md ${
+                          className={`rounded-lg px-2.5 py-2 sm:px-4 sm:py-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md w-full xs:w-auto text-center ${
                             product.stock === 0
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200/50'
                               : product.id === addedProductId
@@ -193,114 +156,11 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
         )}
 
         {/* ================= PREMIUM QUICK VIEW MODAL ================= */}
-        {selectedProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300">
-            {/* Backdrop click close */}
-            <div className="absolute inset-0" onClick={() => setSelectedProduct(null)} />
-            
-            {/* Modal Box */}
-            <div className="relative w-full max-w-3xl bg-[#FDFBF7] text-[#111111] rounded-2xl overflow-hidden shadow-2xl border border-gray-200 flex flex-col md:flex-row z-10 max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible">
-              
-              {/* Close Button */}
-              <button 
-                onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 p-1.5 rounded-full bg-white border border-gray-200 hover:text-[#D4AF37] transition-colors z-20 shadow-sm"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              {/* Left Side: Product Image Showcase */}
-              <div className="w-full md:w-1/2 bg-gray-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-200/60 min-h-[300px]">
-                {selectedProduct.imageUrl ? (
-                  <img 
-                    src={selectedProduct.imageUrl} 
-                    alt={selectedProduct.name} 
-                    className="max-h-64 object-contain"
-                    onError={(e) => { e.currentTarget.src = "/images/newlogo.svg?v=2"; }}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-lg bg-[#FAF9F5]/40 text-center p-8 select-none">
-                    <img 
-                      src="/images/newlogo.svg?v=2" 
-                      alt="MadhurGram Logo" 
-                      className="max-h-32 max-w-[85%] object-contain opacity-40 transition-all duration-300 hover:scale-105 hover:opacity-60" 
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Right Side: Luxury Heritage Story Details */}
-              <div className="w-full md:w-1/2 p-8 flex flex-col justify-between">
-                <div>
-                  <span className="text-[9px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase">
-                    {selectedProduct.category} • {selectedProduct.tag}
-                  </span>
-                  <h3 className="font-serif text-2xl font-bold tracking-wide mt-2 text-[#111111]">
-                    {selectedProduct.name}
-                  </h3>
-                  <div className="flex items-center gap-1.5 mt-2 select-none">
-                    <div className="flex items-center gap-0.5 px-2 py-0.5 bg-yellow-500/10 rounded border border-yellow-500/25 text-[#D4AF37] text-xs font-bold font-mono">
-                      <span>★</span>
-                      <span>{selectedProduct.rating ? Number(selectedProduct.rating).toFixed(1) : "4.8"}</span>
-                    </div>
-                    <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
-                      Customer Choice
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 font-mono">{selectedProduct.volume}</p>
-                  
-                  <div className="flex flex-col mt-4">
-                    {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price ? (
-                      <span className="text-xs text-gray-400 line-through">MRP: ₹{selectedProduct.originalPrice}</span>
-                    ) : null}
-                    <div className="text-2xl font-bold text-[#111111]">₹{selectedProduct.price}</div>
-                  </div>
-                  
-                  <div className="mt-6 border-t border-gray-200/60 pt-4 space-y-4">
-                    <p className="text-xs text-gray-600 font-light leading-relaxed">
-                      MadhurGram brings you pure, unadulterated heritage essentials directly from our village farms. Crafted using traditional, slow-cooked methods passed down through generations to preserve natural nutrition and rich, authentic flavor.
-                    </p>
-                    
-                    {/* Trust Badges Inside Modal */}
-                    <div className="grid grid-cols-3 gap-2 pt-2">
-                      <div className="flex flex-col items-center p-2 bg-white border border-gray-100 rounded-xl text-center">
-                        <Leaf className="h-4 w-4 text-[#D4AF37] mb-1" />
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-700">100% Pure</span>
-                      </div>
-                      <div className="flex flex-col items-center p-2 bg-white border border-gray-100 rounded-xl text-center">
-                        <Flame className="h-4 w-4 text-[#D4AF37] mb-1" />
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-700">Slow Cooked</span>
-                      </div>
-                      <div className="flex flex-col items-center p-2 bg-white border border-gray-100 rounded-xl text-center">
-                        <ShieldCheck className="h-4 w-4 text-[#D4AF37] mb-1" />
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-700">Lab Tested</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Action inside Modal */}
-                <div className="mt-8 pt-4 border-t border-gray-100 flex items-center space-x-4">
-                  <button 
-                    disabled={selectedProduct.stock === 0}
-                    onClick={() => {
-                      onAddToCart(selectedProduct);
-                      setSelectedProduct(null);
-                    }}
-                    className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center ${
-                      selectedProduct.stock === 0 
-                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                        : 'bg-[#111111] text-[#FDFBF7] hover:bg-[#D4AF37] hover:text-[#111111] active:scale-95'
-                    }`}
-                  >
-                    {selectedProduct.stock === 0 ? 'Sold Out' : 'Add To Cart'}
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        )}
+        <ProductQuickViewModal 
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onAddToCart={onAddToCart}
+        />
 
       </div>
     </section>

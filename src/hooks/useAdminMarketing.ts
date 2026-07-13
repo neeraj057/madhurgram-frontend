@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { API_ENDPOINTS } from "@/apis/api";
-import { getAuthFetchOptions, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { apiClient } from "@/apis/apiClient";
 
 export interface BroadcastCampaignRequest {
   title: string;
@@ -32,15 +31,7 @@ export const useAdminMarketing = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_ENDPOINTS.adminMarketingCampaigns, getAuthFetchOptions());
-
-      if (await handleAuthError(response)) return;
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        throw new Error(errorMessage || "Failed to load campaigns.");
-      }
-
-      const data = await response.json();
+      const data = await apiClient<BroadcastCampaign[]>("/api/admin/marketing/campaigns");
       setCampaigns(data);
     } catch (err) {
       console.error("Marketing load error:", err);
@@ -54,19 +45,11 @@ export const useAdminMarketing = () => {
     setSubmitting(true);
     setError(null);
     try {
-      const response = await fetch(
-        API_ENDPOINTS.adminMarketingBroadcast,
-        getAuthFetchOptions("POST", JSON.stringify(payload), "application/json")
-      );
-
-      if (await handleAuthError(response)) return null;
-      if (!response.ok) {
-        const errorMessage = await parseApiError(response);
-        throw new Error(errorMessage || "Failed to create broadcast campaign.");
-      }
-
-      const created = await response.json();
-      return created as BroadcastCampaign;
+      const created = await apiClient<BroadcastCampaign>("/api/admin/marketing/broadcast", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      return created;
     } catch (err) {
       console.error("Campaign submit error:", err);
       setError(err instanceof Error ? err.message : "Unable to send campaign.");
