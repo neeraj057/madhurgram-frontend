@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map, CreditCard, Trash2 } from 'lucide-react'; 
+import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map, CreditCard, Trash2, X } from 'lucide-react'; 
 import { CustomerService, CustomerProfile, Address, AddressType } from '@/services/customerService';
 import { showToast } from '@/components/ui/Toast';
 
@@ -705,6 +705,18 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       <div className="absolute inset-0" onClick={!placedOrderId && !isSubmitting ? onClose : undefined} />
       
       <div className="relative w-full max-w-lg bg-[#111111]/70 backdrop-blur-xl text-[#FDFBF7] rounded-3xl p-8 border border-[#D4AF37]/30 shadow-[0_0_50px_rgba(212,175,55,0.15)] z-10 max-h-[90vh] flex flex-col transition-all duration-500">
+        
+        {/* Top Right Close Button */}
+        {!placedOrderId && !isSubmitting && (
+          <button 
+            type="button"
+            onClick={onClose}
+            className="absolute top-5 right-5 p-1.5 rounded-full bg-white/5 border border-gray-800 text-gray-400 hover:text-white hover:bg-white/10 transition-colors z-20 shadow-sm"
+            title="Close Checkout"
+          >
+            <X className="h-4.5 w-4.5" />
+          </button>
+        )}
         
         {/* 🎉 Success Screen */}
         {placedOrderId ? (
