@@ -55,7 +55,34 @@ export const addCustomerAddress = async (phone: string, address: Address): Promi
   });
 
   if (!response.ok) {
-    throw new Error("Failed to add new address.");
+    let errorMessage = "Failed to add new address.";
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        errorMessage = errorBody.message;
+      }
+    } catch {}
+    throw new Error(errorMessage);
+  }
+  return response.json();
+};
+
+// ❌ 3. प्रोफाइल से एड्रेस डिलीट करना
+export const deleteCustomerAddress = async (phone: string, addressId: number): Promise<CustomerProfile> => {
+  const response = await fetch(API_ENDPOINTS.deleteCustomerAddress(phone, addressId), {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Failed to delete address.";
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        errorMessage = errorBody.message;
+      }
+    } catch {}
+    throw new Error(errorMessage);
   }
   return response.json();
 };

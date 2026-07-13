@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map, CreditCard } from 'lucide-react'; 
+import { CheckCircle2, ArrowRight, MapPin, Plus, Loader2, Home, Briefcase, Map, CreditCard, Trash2 } from 'lucide-react'; 
 import { API_ENDPOINTS } from '@/apis/api';
-import { fetchCustomerProfile, addCustomerAddress, CustomerProfile, Address, AddressType } from '@/apis/customerProfile';
+import { fetchCustomerProfile, addCustomerAddress, deleteCustomerAddress, CustomerProfile, Address, AddressType } from '@/apis/customerProfile';
 import { syncCart } from '@/apis/cartRecovery';
 import { showToast } from '@/components/ui/Toast';
 
@@ -473,6 +473,31 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
+  const handleDeleteAddress = async (addressId: number) => {
+    if (!confirm("Are you sure you want to delete this delivery address?")) return;
+    try {
+      showToast("Deleting address...", "info");
+      const updatedProfile = await deleteCustomerAddress(phone, addressId);
+      setProfile(updatedProfile);
+      showToast("Address deleted successfully.", "success");
+      
+      // If the deleted address was currently selected, reset selection to default or null
+      if (selectedAddressId === addressId) {
+        if (updatedProfile.addresses && updatedProfile.addresses.length > 0) {
+          const defaultAddr = updatedProfile.addresses.find(a => a.isDefault) || updatedProfile.addresses[0];
+          setSelectedAddressId(defaultAddr.id!);
+        } else {
+          setSelectedAddressId(null);
+          setIsAddingNew(true);
+        }
+      }
+    } catch (error) {
+      console.error("Delete address failed:", error);
+      const msg = error instanceof Error ? error.message : "Failed to delete address.";
+      showToast(msg, "error");
+    }
+  };
+
   // 🔄 फोन नंबर 10 डिजिट का होते ही प्रोफाइल फेच करो
   useEffect(() => {
     if (phone.length === 10) {
@@ -633,7 +658,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       setPlacedOrderId(savedOrder.id);
     } catch (error) {
       console.error("Checkout Error:", error);
-      showToast("Failed to connect with Server. Please check your inventory or try again.", "error");
+      const msg = error instanceof Error ? error.message : "Failed to connect with Server. Please check your inventory or try again.";
+      showToast(msg, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -967,31 +993,46 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               : "bg-[#161616] border-gray-800 hover:border-gray-700"
                           }`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${isSelected ? "bg-[#D4AF37]/20 text-[#D4AF37]" : "bg-black/40 text-gray-500"}`}>
-                              {addr.addressType === 'HOME' ? (
-                                <Home className="h-4 w-4" />
-                              ) : addr.addressType === 'OFFICE' ? (
-                                <Briefcase className="h-4 w-4" />
-                              ) : (
-                                <Map className="h-4 w-4" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300">
-                                  {addr.addressType}
-                                </span>
-                                {addr.isDefault && (
-                                  <span className="text-[8px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-bold uppercase">
-                                    Default
-                                  </span>
+                          <div className="flex items-start gap-3 justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                              <div className={`p-2 rounded-lg ${isSelected ? "bg-[#D4AF37]/20 text-[#D4AF37]" : "bg-black/40 text-gray-500"}`}>
+                                {addr.addressType === 'HOME' ? (
+                                  <Home className="h-4 w-4" />
+                                ) : addr.addressType === 'OFFICE' ? (
+                                  <Briefcase className="h-4 w-4" />
+                                ) : (
+                                  <Map className="h-4 w-4" />
                                 )}
                               </div>
-                              <p className="text-sm text-gray-400 font-light leading-relaxed">
-                                {addr.fullAddress}, {addr.city}, {addr.state} - <span className="font-mono text-xs">{addr.pincode}</span>
-                              </p>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300">
+                                    {addr.addressType}
+                                  </span>
+                                  {addr.isDefault && (
+                                    <span className="text-[8px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-bold uppercase">
+                                      Default
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-400 font-light leading-relaxed">
+                                  {addr.fullAddress}, {addr.city}, {addr.state} - <span className="font-mono text-xs">{addr.pincode}</span>
+                                </p>
+                              </div>
                             </div>
+
+                            {/* Delete Address Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation(); // prevent address card selection
+                                handleDeleteAddress(addr.id!);
+                              }}
+                              className="text-gray-500 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-500/10 transition-all active:scale-95 self-start shrink-0"
+                              title="Delete Address"
+                            >
+                              <Trash2 className="h-4.5 w-4.5" />
+                            </button>
                           </div>
                         </div>
                       );

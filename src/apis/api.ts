@@ -19,6 +19,8 @@ export const API_ENDPOINTS = {
     `${BASE_URL}/api/customers/${phone.trim()}`,
   addCustomerAddress: (phone: string) =>
     `${BASE_URL}/api/customers/${phone.trim()}/addresses`,
+  deleteCustomerAddress: (phone: string, addressId: number) =>
+    `${BASE_URL}/api/customers/${phone.trim()}/addresses/${addressId}`,
   // 📊 Analytics Endpoints
   getDailyAnalytics: (days: number = 7) => `${BASE_URL}/api/admin/analytics/daily?days=${days}`,
   adminProducts: `${BASE_URL}/api/admin/products`,
