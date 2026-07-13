@@ -125,6 +125,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const [alternativePhone, setAlternativePhone] = useState("");
   const [isAddressVerifying, setIsAddressVerifying] = useState(false);
   const [isAddressVerified, setIsAddressVerified] = useState(false);
+  const [deletingAddressId, setDeletingAddressId] = useState<number | null>(null);
   
   // 🎟️ Coupon & Discount States
   const [couponInput, setCouponInput] = useState("");
@@ -473,8 +474,11 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
-  const handleDeleteAddress = async (addressId: number) => {
-    if (!confirm("Are you sure you want to delete this delivery address?")) return;
+  const handleDeleteAddress = (addressId: number) => {
+    setDeletingAddressId(addressId);
+  };
+
+  const performAddressDelete = async (addressId: number) => {
     try {
       showToast("Deleting address...", "info");
       const updatedProfile = await deleteCustomerAddress(phone, addressId);
@@ -925,7 +929,43 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
         ) : (
           
           /* 📦 Smart Shipping Flow */
-          <div className="flex flex-col h-full max-h-full overflow-hidden">
+          <div className="flex flex-col h-full max-h-full overflow-hidden relative">
+            {deletingAddressId !== null && (
+              <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fadeIn">
+                <div className="bg-[#111111] border border-gray-800 rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+                  <div className="h-12 w-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto">
+                    <Trash2 className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-bold text-[#FDFBF7] uppercase tracking-wider">Delete Address?</h4>
+                    <p className="text-xs text-gray-500 font-light leading-relaxed">
+                      Are you sure you want to remove this delivery address from your profile? This action cannot be undone.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setDeletingAddressId(null)}
+                      className="flex-1 py-2.5 border border-gray-800 text-gray-400 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-900 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const id = deletingAddressId;
+                        setDeletingAddressId(null);
+                        performAddressDelete(id);
+                      }}
+                      className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-[#FDFBF7] font-bold rounded-xl text-xs uppercase tracking-wider transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <h3 className="font-serif text-3xl font-bold tracking-wide text-center bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] bg-clip-text text-transparent pb-1 shrink-0">
               Shipping Information
             </h3>
