@@ -19,6 +19,7 @@ interface Product {
   tag: string;
   category: string;
   stock: number;
+  rating?: number;
 }
 
 export default function ProductGrid({ activeCategory, onAddToCart, addedProductId }: ProductGridProps) {
@@ -145,7 +146,16 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                       >
                         {product.name}
                       </h3>
-                      <p className="mt-1 text-xs text-gray-500 font-medium">{product.volume}</p>
+                      <div className="mt-1.5 flex items-center gap-1.5 select-none text-[11px] text-gray-500 font-medium">
+                        <span>{product.volume}</span>
+                        <span className="text-gray-300 text-[9px]">|</span>
+                        <div className="flex items-center gap-0.5 text-xs text-[#D4AF37]">
+                          <span className="text-sm leading-none">★</span>
+                          <span className="font-bold text-gray-800 text-[11px] font-mono leading-none">
+                            {product.rating ? Number(product.rating).toFixed(1) : "4.8"}
+                          </span>
+                        </div>
+                      </div>
                       
                       <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
                         <div className="flex flex-col">
@@ -228,7 +238,16 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
                   <h3 className="font-serif text-2xl font-bold tracking-wide mt-2 text-[#111111]">
                     {selectedProduct.name}
                   </h3>
-                  <p className="text-xs text-gray-500 mt-1 font-mono">{selectedProduct.volume}</p>
+                  <div className="flex items-center gap-1.5 mt-2 select-none">
+                    <div className="flex items-center gap-0.5 px-2 py-0.5 bg-yellow-500/10 rounded border border-yellow-500/25 text-[#D4AF37] text-xs font-bold font-mono">
+                      <span>★</span>
+                      <span>{selectedProduct.rating ? Number(selectedProduct.rating).toFixed(1) : "4.8"}</span>
+                    </div>
+                    <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                      Customer Choice
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 font-mono">{selectedProduct.volume}</p>
                   
                   <div className="flex flex-col mt-4">
                     {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price ? (
