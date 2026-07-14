@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { apiClient } from "@/apis/apiClient";
+import { showToast } from "@/components/ui/Toast";
 
 export interface CustomerFeedback {
   id: number;
@@ -11,6 +12,7 @@ export interface CustomerFeedback {
   selectedChips?: string;
   productImageUrl?: string;
   createdAt: string;
+  isApproved?: boolean;
 }
 
 export const useAdminFeedback = () => {
@@ -32,9 +34,39 @@ export const useAdminFeedback = () => {
     }
   };
 
+  const approveFeedback = async (id: number) => {
+    try {
+      await apiClient<CustomerFeedback>(`/api/admin/feedback/${id}/approve`, {
+        method: "PUT"
+      });
+      showToast("रिव्यू को सफलतापूर्वक अप्रूव कर दिया गया है! 💛", "success");
+      await fetchFeedbacks();
+      return true;
+    } catch (err: any) {
+      console.error("Approve feedback error:", err);
+      showToast(err?.message || "Failed to approve review.", "error");
+      return false;
+    }
+  };
+
+  const deleteFeedback = async (id: number) => {
+    try {
+      await apiClient<void>(`/api/admin/feedback/${id}`, {
+        method: "DELETE"
+      });
+      showToast("रिव्यू को रिजेक्ट/डिलीट कर दिया गया है।", "success");
+      await fetchFeedbacks();
+      return true;
+    } catch (err: any) {
+      console.error("Delete feedback error:", err);
+      showToast(err?.message || "Failed to delete review.", "error");
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchFeedbacks();
   }, []);
 
-  return { feedbacks, loading, error, refresh: fetchFeedbacks };
+  return { feedbacks, loading, error, approveFeedback, deleteFeedback, refresh: fetchFeedbacks };
 };
