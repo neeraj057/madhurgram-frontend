@@ -89,7 +89,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen bg-[#FDFBF7]">
+    <main className="relative min-h-screen bg-[#FDFBF7] overflow-x-hidden">
       <Header 
         activeCategory={activeCategory} 
         setActiveCategory={setActiveCategory} 

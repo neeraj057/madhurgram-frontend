@@ -62,7 +62,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
         
         {/* LEFT: LOGO */}
         <div className="flex items-center cursor-pointer" onClick={() => handleCategoryClick('shop-all')}>
-          <div className="relative h-20 w-72 flex items-center justify-start group">
+          <div className="relative h-12 w-44 md:h-20 md:w-72 flex items-center justify-start group">
             {/* Continuous subtle gold pulse aura */}
             <div className="absolute inset-y-1 inset-x-2 bg-[#D4AF37]/5 rounded-xl blur-md animate-pulse pointer-events-none" />
             {/* Additional glow on hover */}
