@@ -15,6 +15,8 @@ type ProductFormState = {
   category: string;
   isActive: boolean;
   hsnCode: string;
+  showSalesCount: boolean;
+  salesCount: string;
 };
 
 const inputClass =
@@ -38,6 +40,8 @@ export const AdminProductManager = () => {
     category: "",
     isActive: true,
     hsnCode: "",
+    showSalesCount: false,
+    salesCount: "0",
   };
   const [formData, setFormData] = useState<ProductFormState>(initialFormState);
 
@@ -60,6 +64,8 @@ export const AdminProductManager = () => {
       category: product.category || "",
       isActive: product.isActive ?? true,
       hsnCode: product.hsnCode || "",
+      showSalesCount: product.showSalesCount ?? false,
+      salesCount: product.salesCount != null ? String(product.salesCount) : "0",
     });
     setIsModalOpen(true);
   };
@@ -78,6 +84,7 @@ export const AdminProductManager = () => {
     e.preventDefault();
     const price = parseFloat(formData.price);
     const stock = parseInt(formData.stock, 10);
+    const salesCount = parseInt(formData.salesCount, 10) || 0;
     const originalPriceRaw = formData.originalPrice.trim();
     const originalPrice = originalPriceRaw !== "" ? parseFloat(originalPriceRaw) : null;
 
@@ -95,6 +102,8 @@ export const AdminProductManager = () => {
       price,
       stock,
       originalPrice: originalPrice != null && !isNaN(originalPrice) ? originalPrice : null,
+      showSalesCount: formData.showSalesCount,
+      salesCount: salesCount,
     };
     const success = await saveProduct(productToSave);
     if (success) closeModal();
@@ -151,6 +160,11 @@ export const AdminProductManager = () => {
                     <p className="text-[10px] text-gray-500">
                       {product.category} • {product.volume}{product.hsnCode ? ` • HSN: ${product.hsnCode}` : ""}
                     </p>
+                    {product.showSalesCount && (
+                      <p className="text-[10px] text-amber-500 font-semibold mt-0.5">
+                        🔥 Displaying: {((product.salesCount || 0) + (product.realSalesCount || 0))} sales ({product.realSalesCount || 0} real + {product.salesCount || 0} boost)
+                      </p>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4">
@@ -373,6 +387,41 @@ export const AdminProductManager = () => {
                     Product is Active
                     <span className="text-gray-600 ml-1">(visible on storefront)</span>
                   </label>
+                </div>
+
+                {/* Sales Count Toggle & Input */}
+                <div className="space-y-3 bg-[#0d0d0d] border border-gray-800 rounded-xl p-3">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="showSalesCount"
+                      checked={formData.showSalesCount ?? false}
+                      onChange={(e) => setFormData({...formData, showSalesCount: e.target.checked})}
+                      className="h-4 w-4 rounded border-gray-700 text-[#D4AF37] focus:ring-[#D4AF37] bg-[#161616] cursor-pointer"
+                    />
+                    <label htmlFor="showSalesCount" className="text-xs text-gray-300 font-medium cursor-pointer select-none flex-1 font-bold">
+                      Show Sales / Trending Counter
+                      <span className="text-gray-600 ml-1 font-normal">(Social proof tag)</span>
+                    </label>
+                  </div>
+                  
+                  {formData.showSalesCount && (
+                    <div className="pt-3 border-t border-gray-800/60 animate-fadeIn">
+                      <label className={labelClass}>Manual Sales Count Value</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formData.salesCount}
+                        onChange={(e) => setFormData({...formData, salesCount: e.target.value.replace(/\D/g, "")})}
+                        className={inputClass}
+                        placeholder="e.g. 1200"
+                        required={formData.showSalesCount}
+                      />
+                      <p className="text-[10px] text-gray-600 mt-1.5 leading-normal">
+                        This number will show as "🔥 X+ bought" on the storefront product card and product detail modal.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
               </div>

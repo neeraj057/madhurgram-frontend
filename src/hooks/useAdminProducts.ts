@@ -14,6 +14,9 @@ export interface Product {
   isActive: boolean;
   hsnCode?: string;
   rating?: number;
+  showSalesCount?: boolean;
+  salesCount?: number;
+  realSalesCount?: number;
 }
 
 export const useAdminProducts = () => {

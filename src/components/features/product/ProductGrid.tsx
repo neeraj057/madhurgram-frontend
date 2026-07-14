@@ -183,7 +183,7 @@ function ProductCard({
           </div>
         )}
 
-        <div className="mt-2.5 flex items-center gap-1.5 select-none text-[11px] text-gray-500 font-medium">
+        <div className="mt-2.5 flex items-center gap-1.5 select-none text-[11px] text-gray-500 font-medium flex-wrap">
           <span>{displayProduct.volume}</span>
           <span className="text-gray-300 text-[9px]">|</span>
           <div className="flex items-center gap-0.5 text-xs text-[#D4AF37]">
@@ -192,6 +192,15 @@ function ProductCard({
               {displayProduct.rating ? Number(displayProduct.rating).toFixed(1) : DEFAULT_PRODUCT_RATING}
             </span>
           </div>
+          {displayProduct.showSalesCount ? (
+            <>
+              <span className="text-gray-300 text-[9px]">|</span>
+              <span className="text-[9.5px] text-amber-600 font-bold bg-amber-50/70 px-1.5 py-0.5 rounded border border-amber-100/40 flex items-center gap-0.5 leading-none">
+                <span>🔥</span>
+                <span>{((displayProduct.salesCount || 0) + (displayProduct.realSalesCount || 0))}+ bought</span>
+              </span>
+            </>
+          ) : null}
         </div>
         
         <div className="mt-4 flex flex-col xs:flex-row xs:items-center xs:justify-between border-t border-gray-100 pt-4 gap-2">

@@ -89,7 +89,10 @@ export function groupProducts(products: Product[]): Product[] {
             price: v.price,
             originalPrice: v.originalPrice,
             stock: p.stock,
-            tag: p.tag
+            tag: p.tag,
+            showSalesCount: p.showSalesCount,
+            salesCount: p.salesCount,
+            realSalesCount: p.realSalesCount
           }))
         });
       } else {
@@ -119,7 +122,10 @@ export function groupProducts(products: Product[]): Product[] {
           price: p.price,
           originalPrice: p.originalPrice,
           stock: p.stock,
-          tag: p.tag
+          tag: p.tag,
+          showSalesCount: p.showSalesCount,
+          salesCount: p.salesCount,
+          realSalesCount: p.realSalesCount
         }))
       });
     }
@@ -147,6 +153,9 @@ export function getVariantProduct(product: Product, selectedVolume: string): Pro
     originalPrice: activeVariant.originalPrice,
     volume: activeVariant.volume,
     stock: activeVariant.stock,
-    tag: activeVariant.tag
+    tag: activeVariant.tag,
+    showSalesCount: activeVariant.showSalesCount !== undefined ? activeVariant.showSalesCount : product.showSalesCount,
+    salesCount: activeVariant.salesCount !== undefined ? activeVariant.salesCount : product.salesCount,
+    realSalesCount: activeVariant.realSalesCount !== undefined ? activeVariant.realSalesCount : product.realSalesCount
   };
 }

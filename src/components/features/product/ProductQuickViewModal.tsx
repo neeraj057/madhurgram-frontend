@@ -254,11 +254,20 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
               {activeTab === "buy" && (
                 <div className="space-y-4 animate-fadeIn">
                   {/* Rating */}
-                  <div className="flex items-center gap-1.5 select-none text-[10px] text-gray-500 font-medium">
+                  <div className="flex items-center gap-1.5 select-none text-[10px] text-gray-500 font-medium flex-wrap">
                     <span className="text-[#D4AF37]">★</span>
                     <span className="font-bold text-gray-800">{displayProduct.rating ? Number(displayProduct.rating).toFixed(1) : DEFAULT_PRODUCT_RATING}</span>
                     <span className="text-gray-300">|</span>
                     <span className="text-[9px] uppercase tracking-wider text-[#D4AF37] font-semibold">100% Organic</span>
+                    {displayProduct.showSalesCount ? (
+                      <>
+                        <span className="text-gray-300">|</span>
+                        <span className="text-[9.5px] text-amber-600 font-bold bg-amber-50/70 px-1.5 py-0.5 rounded border border-amber-100/40 flex items-center gap-0.5 leading-none">
+                          <span>🔥</span>
+                          <span>{((displayProduct.salesCount || 0) + (displayProduct.realSalesCount || 0))}+ orders placed</span>
+                        </span>
+                      </>
+                    ) : null}
                   </div>
 
                   {/* Size selection */}

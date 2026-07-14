@@ -11,6 +11,9 @@ export interface Product {
   category: string;
   stock: number;
   rating?: number;
+  showSalesCount?: boolean;
+  salesCount?: number;
+  realSalesCount?: number;
   variants?: {
     id: number;
     name: string;
@@ -19,6 +22,9 @@ export interface Product {
     originalPrice?: number;
     stock: number;
     tag: string;
+    showSalesCount?: boolean;
+    salesCount?: number;
+    realSalesCount?: number;
   }[];
 }
 
