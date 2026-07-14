@@ -18,10 +18,9 @@ export function useCart() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // 🛒 कार्ट में नया प्रोडक्ट जोड़ने या क्वांटिटी बढ़ाने का फंक्शन
-  // नोट: 'any' टाइप हटाकर हमने इसे टाइप-सेफ बना दिया है (Omit का मतलब है quantity को छोड़कर बाकी सब)
-  const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+  const addToCart = (product: Omit<CartItem, 'quantity'>, quantityToAdd: number = 1) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      const existingItem = prevItems.find((item) => item.id === product.id && item.volume === product.volume);
 
       // 🚨 Inventory Guard 1: agar product poori tarah se out of stock hai
       if (product.stock <= 0) {
@@ -31,45 +30,50 @@ export function useCart() {
 
       // 🚨 Inventory Guard 2: agar item pehle se cart me hai, to check karo ki nayi quantity stock se jyada na ho jaye
       if (existingItem) {
-        if (existingItem.quantity >= product.stock) {
+        const targetQty = existingItem.quantity + quantityToAdd;
+        if (targetQty > product.stock) {
           showToast(`बस भाई! वेयरहाउस में ${product.name} की केवल ${product.stock} यूनिट्स ही बची हैं।`, "error");
-          return prevItems; // cart update nahi hoga, purana state hi return kar denge
+          return prevItems; 
         }
         return prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          (item.id === product.id && item.volume === product.volume) ? { ...item, quantity: targetQty } : item
         );
       }
 
-      // नया आइटम कार्ट में डालो (बाय डिफ़ॉल्ट क्वांटिटी 1 रहेगी)
-      return [...prevItems, { ...product, quantity: 1 }];
+      if (quantityToAdd > product.stock) {
+        showToast(`बस भाई! वेयरहाउस में ${product.name} की केवल ${product.stock} यूनिट्स ही बची हैं।`, "error");
+        return prevItems;
+      }
+
+      // नया आइटम कार्ट में डालो
+      return [...prevItems, { ...product, quantity: quantityToAdd }];
     });
   };
 
   // 🔄 कार्ट के अंदर ही क्वांटिटी अपडेट करने का फंक्शन (+ / - बटन के लिए)
-  // नोट: इसमें 'currentStock' पैरामीटर ऐड किया है ताकि कार्ट पेज पर भी लिमिट चेक हो सके
-  const updateQuantity = (id: number, newQuantity: number, currentStock: number) => {
+  const updateQuantity = (id: number, volume: string, newQuantity: number, currentStock: number) => {
     // अगर क्वांटिटी 0 या उससे कम की, तो आइटम कार्ट से रिमूव हो जाएगा
     if (newQuantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(id, volume);
       return;
     }
 
-    // 🚨 Inventory Guard 3: cart page par plus (+) button dabane par boundary check karo
+    // 🚨 Inventory Guard 3: cart page par plus (+) button boundary check karo
     if (newQuantity > currentStock) {
       showToast(`माफ़ करना, स्टॉक में केवल ${currentStock} यूनिट्स ही उपलब्ध हैं।`, "error");
-      return; // state update rok do
+      return; 
     }
 
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        (item.id === id && item.volume === volume) ? { ...item, quantity: newQuantity } : item
       )
     );
   };
 
   // 🗑️ कार्ट से ITEM डिलीट करने का फंक्शन
-  const removeFromCart = (id: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeFromCart = (id: number, volume: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => !(item.id === id && item.volume === volume)));
   };
 
   // 📥 कार्ट में मल्टीपल आइटम्स एक साथ लोड करने का फंक्शन (रिकवरी के लिए)

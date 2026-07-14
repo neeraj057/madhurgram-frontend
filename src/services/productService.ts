@@ -11,6 +11,15 @@ export interface Product {
   category: string;
   stock: number;
   rating?: number;
+  variants?: {
+    id: number;
+    name: string;
+    volume: string;
+    price: number;
+    originalPrice?: number;
+    stock: number;
+    tag: string;
+  }[];
 }
 
 export const ProductService = {

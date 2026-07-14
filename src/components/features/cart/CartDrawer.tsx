@@ -17,10 +17,9 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
-  onRemoveItem: (id: number) => void;
-  // 🔄 टाइप अपडेट: अब यह तीसरा पैरामीटर 'stock' भी लेगा
-  onUpdateQuantity: (id: number, quantity: number, stock: number) => void;
-  onCheckout: () => void; // 💳 चेकआउट ओपन करने के लिए नया प्रोप
+  onRemoveItem: (id: number, volume: string) => void;
+  onUpdateQuantity: (id: number, volume: string, quantity: number, stock: number) => void;
+  onCheckout: () => void; 
 }
 
 // 📦 Traditional woven basket icon representing direct farm produce
@@ -119,7 +118,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
 
                   return (
                     <div 
-                      key={item.id} 
+                      key={`${item.id}-${item.volume}`} 
                       className="flex items-center justify-between bg-[#25150E]/40 hover:bg-[#25150E]/60 p-4 rounded-xl border border-[#D4AF37]/10 hover:border-[#D4AF37]/25 transition-all duration-300 relative z-20 backdrop-blur-xs"
                     >
                       <div className="flex items-center space-x-4">
@@ -138,7 +137,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
                           <div className="flex items-center space-x-2 border border-[#D4AF37]/20 rounded-lg bg-[#0F0804]/90 p-0.5 w-max">
                             {/* ➖ Minus Button */}
                             <button 
-                              onClick={() => onUpdateQuantity(item.id, item.quantity - 1, item.stock)}
+                              onClick={() => onUpdateQuantity(item.id, item.volume, item.quantity - 1, item.stock)}
                               className="p-1 text-gray-400 hover:text-[#D4AF37] transition-colors"
                             >
                               <Minus className="h-3 w-3" />
@@ -151,7 +150,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
                             {/* ➕ Plus Button */}
                             <button 
                               disabled={isMaxStockReached}
-                              onClick={() => onUpdateQuantity(item.id, item.quantity + 1, item.stock)}
+                              onClick={() => onUpdateQuantity(item.id, item.volume, item.quantity + 1, item.stock)}
                               className={`p-1 transition-colors ${
                                 isMaxStockReached 
                                   ? "text-gray-800 cursor-not-allowed" 
@@ -167,7 +166,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
                       <div className="text-right flex flex-col items-end justify-between h-full space-y-4">
                         <p className="text-xs font-bold text-[#D4AF37]">₹{item.price * item.quantity}</p>
                         <button 
-                          onClick={() => onRemoveItem(item.id)}
+                          onClick={() => onRemoveItem(item.id, item.volume)}
                           className="p-1 text-gray-600 hover:text-red-400 transition-colors mt-1"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
