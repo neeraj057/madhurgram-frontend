@@ -78,8 +78,8 @@ export default function Home() {
     window.location.reload(); 
   };
 
-  const handleAddToCart = (product: Omit<CartItem, 'quantity'>) => {
-    addToCart(product);
+  const handleAddToCart = (product: Omit<CartItem, 'quantity'>, quantity: number = 1) => {
+    addToCart(product, quantity);
     setIsCartOpen(true); // 🛒 Automatically slide open the cart drawer!
     setRecentlyAddedId(product.id);
     setCartPulse(true);
