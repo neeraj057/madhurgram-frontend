@@ -37,6 +37,7 @@ function FeedbackContent() {
   const [showCustomNote, setShowCustomNote] = useState<boolean>(false);
   const [productImageUrl, setProductImageUrl] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
+  const [emailConfirm, setEmailConfirm] = useState<string>(""); // Honeypot state
 
   // Fetch contextual suggestions and customer info
   useEffect(() => {
@@ -134,6 +135,7 @@ function FeedbackContent() {
         feedbackText: feedbackText,
         selectedChips: selectedChips.join(","),
         productImageUrl: productImageUrl,
+        emailConfirm: emailConfirm,
       };
 
       const response = await fetch(API_ENDPOINTS.publicFeedbackSubmit, {
@@ -347,6 +349,18 @@ function FeedbackContent() {
                     />
                   </label>
                 )}
+              </div>
+
+              {/* Honeypot field - hidden from real users but bots will fill it */}
+              <div className="hidden" aria-hidden="true">
+                <input
+                  type="text"
+                  name="email_confirm"
+                  value={emailConfirm}
+                  onChange={(e) => setEmailConfirm(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
               </div>
 
               {/* Submit Buttons */}

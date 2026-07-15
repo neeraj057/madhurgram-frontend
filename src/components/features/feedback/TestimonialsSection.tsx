@@ -30,6 +30,7 @@ export default function TestimonialsSection() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [emailConfirm, setEmailConfirm] = useState(""); // Honeypot state
 
   const fetchTestimonials = async () => {
     try {
@@ -107,7 +108,8 @@ export default function TestimonialsSection() {
         rating,
         sentiment,
         feedbackText: comment.trim(),
-        productImageUrl
+        productImageUrl,
+        emailConfirm
       };
 
       // 3. Submit feedback details payload (orderId is null, will trigger isApproved = false in backend)
@@ -126,6 +128,7 @@ export default function TestimonialsSection() {
         setComment("");
         setRating(5);
         setSelectedFile(null);
+        setEmailConfirm("");
         fetchTestimonials(); // Refresh list just in case
       } else {
         showToast("रिव्यू सबमिट करने में विफल। कृपया पुन: प्रयास करें।", "error");
@@ -366,6 +369,18 @@ export default function TestimonialsSection() {
                     <p className="text-[9px] text-gray-600">JPG, PNG up to 5MB</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Honeypot field - hidden from real users but bots will fill it */}
+              <div className="hidden" aria-hidden="true">
+                <input
+                  type="text"
+                  name="email_confirm"
+                  value={emailConfirm}
+                  onChange={(e) => setEmailConfirm(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
               </div>
 
               {/* Actions */}
