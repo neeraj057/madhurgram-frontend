@@ -57,12 +57,12 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
   };
 
   return (
-    <header className="sticky top-0 left-0 z-50 w-full bg-[#050505] px-6 py-4 md:px-16 border-b border-gray-800/40">
+    <header className="sticky top-0 left-0 z-50 w-full bg-[#050505] px-6 py-4 lg:px-16 border-b border-gray-800/40">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         
         {/* LEFT: LOGO */}
         <div className="flex items-center cursor-pointer" onClick={() => handleCategoryClick('shop-all')}>
-          <div className="relative h-12 w-44 md:h-20 md:w-72 flex items-center justify-start group">
+          <div className="relative h-12 w-40 sm:w-44 lg:h-20 lg:w-72 flex items-center justify-start group">
             {/* Continuous subtle gold pulse aura */}
             <div className="absolute inset-y-1 inset-x-2 bg-[#D4AF37]/5 rounded-xl blur-md animate-pulse pointer-events-none" />
             {/* Additional glow on hover */}
@@ -76,7 +76,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
         </div>
 
         {/* CENTER: NAVIGATION MENU WITH ACTIVE STATE */}
-        <nav className="hidden space-x-12 md:flex items-center">
+        <nav className="hidden space-x-6 lg:space-x-12 lg:flex items-center">
           {categories.map((cat, index) => (
             <button
               key={index}
@@ -109,7 +109,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
           </button>
 
           {/* Mobile Menu Icon */}
-          <button className="ml-4 md:hidden p-1.5 text-[#FDFBF7] hover:text-[#D4AF37]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <button className="ml-4 lg:hidden p-1.5 text-[#FDFBF7] hover:text-[#D4AF37]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -117,7 +117,7 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
 
       {/* MOBILE DROPDOWN */}
       {isMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-[#111111] border-b border-gray-800 px-8 py-8 md:hidden">
+        <div className="absolute top-full left-0 w-full bg-[#111111] border-b border-gray-800 px-8 py-8 lg:hidden">
           <nav className="flex flex-col space-y-6">
             {categories.map((cat, index) => (
               <button
