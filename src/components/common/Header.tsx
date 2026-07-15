@@ -60,22 +60,36 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
     <header className="sticky top-0 left-0 z-50 w-full bg-[#050505] px-6 py-4 lg:px-16 border-b border-gray-800/40">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         
-        {/* LEFT: LOGO */}
-        <div className="flex items-center cursor-pointer" onClick={() => handleCategoryClick('shop-all')}>
-          <div className="relative h-12 w-40 sm:w-44 lg:h-20 lg:w-72 flex items-center justify-start group">
+        {/* LEFT: MOBILE HAMBURGER BUTTON (Hidden on Desktop) */}
+        <div className="flex w-12 justify-start lg:hidden">
+          <button 
+            className="p-1.5 text-[#FDFBF7] hover:text-[#D4AF37] cursor-pointer transition-colors" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+
+        {/* CENTER/LEFT: LOGO (Centered on Mobile, Left-aligned on Desktop) */}
+        <div 
+          className="flex flex-1 justify-center lg:justify-start lg:flex-none cursor-pointer" 
+          onClick={() => handleCategoryClick('shop-all')}
+        >
+          <div className="relative h-12 w-40 sm:w-44 lg:h-20 lg:w-72 flex items-center justify-center lg:justify-start group">
             {/* Continuous subtle gold pulse aura */}
             <div className="absolute inset-y-1 inset-x-2 bg-[#D4AF37]/5 rounded-xl blur-md animate-pulse pointer-events-none" />
             {/* Additional glow on hover */}
             <div className="absolute inset-0 bg-[#D4AF37]/8 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            
             <img 
               src="/images/newlogo.svg?v=2" 
               alt="MadhurGram Logo" 
-              className="h-full w-full object-contain object-left relative z-10 transition-all duration-300 group-hover:scale-[1.04]" 
+              className="h-full w-full object-contain object-center lg:object-left relative z-10 transition-all duration-300 group-hover:scale-[1.04]" 
             />
           </div>
         </div>
 
-        {/* CENTER: NAVIGATION MENU WITH ACTIVE STATE */}
+        {/* CENTER: NAVIGATION MENU WITH ACTIVE STATE (Desktop Only) */}
         <nav className="hidden space-x-6 lg:space-x-12 lg:flex items-center">
           {categories.map((cat, index) => (
             <button
@@ -93,12 +107,11 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
           ))}
         </nav>
 
-        {/* RIGHT: CART STATUS & QUICK LINKS */}
-        <div className="flex items-center text-[#FDFBF7]">
-
+        {/* RIGHT: CART STATUS (Right-aligned, matching Menu width on Mobile) */}
+        <div className="flex w-12 lg:w-auto justify-end items-center text-[#FDFBF7]">
           <button 
             onClick={onCartClick} 
-            className={`relative p-2.5 transition-all group ${cartPulse ? 'scale-105' : 'hover:scale-105'}`}
+            className={`relative p-2.5 transition-all group ${cartPulse ? 'scale-105' : 'hover:scale-105'} cursor-pointer`}
           >
             <SwadeshiBasketIcon className="h-6 w-6 text-[#FDFBF7] group-hover:text-[#D4AF37] transition-colors" />
             {cartCount > 0 && (
@@ -106,11 +119,6 @@ export default function Header({ activeCategory, setActiveCategory, onCartClick,
                 {cartCount}
               </span>
             )}
-          </button>
-
-          {/* Mobile Menu Icon */}
-          <button className="ml-4 lg:hidden p-1.5 text-[#FDFBF7] hover:text-[#D4AF37]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>

@@ -14,6 +14,43 @@
       <stop offset="80%" stop-color="#D4941E"/>
       <stop offset="100%" stop-color="#FCE195"/>
     </linearGradient>
+
+    <filter id="gold-3d" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="blur" />
+      <feSpecularLighting in="blur" surfaceScale="5" specularConstant="1.6" specularExponent="32" lighting-color="#FFECA0" result="spec">
+        <feDistantLight azimuth="225" elevation="65" />
+      </feSpecularLighting>
+      <feDiffuseLighting in="blur" surfaceScale="5" diffuseConstant="1.2" lighting-color="#FFD042" result="diff">
+        <feDistantLight azimuth="225" elevation="65" />
+      </feDiffuseLighting>
+      <feComponentTransfer in="spec" result="specGlow">
+        <feFuncA type="linear" slope="1.5" />
+      </feComponentTransfer>
+      <feBlend mode="multiply" in="SourceGraphic" in2="diff" result="goldBase" />
+      
+      <!-- Combine lit gold base with pure original gradient to preserve full golden color saturation and brightness -->
+      <feComposite operator="arithmetic" k1="0" k2="0.5" k3="0.5" k4="0" in="goldBase" in2="SourceGraphic" result="goldVibrant" />
+      
+      <feComposite operator="arithmetic" k1="0" k2="1" k3="1.2" k4="0" in="goldVibrant" in2="specGlow" result="bevelGold" />
+      
+      <!-- Clip the bevelGold to the original vector outlines to keep the background fully transparent -->
+      <feComposite operator="in" in="bevelGold" in2="SourceGraphic" result="litGraphic" />
+      
+      <feOffset dx="2.5" dy="3.5" in="SourceAlpha" result="offset" />
+      <feGaussianBlur in="offset" stdDeviation="3" result="shadowBlur" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.8 0" in="shadowBlur" result="dropShadow" />
+      <feMerge>
+        <feMergeNode in="dropShadow" />
+        <feMergeNode in="litGraphic" />
+      </feMerge>
+    </filter>
+
+    <style>
+      #vector-artwork {
+        filter: url(#gold-3d);
+        fill: url(#gold);
+      }
+    </style>
   </defs>
 
   <rect id="background" width="1727" height="911" fill="none"/>
