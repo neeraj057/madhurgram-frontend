@@ -71,4 +71,9 @@ export const API_ENDPOINTS = {
     `${BASE_URL}/api/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`,
   publicFeedbackUpload: `${BASE_URL}/api/public/feedback/upload`,
   publicFeedbackSubmit: `${BASE_URL}/api/public/feedback`,
+
+  // ⚙️ Hero Section Config Endpoints
+  getHeroConfig: `${BASE_URL}/api/public/settings/hero`,
+  adminHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
+  updateHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
 };

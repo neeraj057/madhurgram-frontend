@@ -27,6 +27,14 @@ export default function AdminMarketingPage() {
   const [testPhone, setTestPhone] = useState("");
   const [testSubmitting, setTestSubmitting] = useState(false);
 
+  // Hero Display Manager states
+  const [heroType, setHeroType] = useState("video");
+  const [heroOfferTitle, setHeroOfferTitle] = useState("");
+  const [heroOfferSubtitle, setHeroOfferSubtitle] = useState("");
+  const [heroOfferLink, setHeroOfferLink] = useState("/#products");
+  const [heroOfferCoupon, setHeroOfferCoupon] = useState("");
+  const [heroSaving, setHeroSaving] = useState(false);
+
   const fetchReviewsQueue = async () => {
     try {
       const res = await fetch(API_ENDPOINTS.adminMarketingReviews, getAuthFetchOptions());
@@ -106,11 +114,52 @@ export default function AdminMarketingPage() {
     }
   };
 
+  const fetchHeroConfig = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminHeroConfig, getAuthFetchOptions());
+      if (res.ok) {
+        const data = await res.json();
+        setHeroType(data.heroContentType || "video");
+        setHeroOfferTitle(data.offerTitle || "");
+        setHeroOfferSubtitle(data.offerSubtitle || "");
+        setHeroOfferLink(data.offerLink || "/#products");
+        setHeroOfferCoupon(data.offerCoupon || "");
+      }
+    } catch (e) {
+      console.error("Error fetching hero config:", e);
+    }
+  };
+
+  const handleSaveHeroConfig = async () => {
+    setHeroSaving(true);
+    try {
+      const payload = {
+        heroContentType: heroType,
+        offerTitle: heroOfferTitle,
+        offerSubtitle: heroOfferSubtitle,
+        offerLink: heroOfferLink,
+        offerCoupon: heroOfferCoupon,
+      };
+      const res = await fetch(API_ENDPOINTS.updateHeroConfig, getAuthFetchOptions("PUT", JSON.stringify(payload), "application/json"));
+      if (res.ok) {
+        showToast("Hero Section configuration updated live!", "success");
+      } else {
+        showToast("Failed to save hero configurations.", "error");
+      }
+    } catch (e) {
+      console.error("Error saving hero config:", e);
+      showToast("Error updating hero config.", "error");
+    } finally {
+      setHeroSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchCampaigns();
     fetchProducts();
     fetchReviewsQueue();
     fetchReviewConfig();
+    fetchHeroConfig();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -172,6 +221,105 @@ export default function AdminMarketingPage() {
             </button>
           </div>
         </div>
+
+    {/* 🎬 HOME HERO MEDIA & CAMPAIGN CONTROLLER BOARD */}
+    <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-5 mb-6 gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-[#D4AF37]" />
+            Dynamic Home Hero Configuration Board
+          </h2>
+          <p className="text-sm text-gray-400">Choose between cinematic video background, Gopiganj ghee purity image, or custom deal banner templates.</p>
+        </div>
+        <button
+          onClick={handleSaveHeroConfig}
+          disabled={heroSaving}
+          className="px-6 py-2.5 bg-[#D4AF37] hover:bg-[#F7D070] text-[#11] hover:text-[#111] text-xs font-bold uppercase tracking-widest rounded-xl transition-all disabled:opacity-50"
+        >
+          {heroSaving ? "Saving Config..." : "Save Live Configuration"}
+        </button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Left side: Toggles */}
+        <div className="space-y-4">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold">Active Content Slot Type</label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { value: "video", label: "Cinematic Video" },
+              { value: "image", label: "Purity HD Image" },
+              { value: "offer", label: "Offers Card Banner" }
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setHeroType(opt.value)}
+                className={`py-3 px-4 rounded-xl border text-center transition-all cursor-pointer text-xs uppercase font-bold tracking-wider ${
+                  heroType === opt.value
+                    ? "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]"
+                    : "border-gray-800 bg-[#111] hover:border-gray-700 text-gray-400"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500">
+            {heroType === 'video' && "Shows the background video loops for Gopiganj handcrafted goods."}
+            {heroType === 'image' && "Shows the generated ultra HD wood table ghee purity background image."}
+            {heroType === 'offer' && "Displays a custom promotional card layout over the sweets deal background image."}
+          </p>
+        </div>
+
+        {/* Right side: Offer tags input */}
+        <div className="space-y-4 border-t md:border-t-0 md:border-l border-gray-800/80 pt-4 md:pt-0 md:pl-6">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold">Offer Banner Details (Only for Offers Slot)</label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Headline Title</label>
+              <input
+                type="text"
+                value={heroOfferTitle}
+                onChange={(e) => setHeroOfferTitle(e.target.value)}
+                placeholder="e.g. Inaugural Swadeshi Offer"
+                className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+              />
+            </div>
+            <div>
+              <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Voucher Coupon Code</label>
+              <input
+                type="text"
+                value={heroOfferCoupon}
+                onChange={(e) => setHeroOfferCoupon(e.target.value)}
+                placeholder="e.g. GOPIGANJ10"
+                className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Detailed description</label>
+            <input
+              type="text"
+              value={heroOfferSubtitle}
+              onChange={(e) => setHeroOfferSubtitle(e.target.value)}
+              placeholder="e.g. Get 10% Flat discount on Ghee and Oils today"
+              className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+            />
+          </div>
+          <div>
+            <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Action Button Redirection URL</label>
+            <input
+              type="text"
+              value={heroOfferLink}
+              onChange={(e) => setHeroOfferLink(e.target.value)}
+              placeholder="e.g. /#products"
+              className="w-full rounded-xl border border-gray-800 bg-[#111111] px-3.5 py-2 text-xs text-white outline-none focus:border-[#D4AF37]"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
 
         <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
           <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm">
