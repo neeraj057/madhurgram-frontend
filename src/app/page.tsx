@@ -124,7 +124,7 @@ export default function Home() {
 
       <TestimonialsSection />
 
-      <FooterSection />
+      <FooterSection onAddToCart={handleAddToCart} />
 
       {/* Floating WhatsApp Support Button */}
       <WhatsAppButton />

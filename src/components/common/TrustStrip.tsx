@@ -1,33 +1,74 @@
 "use client";
-
+ 
 import React from 'react';
-import { Sprout, ShieldCheck, Users, Award } from 'lucide-react';
+
+const BilonaIcon = () => (
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8">
+    <line x1="32" y1="8" x2="32" y2="44" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M22 38H42" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M19 24C19 18 23 17 32 17C41 17 45 18 45 24C45 37 41 48 32 48C23 48 19 37 19 24Z" stroke="#D4AF37" strokeWidth="2" strokeLinejoin="round" fill="#FAF3E0" />
+    <ellipse cx="32" cy="17" rx="9" ry="2.5" stroke="#D4AF37" strokeWidth="2" fill="#ffffff" />
+    <path d="M23 28C26 27 28 29 32 28C36 27 38 29 41 28" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M25 34C28 33 30 35 34 34C38 33 40 35 43 34" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+  </svg>
+);
+
+const OrganicIcon = () => (
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8">
+    <circle cx="32" cy="26" r="10" stroke="#D4AF37" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+    <path d="M16 48C24 48 28 46 32 46C36 46 40 48 48 48" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" />
+    <path d="M32 46V24C32 20 37 15 43 18" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M32 34C27 32 23 26 26 22C29 22 32 27 32 30" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FAF3E0" />
+    <path d="M32 27C37 26 41 20 38 16C35 16 32 21 32 24" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FAF3E0" />
+  </svg>
+);
+
+const FarmIcon = () => (
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8">
+    <circle cx="44" cy="20" r="4" stroke="#D4AF37" strokeWidth="1.5" fill="#ffffff" />
+    <path d="M14 44L22 33L30 44" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+    <path d="M26 44H46V34L36 27L26 34V44Z" stroke="#D4AF37" strokeWidth="2" strokeLinejoin="round" fill="#FAF3E0" />
+    <path d="M24 34L36 25L48 34" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="33" y="37" width="6" height="7" rx="1" stroke="#D4AF37" strokeWidth="1.5" fill="#ffffff" />
+    <path d="M16 48H48" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" />
+    <path d="M18 52H46" stroke="#D4AF37" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+  </svg>
+);
+
+const QualityIcon = () => (
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8">
+    <path d="M26 36V50L32 46L38 50V36" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FAF3E0" />
+    <circle cx="32" cy="25" r="15" stroke="#D4AF37" strokeWidth="2" fill="#FAF3E0" />
+    <circle cx="32" cy="25" r="11" stroke="#D4AF37" strokeWidth="1" strokeDasharray="2 2" fill="#ffffff" />
+    <path d="M28 25L31 28L36 21" stroke="#D4AF37" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 export default function TrustStrip() {
   const promises = [
     {
-      icon: <Award className="h-6 w-6 text-[#D4AF37]" />,
+      icon: <BilonaIcon />,
       title: "पारंपरिक बिलोना विधि",
       englishTitle: "Traditional Bilona Ghee",
       description: "हमारा घी पारंपरिक रूप से गाय के दूध से दही बनाकर, फिर मथनी से मथकर (बिलोना विधि) तैयार किया जाता है, न कि दूध की मलाई से।",
       englishDesc: "Churned from curd using traditional wooden churners, preserving maximum nutrition and granular texture."
     },
     {
-      icon: <Sprout className="h-6 w-6 text-[#D4AF37]" />,
+      icon: <OrganicIcon />,
       title: "100% जैविक और शुद्ध",
       englishTitle: "100% Organic & Pure",
       description: "रसायनों, कृत्रिम मिठास और मिलावट से कोसों दूर। हमारे अचार, गुड़ और तेल पारंपरिक रूप से बिना किसी प्रिज़र्वेटिव के तैयार होते हैं।",
       englishDesc: "Grown organically and processed without chemicals, sulfur, or artificial preservatives."
     },
     {
-      icon: <Users className="h-6 w-6 text-[#D4AF37]" />,
+      icon: <FarmIcon />,
       title: "सीधे किसानों से sourced",
       englishTitle: "Directly Farm Sourced",
       description: "गोपीगंज (भदोही) के खेतों और पशुपालकों से सीधा जुड़ाव। हर खरीदारी सीधे ग्रामीण अर्थव्यवस्था और किसानों को मज़बूत करती है।",
       englishDesc: "Directly sourced from Bhadohi local farmers, ensuring fair prices and fresh batches."
     },
     {
-      icon: <ShieldCheck className="h-6 w-6 text-[#D4AF37]" />,
+      icon: <QualityIcon />,
       title: "लैब प्रमाणित गुणवत्ता",
       englishTitle: "Lab Tested Purity",
       description: "हमारे सभी उत्पादों की शुद्धता और गुणवत्ता का कड़ा परीक्षण किया जाता है, ताकि आप तक सिर्फ सर्वोत्तम और सुरक्षित आहार पहुँचे।",
@@ -69,11 +110,9 @@ export default function TrustStrip() {
               className="group flex flex-col items-center text-center p-6 rounded-2xl border border-gray-200/70 bg-white/70 backdrop-blur-sm shadow-[0_4px_25px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.06)] hover:border-[#D4AF37]/45 hover:-translate-y-1 transition-all duration-300"
             >
               {/* Icon Container */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FAF3E0] border border-[#D4AF37]/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] transition-all duration-300 mb-5">
-                <div className="group-hover:scale-110 group-hover:text-white transition-transform duration-300">
-                  {React.cloneElement(item.icon, {
-                    className: "h-5 w-5 text-[#D4AF37] group-hover:text-white transition-colors duration-300"
-                  })}
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FAF3E0]/70 border border-[#D4AF37]/25 shadow-sm group-hover:bg-white group-hover:border-[#D4AF37]/50 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.15)] transition-all duration-300 mb-5">
+                <div className="group-hover:scale-110 transition-transform duration-300">
+                  {item.icon}
                 </div>
               </div>
 

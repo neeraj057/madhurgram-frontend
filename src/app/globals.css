@@ -43,3 +43,28 @@
 .animate-toast-mobile {
   animation: toastSlideInMobile 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* ✨ Premium Flash / Shimmer Animations */
+@keyframes shimmerFlashBg {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-shimmer-bg {
+  background: linear-gradient(110deg, #FDF8EB 30%, #ffffff 50%, #FDF8EB 70%);
+  background-size: 200% auto;
+  animation: shimmerFlashBg 2.5s linear infinite;
+}
+
+@keyframes textShine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-text-shine {
+  background: linear-gradient(110deg, #A87F18 30%, #E3C153 50%, #A87F18 70%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShine 2.5s linear infinite;
+}

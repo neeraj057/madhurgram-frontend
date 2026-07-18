@@ -25,6 +25,7 @@ export const AdminSidebar = () => {
     { name: "Analytics", href: "/admin/analytics", icon: LayoutDashboard },
     { name: "Live Orders", href: "/admin/orders", icon: ShoppingCart },
     { name: "Products", href: "/admin/products", icon: Package },
+    { name: "Bundles", href: "/admin/bundles", icon: Package },
     { name: "Tax Settings", href: "/admin/tax-settings", icon: Percent },
     { name: "Manage Coupons", href: "/admin/coupons", icon: Ticket },
     { name: "Customers", href: "/admin/customers", icon: Users },
