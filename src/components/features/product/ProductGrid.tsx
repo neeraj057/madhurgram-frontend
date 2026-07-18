@@ -20,8 +20,20 @@ export default function ProductGrid({ activeCategory, onAddToCart, addedProductI
   const displayProducts = groupProducts(products);
 
   return (
-    <section id="products" className="py-20 px-6 md:px-16 bg-[#FDFBF7] text-[#111111]">
-      <div className="mx-auto max-w-7xl">
+    <section id="products" className="relative py-20 px-6 md:px-16 text-[#111111] overflow-hidden">
+      {/* Premium Heritage Village Journey Background Image */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.85]"
+        style={{
+          backgroundImage: "url('/images/village_seamless_bg.png')",
+          backgroundRepeat: 'repeat',
+          backgroundSize: '750px',
+        }}
+      />
+      {/* Soft gradient edges to blend with neighboring sections */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-[#FDFBF7] via-transparent to-[#FDFBF7]" />
+
+      <div className="relative z-10 mx-auto max-w-7xl">
         
         {/* Section Title */}
         <div className="mb-16 text-center">
