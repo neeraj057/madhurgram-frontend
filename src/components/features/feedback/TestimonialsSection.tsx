@@ -147,12 +147,12 @@ export default function TestimonialsSection() {
       <section className="py-20 bg-[#111111] border-t border-gray-800/40 animate-fadeIn">
         <div className="max-w-7xl mx-auto px-6 space-y-8">
           <div className="text-center space-y-2">
-            <div className="h-3 w-20 bg-gray-800 animate-pulse mx-auto rounded" />
-            <div className="h-8 w-60 bg-gray-800 animate-pulse mx-auto rounded" />
+            <div className="h-3 w-20 bg-gray-200 animate-pulse mx-auto rounded" />
+            <div className="h-8 w-60 bg-gray-200 animate-pulse mx-auto rounded" />
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-48 rounded-2xl border border-gray-800 bg-[#161616] p-6 animate-pulse" />
+              <div key={i} className="h-48 rounded-2xl border border-gray-200 bg-gray-100/50 p-6 animate-pulse" />
             ))}
           </div>
         </div>
@@ -173,20 +173,20 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-24 bg-[#050505] border-t border-gray-800/40 relative overflow-hidden">
+    <section className="relative py-24 text-[#111111] overflow-hidden border-t border-gray-200/50">
       {/* Luxury gold glowing backdrops */}
-      <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 right-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/3 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#D4AF37]/3 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <header className="text-center space-y-4 mb-10">
           <span className="text-[10px] sm:text-xs font-bold tracking-[0.35em] text-[#D4AF37] uppercase animate-pulse block animate-fadeIn">
             शुद्धता का अनुभव
           </span>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#FDFBF7] tracking-wide leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#111111] tracking-wide leading-tight">
             Our Customers Say
           </h2>
-          <p className="text-lg sm:text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] select-none tracking-wide">
+          <p className="text-xs sm:text-sm font-sans font-bold text-[#D4AF37] select-none tracking-widest uppercase">
             (कस्टमर की पसंद)
           </p>
           <div className="flex items-center justify-center gap-2 mt-4 select-none">
@@ -199,7 +199,7 @@ export default function TestimonialsSection() {
           <div className="flex justify-center pt-2">
             <button
               onClick={() => setIsWriteModalOpen(true)}
-              className="px-6 py-2.5 rounded-xl border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold uppercase tracking-widest hover:bg-[#D4AF37] hover:text-[#111111] transition-all duration-300 active:scale-95 shadow-md hover:shadow-[#D4AF37]/15"
+              className="px-6 py-2.5 rounded-xl border-2 border-[#D4AF37] text-[#D4AF37] bg-white text-xs font-bold uppercase tracking-widest hover:bg-[#D4AF37] hover:text-[#111111] transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md"
             >
               Write A Review
             </button>
@@ -207,8 +207,8 @@ export default function TestimonialsSection() {
         </header>
 
         {testimonials.length === 0 ? (
-          <div className="text-center py-10 bg-[#161616]/40 border border-gray-800/40 rounded-2xl max-w-md mx-auto p-8 animate-fadeIn">
-            <p className="text-gray-400 text-sm font-sans font-light">
+          <div className="text-center py-10 bg-white/50 border border-gray-200/60 rounded-2xl max-w-md mx-auto p-8 animate-fadeIn">
+            <p className="text-gray-500 text-sm font-sans font-light">
               No testimonials have been published yet. Be the first to share your authentic experience! 💛
             </p>
           </div>
@@ -248,8 +248,8 @@ export default function TestimonialsSection() {
                   ))}
                 </div>
                 {/* Fade edges */}
-                <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#050505] to-transparent pointer-events-none z-10" />
-                <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#050505] to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#FDFBF7] to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#FDFBF7] to-transparent pointer-events-none z-10" />
               </div>
             )}
 
@@ -262,8 +262,8 @@ export default function TestimonialsSection() {
                   ))}
                 </div>
                 {/* Fade edges */}
-                <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#050505] to-transparent pointer-events-none z-10" />
-                <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#050505] to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#FDFBF7] to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#FDFBF7] to-transparent pointer-events-none z-10" />
               </div>
             )}
           </div>
@@ -434,10 +434,10 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
 
   return (
     <div
-      className="group relative flex flex-col justify-between rounded-2xl border border-gray-800/50 bg-[#161616]/75 hover:bg-[#1d1d1d]/80 p-6 transition-all duration-300 hover:border-[#D4AF37]/40 shadow-2xl backdrop-blur-sm w-[280px] sm:w-[320px] flex-shrink-0"
+      className="group relative flex flex-col justify-between rounded-2xl border border-gray-200/80 bg-white/95 hover:bg-white p-6 transition-all duration-300 hover:border-[#D4AF37]/50 shadow-[0_4px_25px_rgba(0,0,0,0.015)] hover:shadow-[0_12px_30px_rgba(212,175,55,0.05)] w-[280px] sm:w-[320px] flex-shrink-0"
     >
       {/* Decorative Quotation Mark */}
-      <div className="absolute -top-3 -left-1 text-[#D4AF37]/10 group-hover:text-[#D4AF37]/25 transition-all text-7xl font-serif pointer-events-none select-none">
+      <div className="absolute -top-3 -left-1 text-[#D4AF37]/5 group-hover:text-[#D4AF37]/15 transition-all text-7xl font-serif pointer-events-none select-none">
         “
       </div>
 
@@ -448,7 +448,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
             <Star
               key={i}
               className={`h-3 w-3 ${
-                i < t.rating ? "fill-[#D4AF37] text-[#D4AF37]" : "text-gray-800"
+                i < t.rating ? "fill-[#D4AF37] text-[#D4AF37]" : "text-gray-200"
               }`}
             />
           ))}
@@ -457,7 +457,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
 
         {/* Customer product image */}
         {t.productImageUrl && (
-          <div className="w-full h-24 rounded-lg overflow-hidden border border-gray-800 bg-[#0B0B0B] relative">
+          <div className="w-full h-24 rounded-lg overflow-hidden border border-gray-200/80 bg-gray-50 relative">
             <img
               src={t.productImageUrl}
               alt="Customer review product"
@@ -467,19 +467,19 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
         )}
 
         {/* Feedback Text */}
-        <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans font-light italic line-clamp-3">
+        <p className="text-xs sm:text-sm text-gray-700 leading-relaxed font-sans font-light italic line-clamp-3">
           "{textToDisplay}"
         </p>
       </div>
 
       {/* Author Info */}
-      <footer className="mt-6 border-t border-gray-800/40 pt-3 flex justify-between items-center relative z-10">
+      <footer className="mt-6 border-t border-gray-100 pt-3 flex justify-between items-center relative z-10">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-[#FDFBF7] group-hover:text-[#D4AF37] transition-colors">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#111111] group-hover:text-[#D4AF37] transition-colors">
             {t.customerName}
           </p>
           <p className={`text-[8.5px] uppercase tracking-widest font-bold mt-0.5 ${
-            isOrderVerified ? "text-[#D4AF37]" : "text-green-500"
+            isOrderVerified ? "text-[#D4AF37]" : "text-green-600"
           }`}>
             {isOrderVerified ? "Verified Buyer" : "Community Reviewer"}
           </p>
@@ -489,7 +489,7 @@ function TestimonialCard({ testimonial: t }: { testimonial: Testimonial }) {
         <span className={`h-5 w-5 rounded-full border flex items-center justify-center text-[9px] select-none font-bold ${
           isOrderVerified 
             ? "bg-[#D4AF37]/10 border-[#D4AF37]/20 text-[#D4AF37]" 
-            : "bg-green-500/10 border-green-500/20 text-green-500"
+            : "bg-green-500/10 border-green-500/20 text-green-600"
         }`}>
           ✓
         </span>

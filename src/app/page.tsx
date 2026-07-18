@@ -9,6 +9,9 @@ import CheckoutModal from "@/components/features/checkout/CheckoutModal"; // न
 import { useCart, CartItem } from "@/hooks/useCart";
 import { fetchRecoveredCart } from "@/apis/cartRecovery";
 import TestimonialsSection from "@/components/features/feedback/TestimonialsSection";
+import TrustStrip from "@/components/common/TrustStrip";
+import FAQSection from "@/components/common/FAQSection";
+import WhatsAppButton from "@/components/common/WhatsAppButton";
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("shop-all");
@@ -90,13 +93,24 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen bg-[#FDFBF7] overflow-x-hidden">
-      <Header 
-        activeCategory={activeCategory} 
-        setActiveCategory={setActiveCategory} 
-        onCartClick={() => setIsCartOpen(true)} 
-        cartCount={totalCartCount} 
-        cartPulse={cartPulse}
+      {/* Page-Wide Premium Heritage Village Journey Subtle Background */}
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage: "url('/images/village_seamless_bg.png')",
+          backgroundRepeat: 'repeat',
+          backgroundSize: '750px',
+        }}
       />
+      
+      <div className="relative z-10">
+        <Header 
+          activeCategory={activeCategory} 
+          setActiveCategory={setActiveCategory} 
+          onCartClick={() => setIsCartOpen(true)} 
+          cartCount={totalCartCount} 
+          cartPulse={cartPulse}
+        />
       
       <HeroSection />
       
@@ -104,9 +118,18 @@ export default function Home() {
         <ProductGrid activeCategory={activeCategory} onAddToCart={handleAddToCart} addedProductId={recentlyAddedId} />
       </div>
 
+      <TrustStrip />
+
+      <FAQSection />
+
       <TestimonialsSection />
 
       <FooterSection />
+
+      {/* Floating WhatsApp Support Button */}
+      <WhatsAppButton />
+      
+      </div>
 
       <CartDrawer 
         isOpen={isCartOpen} 
@@ -119,8 +142,6 @@ export default function Home() {
           setIsCheckoutOpen(true); // चेकआउट खोलो
         }}
       />
-
-
 
       {/* 💳 चेकआउट मोडल एकदम सेपरेटेड और क्लीन */}
       <CheckoutModal 
