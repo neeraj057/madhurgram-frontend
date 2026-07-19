@@ -76,4 +76,9 @@ export const API_ENDPOINTS = {
   getHeroConfig: `${BASE_URL}/api/public/settings/hero`,
   adminHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
   updateHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
+
+  // 💬 WhatsApp Quick Buy Config Endpoints
+  getWhatsAppConfig: `${BASE_URL}/api/public/settings/whatsapp`,
+  adminWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
+  updateWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
 };

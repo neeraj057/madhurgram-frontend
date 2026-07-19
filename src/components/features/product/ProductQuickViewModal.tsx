@@ -5,6 +5,7 @@ import { DEFAULT_PRODUCT_RATING } from '@/utils/constants';
 import { getProductVariants, getVariantProduct } from '@/utils/productUtils';
 import { Product } from '@/services/productService';
 import { showToast } from '@/components/ui/Toast';
+import { API_ENDPOINTS } from '@/apis/api';
 
 interface ProductQuickViewModalProps {
   product: Product | null;
@@ -156,9 +157,38 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
       setSelectedVolume(vars && vars.length > 0 ? vars[0].volume : product.volume);
       setQuantity(1); // Reset quantity on product swap
       setActiveTab("buy"); // Reset to default purchase tab
+      setShowWhatsAppForm(false);
+      setCustName("");
+      setCustPhone("");
+      setCustAddress("");
     }
   }, [product]);
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState("917899999902");
+  const [whatsappTemplate, setWhatsappTemplate] = useState("");
+  const [showWhatsAppForm, setShowWhatsAppForm] = useState(false);
+  const [custName, setCustName] = useState("");
+  const [custPhone, setCustPhone] = useState("");
+  const [custAddress, setCustAddress] = useState("");
 
+  useEffect(() => {
+    if (!product) return;
+    const fetchWhatsAppConfig = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.getWhatsAppConfig);
+        if (res.ok) {
+          const data = await res.json();
+          console.log("Fetched WhatsApp Config:", data);
+          setWhatsappEnabled(data.whatsappEnabled === "true");
+          setWhatsappNumber(data.whatsappNumber || "917899999902");
+          setWhatsappTemplate(data.whatsappTemplate || "");
+        }
+      } catch (e) {
+        console.error("Error fetching WhatsApp config:", e);
+      }
+    };
+    fetchWhatsAppConfig();
+  }, [product]);
   if (!product) return null;
 
   const displayProduct = variants ? getVariantProduct(product, selectedVolume) : product;
@@ -203,190 +233,348 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
         {/* Right Side: Heritage Details Pane (Tabbed Navigation for Dynamic storytelling) */}
         <div className="w-full sm:w-7/12 p-6 flex flex-col justify-between">
           <div>
-            <span className="text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
-              {displayProduct.category}
-            </span>
-            <h3 className="font-serif text-lg sm:text-xl font-bold tracking-wide mt-1 text-[#111111] leading-snug">
-              {displayProduct.name}
-            </h3>
+            {!showWhatsAppForm ? (
+              <>
+                <span className="text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
+                  {displayProduct.category}
+                </span>
+                <h3 className="font-serif text-lg sm:text-xl font-bold tracking-wide mt-1 text-[#111111] leading-snug">
+                  {displayProduct.name}
+                </h3>
 
-            {/* Elegant Luxury Tabs */}
-            <div className="flex border-b border-gray-200 mt-3.5 select-none text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-              <button
-                type="button"
-                onClick={() => setActiveTab("buy")}
-                className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
-                  activeTab === "buy"
-                    ? "border-[#D4AF37] text-[#111111]"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
-                }`}
-              >
-                Quick Buy
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("story")}
-                className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
-                  activeTab === "story"
-                    ? "border-[#D4AF37] text-[#111111]"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
-                }`}
-              >
-                Our Process
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("specs")}
-                className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
-                  activeTab === "specs"
-                    ? "border-[#D4AF37] text-[#111111]"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
-                }`}
-              >
-                Purity Specs
-              </button>
-            </div>
+                {/* Elegant Luxury Tabs */}
+                <div className="flex border-b border-gray-200 mt-3.5 select-none text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("buy")}
+                    className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
+                      activeTab === "buy"
+                        ? "border-[#D4AF37] text-[#111111]"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    Quick Buy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("story")}
+                    className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
+                      activeTab === "story"
+                        ? "border-[#D4AF37] text-[#111111]"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    Our Process
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("specs")}
+                    className={`flex-1 pb-1.5 border-b-2 text-center transition-all ${
+                      activeTab === "specs"
+                        ? "border-[#D4AF37] text-[#111111]"
+                        : "border-transparent text-gray-400 hover:text-gray-600"
+                    }`}
+                  >
+                    Purity Specs
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="text-[8px] font-bold tracking-[0.25em] text-green-600 uppercase">
+                  WhatsApp Direct Order
+                </span>
+                <h3 className="font-serif text-base sm:text-lg font-bold tracking-wide mt-1 text-[#111111] leading-snug">
+                  Enter Delivery Details
+                </h3>
+                <p className="text-[9px] text-gray-500 mt-1 font-light leading-none">
+                  We'll pre-fill these details so you don't have to type them on WhatsApp.
+                </p>
+              </>
+            )}
 
             {/* Tab Contents Pane (Fixed height to prevent modal size jumps) */}
             <div className="mt-4 h-[160px] sm:h-[185px] overflow-y-auto scrollbar-thin pr-1">
               
-              {/* Tab 1: Buy Options */}
-              {activeTab === "buy" && (
-                <div className="space-y-4 animate-fadeIn">
-                  {/* Rating */}
-                  <div className="flex items-center gap-1.5 select-none text-[10px] text-gray-500 font-medium flex-wrap">
-                    <span className="text-[#D4AF37]">★</span>
-                    <span className="font-bold text-gray-800">{displayProduct.rating ? Number(displayProduct.rating).toFixed(1) : DEFAULT_PRODUCT_RATING}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-[9px] uppercase tracking-wider text-[#D4AF37] font-semibold">100% Organic</span>
-                    {displayProduct.showSalesCount ? (
-                      <>
-                        <span className="text-gray-300">|</span>
-                        <span className="text-[9.5px] text-amber-600 font-bold bg-amber-50/70 px-1.5 py-0.5 rounded border border-amber-100/40 flex items-center gap-0.5 leading-none">
-                          <span>🔥</span>
-                          <span>{((displayProduct.salesCount || 0) + (displayProduct.realSalesCount || 0))}+ orders placed</span>
-                        </span>
-                      </>
-                    ) : null}
+              {showWhatsAppForm ? (
+                <div className="space-y-3 animate-fadeIn pr-1 text-[#111111] select-none">
+                  <div>
+                    <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Your Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={custName}
+                      onChange={(e) => setCustName(e.target.value)}
+                      placeholder="e.g. Ramesh Kumar"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-semibold"
+                    />
                   </div>
+                  <div>
+                    <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">WhatsApp Phone Number</label>
+                    <input
+                      type="text"
+                      required
+                      value={custPhone}
+                      onChange={(e) => setCustPhone(e.target.value)}
+                      placeholder="e.g. 9876543210"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] uppercase tracking-wider text-gray-500 font-bold mb-1">Delivery Address & Pincode</label>
+                    <textarea
+                      rows={2}
+                      required
+                      value={custAddress}
+                      onChange={(e) => setCustAddress(e.target.value)}
+                      placeholder="e.g. Near Shiv Temple, Gopiganj, Bhadohi, PIN: 221303"
+                      className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-medium leading-relaxed"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Tab 1: Buy Options */}
+                  {activeTab === "buy" && (
+                    <div className="space-y-4 animate-fadeIn">
+                      {/* Rating */}
+                      <div className="flex items-center gap-1.5 select-none text-[10px] text-gray-500 font-medium flex-wrap">
+                        <span className="text-[#D4AF37]">★</span>
+                        <span className="font-bold text-gray-800">{displayProduct.rating ? Number(displayProduct.rating).toFixed(1) : DEFAULT_PRODUCT_RATING}</span>
+                        <span className="text-gray-300">|</span>
+                        <span className="text-[9px] uppercase tracking-wider text-[#D4AF37] font-semibold">100% Organic</span>
+                        {displayProduct.showSalesCount ? (
+                          <>
+                            <span className="text-gray-300">|</span>
+                            <span className="text-[9.5px] text-amber-600 font-bold bg-amber-50/70 px-1.5 py-0.5 rounded border border-amber-100/40 flex items-center gap-0.5 leading-none">
+                              <span>🔥</span>
+                              <span>{((displayProduct.salesCount || 0) + (displayProduct.realSalesCount || 0))}+ orders placed</span>
+                            </span>
+                          </>
+                        ) : null}
+                      </div>
 
-                  {/* Size selection */}
-                  {variants && (
-                    <div className="flex gap-2 select-none">
-                      {variants.map((v) => (
-                        <button
-                          key={v.volume}
-                          type="button"
-                          onClick={() => setSelectedVolume(v.volume)}
-                          className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border ${
-                            selectedVolume === v.volume
-                              ? "bg-[#D4AF37] text-[#111111] border-[#D4AF37] shadow-sm font-extrabold"
-                              : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
-                          }`}
-                        >
-                          {v.volume}
-                        </button>
-                      ))}
+                      {/* Size selection */}
+                      {variants && (
+                        <div className="flex gap-2 select-none">
+                          {variants.map((v) => (
+                            <button
+                              key={v.volume}
+                              type="button"
+                              onClick={() => setSelectedVolume(v.volume)}
+                              className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border ${
+                                selectedVolume === v.volume
+                                  ? "bg-[#D4AF37] text-[#111111] border-[#D4AF37] shadow-sm font-extrabold"
+                                  : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
+                              }`}
+                            >
+                              {v.volume}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Price and Quantity Selector */}
+                      <div className="flex items-center justify-between bg-gray-50/60 p-2.5 rounded-xl border border-gray-150/40">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] text-gray-400 uppercase tracking-widest font-mono">Price</span>
+                          <span className="text-lg font-extrabold text-[#111111]">₹{displayProduct.price}</span>
+                        </div>
+                        
+                        {displayProduct.stock > 0 && (
+                          <div className="flex items-center border border-gray-200 rounded-lg bg-white p-0.5 select-none shadow-xs">
+                            <button
+                              type="button"
+                              onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                              className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-[#D4AF37] font-bold text-md hover:bg-gray-50 rounded transition-colors"
+                            >
+                              −
+                            </button>
+                            <span className="w-7 text-center text-xs font-bold font-mono text-[#111111]">
+                              {quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (quantity >= displayProduct.stock) {
+                                  showToast("माफ़ करना भाई, वेयरहाउस में केवल " + displayProduct.stock + " यूनिट्स बची हैं।", "error");
+                                } else {
+                                  setQuantity(prev => prev + 1);
+                                }
+                              }}
+                              className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-[#D4AF37] font-bold text-md hover:bg-gray-50 rounded transition-colors"
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Highlights Summary */}
+                      <ul className="space-y-1 text-[10px] text-gray-500 font-medium">
+                        {highlights.slice(0, 2).map((h, i) => (
+                          <li key={i} className="flex items-start gap-1.5">
+                            <span className="text-[#D4AF37]">✓</span>
+                            <span className="leading-tight">{h}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 
-                  {/* Price and Quantity Selector */}
-                  <div className="flex items-center justify-between bg-gray-50/60 p-2.5 rounded-xl border border-gray-150/40">
-                    <div className="flex flex-col">
-                      <span className="text-[9px] text-gray-400 uppercase tracking-widest font-mono">Price</span>
-                      <span className="text-lg font-extrabold text-[#111111]">₹{displayProduct.price}</span>
+                  {/* Tab 2: Story & Process */}
+                  {activeTab === "story" && (
+                    <div className="space-y-2.5 animate-fadeIn">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">How It's Crafted</span>
+                      <p className="text-xs text-gray-600 font-light leading-relaxed">
+                        {getProductStory(product)}
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[9px] text-[#D4AF37] font-bold uppercase tracking-wider bg-yellow-50/50 p-2 rounded-lg border border-yellow-100/50 w-max select-none">
+                        <span>🔥 Wood Fire Cooked</span>
+                        <span>•</span>
+                        <span>🌿 Traditional Process</span>
+                      </div>
                     </div>
-                    
-                    {displayProduct.stock > 0 && (
-                      <div className="flex items-center border border-gray-200 rounded-lg bg-white p-0.5 select-none shadow-xs">
-                        <button
-                          type="button"
-                          onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                          className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-[#D4AF37] font-bold text-md hover:bg-gray-50 rounded transition-colors"
-                        >
-                          −
-                        </button>
-                        <span className="w-7 text-center text-xs font-bold font-mono text-[#111111]">
-                          {quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (quantity >= displayProduct.stock) {
-                              showToast(`माफ़ करना भाई, वेयरहाउस में केवल ${displayProduct.stock} यूनिट्स बची हैं।`, "error");
-                            } else {
-                              setQuantity(prev => prev + 1);
-                            }
-                          }}
-                          className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-[#D4AF37] font-bold text-md hover:bg-gray-50 rounded transition-colors"
-                        >
-                          +
-                        </button>
+                  )}
+
+                  {/* Tab 3: Purity Specs */}
+                  {activeTab === "specs" && (
+                    <div className="space-y-2.5 animate-fadeIn">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">Quality Specifications</span>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {getProductSpecs(product).map((s, i) => (
+                          <div key={i} className="bg-gray-50 p-2 rounded-lg border border-gray-150/45 flex flex-col justify-center">
+                            <span className="text-[9px] text-gray-400 font-mono uppercase leading-none mb-1">{s.label}</span>
+                            <span className="font-bold text-gray-800 leading-tight">{s.value}</span>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </div>
-
-                  {/* Highlights Summary */}
-                  <ul className="space-y-1 text-[10px] text-gray-500 font-medium">
-                    {highlights.slice(0, 2).map((h, i) => (
-                      <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-[#D4AF37]">✓</span>
-                        <span className="leading-tight">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Tab 2: Story & Process */}
-              {activeTab === "story" && (
-                <div className="space-y-2.5 animate-fadeIn">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">How It's Crafted</span>
-                  <p className="text-xs text-gray-600 font-light leading-relaxed">
-                    {getProductStory(product)}
-                  </p>
-                  <div className="flex items-center gap-1.5 text-[9px] text-[#D4AF37] font-bold uppercase tracking-wider bg-yellow-50/50 p-2 rounded-lg border border-yellow-100/50 w-max select-none">
-                    <span>🔥 Wood Fire Cooked</span>
-                    <span>•</span>
-                    <span>🌿 Traditional Process</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 3: Purity Specs */}
-              {activeTab === "specs" && (
-                <div className="space-y-2.5 animate-fadeIn">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">Quality Specifications</span>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {getProductSpecs(product).map((s, i) => (
-                      <div key={i} className="bg-gray-50 p-2 rounded-lg border border-gray-150/45 flex flex-col justify-center">
-                        <span className="text-[9px] text-gray-400 font-mono uppercase leading-none mb-1">{s.label}</span>
-                        <span className="font-bold text-gray-800 leading-tight">{s.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  )}
+                </>
               )}
 
             </div>
           </div>
 
           {/* Bottom Action inside Modal */}
-          <div className="mt-5">
-            <button 
-              disabled={displayProduct.stock === 0}
-              onClick={() => {
-                onAddToCart(displayProduct, quantity);
-                onClose();
-              }}
-              className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center shadow-md active:scale-95 ${
-                displayProduct.stock === 0 
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                  : 'bg-[#111111] text-[#FDFBF7] hover:bg-[#D4AF37] hover:text-[#111111] shadow-md hover:shadow-lg'
-              }`}
-            >
-              {displayProduct.stock === 0 ? 'Sold Out' : `Add To Cart • ₹${displayProduct.price * quantity}`}
-            </button>
+          <div className="mt-5 space-y-3">
+            {showWhatsAppForm ? (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowWhatsAppForm(false)}
+                  className="w-4/12 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-bold uppercase tracking-wider transition-all text-center cursor-pointer active:scale-95"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!custName.trim() || !custAddress.trim()) {
+                      showToast("Please enter your Name and Address.", "error");
+                      return;
+                    }
+                    
+                    // Validate that the address contains a valid 6-digit Indian Pincode
+                    const pincodeMatch = custAddress.match(/\b\d{6}\b/);
+                    if (!pincodeMatch) {
+                      showToast("Please include a valid 6-digit Pincode in your delivery address.", "error");
+                      return;
+                    }
+                    
+                    const pincode = pincodeMatch[0];
+                    
+                    // 1. Basic pattern check: Indian Pincodes only start with 1-8. Block repetitive sequences like 123456, 111111
+                    if (/^(0|9)/.test(pincode) || /^(.)\1{5}$/.test(pincode) || pincode === "123456") {
+                      showToast(`The pincode ${pincode} appears to be invalid.`, "error");
+                      return;
+                    }
+
+                    // 2. Query official Indian Postal API to verify legitimacy (with 1.5s timeout graceful fallback)
+                    let isValidPincode = true;
+                    try {
+                      const apiResponse = await Promise.race([
+                        fetch(`https://api.postalpincode.in/pincode/${pincode}`),
+                        new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("Timeout")), 1500))
+                      ]);
+                      if (apiResponse && apiResponse.ok) {
+                        const apiData = await apiResponse.json();
+                        if (apiData && apiData[0] && apiData[0].Status === "Error") {
+                          isValidPincode = false;
+                        }
+                      }
+                    } catch (e) {
+                      console.warn("Pincode API offline or timed out. Degrading gracefully to bypass verification.", e);
+                    }
+
+                    if (!isValidPincode) {
+                      showToast(`The pincode ${pincode} is not a valid delivery pincode.`, "error");
+                      return;
+                    }
+                    
+                    let message = whatsappTemplate || "Hello MadhurGram,\n\nMy name is *{custName}*.\nI want to order *{productName}* ({volume}).\nMy delivery address is: *{custAddress}*.\n\nPlease confirm my order.";
+                    message = message.replace(/{productName}/g, product.name);
+                    message = message.replace(/{volume}/g, selectedVolume);
+                    
+                    // Replace inputs
+                    message = message.replace(/{custName}/g, custName.trim());
+                    message = message.replace(/{custPhone}/g, custPhone.trim());
+                    message = message.replace(/{custAddress}/g, custAddress.trim());
+                    
+                    // If template did not have custom placeholders, overwrite with a clean structured message
+                    if (!message.includes(custName.trim()) || !message.includes(custAddress.trim())) {
+                      const isEnglish = !whatsappTemplate || /^[a-zA-Z0-9\s,.:'!?()&*-]+$/.test(whatsappTemplate.replace(/[^\x00-\x7F]/g, ""));
+                      if (isEnglish) {
+                        message = `Hello MadhurGram,\n\nMy name is *${custName.trim()}*.\nI want to order *${product.name}* (${selectedVolume}).\nMy delivery address is: *${custAddress.trim()}*.\n\nPlease confirm my order.`;
+                      } else {
+                        message = `नमस्ते MadhurGram,\n\nमेरा नाम: *${custName.trim()}*\nफ़ोन: *${custPhone.trim() || "—"}*\nपता: *${custAddress.trim()}*\n\nमुझे *${product.name}* (${selectedVolume}) आर्डर करना है। कृपया कन्फर्म करें।`;
+                      }
+                    }
+                    
+                    const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                    window.open(waUrl, "_blank");
+                    
+                    // Reset and close
+                    setShowWhatsAppForm(false);
+                    onClose();
+                  }}
+                  className="w-8/12 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center shadow-md hover:shadow-lg active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  Confirm & Go
+                </button>
+              </div>
+            ) : (
+              <>
+                <button 
+                  disabled={displayProduct.stock === 0}
+                  onClick={() => {
+                    onAddToCart(displayProduct, quantity);
+                    onClose();
+                  }}
+                  className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center shadow-md active:scale-95 cursor-pointer ${
+                    displayProduct.stock === 0 
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                      : 'bg-[#111111] text-[#FDFBF7] hover:bg-[#D4AF37] hover:text-[#111111] shadow-md hover:shadow-lg'
+                  }`}
+                >
+                  {displayProduct.stock === 0 ? 'Sold Out' : `Add To Cart • ₹${displayProduct.price * quantity}`}
+                </button>
+
+                {whatsappEnabled && displayProduct.stock > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowWhatsAppForm(true)}
+                    className="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-center shadow-md hover:shadow-lg active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.42 9.864-9.864.002-2.637-1.03-5.118-2.91-6.993-1.88-1.875-4.363-2.907-7.001-2.909-5.439 0-9.86 4.42-9.865 9.864-.002 1.76.461 3.473 1.34 5.016l-.995 3.635 3.737-.981zM17.16 14.86c-.283-.141-1.67-.824-1.928-.918-.258-.093-.446-.14-.633.14-.188.281-.727.918-.891 1.11-.164.19-.328.21-.61.07-.282-.14-1.194-.44-2.274-1.402-.84-.75-1.408-1.675-1.573-1.956-.164-.28-.018-.432.122-.572.127-.125.283-.328.424-.492.142-.164.189-.281.283-.469.094-.188.047-.352-.023-.492-.07-.141-.633-1.528-.868-2.094-.228-.549-.46-.474-.633-.483-.164-.008-.352-.01-.54-.01-.188 0-.492.07-.75.352-.258.281-.986.963-.986 2.348 0 1.385 1.008 2.72 1.149 2.907.14.188 1.984 3.029 4.81 4.249.67.291 1.195.464 1.602.593.673.214 1.285.184 1.769.112.54-.08 1.67-.682 1.904-1.34.234-.658.234-1.221.164-1.34-.07-.12-.258-.188-.54-.328z"/>
+                    </svg>
+                    Order on WhatsApp
+                  </button>
+                )}
+              </>
+            )}
           </div>
 
         </div>

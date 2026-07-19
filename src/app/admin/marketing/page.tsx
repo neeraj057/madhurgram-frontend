@@ -35,6 +35,12 @@ export default function AdminMarketingPage() {
   const [heroOfferCoupon, setHeroOfferCoupon] = useState("");
   const [heroSaving, setHeroSaving] = useState(false);
 
+  // WhatsApp Quick Buy states
+  const [whatsappEnabled, setWhatsappEnabled] = useState("true");
+  const [whatsappNumber, setWhatsappNumber] = useState("917899999902");
+  const [whatsappTemplate, setWhatsappTemplate] = useState("");
+  const [whatsappSaving, setWhatsappSaving] = useState(false);
+
   const fetchReviewsQueue = async () => {
     try {
       const res = await fetch(API_ENDPOINTS.adminMarketingReviews, getAuthFetchOptions());
@@ -154,7 +160,44 @@ export default function AdminMarketingPage() {
     }
   };
 
+  const fetchWhatsAppConfig = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminWhatsAppConfig, getAuthFetchOptions());
+      if (res.ok) {
+        const data = await res.json();
+        setWhatsappEnabled(data.whatsappEnabled || "true");
+        setWhatsappNumber(data.whatsappNumber || "917899999902");
+        setWhatsappTemplate(data.whatsappTemplate || "");
+      }
+    } catch (e) {
+      console.error("Error fetching WhatsApp config:", e);
+    }
+  };
+
+  const handleSaveWhatsAppConfig = async () => {
+    setWhatsappSaving(true);
+    try {
+      const res = await fetch(API_ENDPOINTS.updateWhatsAppConfig, getAuthFetchOptions("PUT", JSON.stringify({
+        whatsappEnabled,
+        whatsappNumber,
+        whatsappTemplate
+      }), "application/json"));
+      if (res.ok) {
+        showToast("WhatsApp Quick Buy settings updated.", "success");
+        fetchWhatsAppConfig();
+      } else {
+        showToast("Failed to update WhatsApp settings.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Error updating WhatsApp settings.", "error");
+    } finally {
+      setWhatsappSaving(false);
+    }
+  };
+
   useEffect(() => {
+    fetchWhatsAppConfig();
     fetchCampaigns();
     fetchProducts();
     fetchReviewsQueue();
@@ -321,7 +364,120 @@ export default function AdminMarketingPage() {
       </div>
     </section>
 
-        <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+    {/* 💬 WHATSAPP QUICK BUY CONFIGURATION BOARD */}
+    <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm mt-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-5 mb-6 gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-green-500" />
+            WhatsApp Quick Buy Configuration
+          </h2>
+          <p className="text-sm text-gray-400">Manage status, business phone number, and customizable templates for WhatsApp Quick Orders.</p>
+          <div className="mt-2.5 flex items-center gap-2">
+            {whatsappEnabled === "true" ? (
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full select-none animate-fadeIn">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                </span>
+                Live & Active on Storefront
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full select-none animate-fadeIn">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                Disabled & Hidden from Storefront
+              </span>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleSaveWhatsAppConfig}
+          disabled={whatsappSaving}
+          className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-[#FDFBF7] text-xs font-bold uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+        >
+          {whatsappSaving ? "Saving Config..." : "Save WhatsApp Configuration"}
+        </button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Left side: Toggle & Number */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-2">WhatsApp Order Channel Status</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { value: "true", label: "Enabled" },
+                { value: "false", label: "Disabled" }
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setWhatsappEnabled(opt.value)}
+                  className={`py-3 px-4 rounded-xl border text-center transition-all cursor-pointer text-xs uppercase font-bold tracking-wider ${
+                    whatsappEnabled === opt.value
+                      ? "border-green-500 bg-green-500/10 text-green-400"
+                      : "border-gray-800 bg-[#111] hover:border-gray-700 text-gray-400"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-1">WhatsApp Business Contact Phone</label>
+            <input
+              type="text"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              placeholder="e.g. 917899999902"
+              className="w-full rounded-xl border border-gray-800 bg-[#0d0d0d] px-3.5 py-2 text-xs text-white outline-none focus:border-green-500 font-mono font-bold"
+              style={{ color: "#FFFFFF", opacity: 1 }}
+            />
+            <p className="text-[10px] text-gray-500 mt-1">Must include country code (e.g. 91 for India) without '+' symbol.</p>
+            {whatsappNumber && (
+              <div className="mt-2.5">
+                <span className="inline-flex items-center gap-1.5 text-[9px] font-mono font-bold text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1.5 rounded-lg select-none">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                  </span>
+                  Active Number: {whatsappNumber}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right side: Message Template */}
+        <div className="space-y-4 border-t md:border-t-0 md:border-l border-gray-800/80 pt-4 md:pt-0 md:pl-6">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">WhatsApp Message Text Template</label>
+          <div>
+            <textarea
+              rows={4}
+              value={whatsappTemplate}
+              onChange={(e) => setWhatsappTemplate(e.target.value)}
+              placeholder="e.g. नमस्ते MadhurGram, मुझे *{productName}* ({volume}) आर्डर करना है..."
+              className="w-full rounded-xl border border-gray-800 bg-[#0d0d0d] px-3.5 py-2 text-xs text-white outline-none focus:border-green-500 leading-relaxed font-semibold"
+              style={{ color: "#FFFFFF", opacity: 1 }}
+            />
+            <p className="text-[10px] text-gray-500 mt-1.5 leading-normal">
+              Customize the message template. Use <code className="text-[#D4AF37] font-mono">{`{productName}`}</code> and <code className="text-[#D4AF37] font-mono">{`{volume}`}</code> to automatically map customer selection values.
+            </p>
+            {whatsappTemplate && (
+              <div className="mt-2.5">
+                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1.5 rounded-lg select-none">
+                  ✓ Active Message Template Loaded
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
           <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <div>
