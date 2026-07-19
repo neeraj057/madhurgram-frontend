@@ -215,6 +215,9 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
     sla: string;
     message: string;
     location?: string;
+    cod?: boolean;
+    courier?: string;
+    disclaimer?: string;
   } | null>(null);
   const [pincodeChecking, setPincodeChecking] = useState(false);
 
@@ -514,24 +517,56 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                           </button>
                         </div>
                         {pincodeResult && (
-                          <div className="text-[10px] leading-tight animate-fadeIn">
+                          <div className="animate-fadeIn">
                             {pincodeResult.available ? (
-                              <div className="text-green-600 bg-green-50/70 border border-green-100 p-2 rounded-lg space-y-1">
-                                <div className="flex items-center gap-1 font-bold">
-                                  <span>✓</span>
-                                  <span>Delivery Available {pincodeResult.location ? `(${pincodeResult.location})` : ""}</span>
+                              <div className="rounded-xl border border-gray-200 overflow-hidden">
+                                {/* Top: Location + ETA */}
+                                <div className="bg-gradient-to-r from-green-50 to-emerald-50/60 border-b border-green-100 px-3 py-2 flex items-center justify-between">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-green-600 text-xs font-bold">📦</span>
+                                    <div>
+                                      <div className="text-[10px] font-extrabold text-green-700">{pincodeResult.message}</div>
+                                      {pincodeResult.location && (
+                                        <div className="text-[8.5px] text-gray-400 font-mono">{pincodeResult.location}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                                    pincodeResult.tier === 'LOCAL' 
+                                      ? 'bg-[#D4AF37]/15 text-[#9a7c1f]' 
+                                      : pincodeResult.tier === 'REGIONAL' 
+                                        ? 'bg-blue-50 text-blue-600' 
+                                        : 'bg-purple-50 text-purple-600'
+                                  }`}>{pincodeResult.tier}</span>
                                 </div>
-                                <div className="text-[9.5px] font-semibold text-gray-700">
-                                  Expected Delivery: <span className="text-green-700 font-extrabold">{pincodeResult.sla}</span>
+                                {/* Bottom: Courier + COD */}
+                                <div className="bg-white px-3 py-2 flex items-center justify-between">
+                                  <div className="text-[9px] text-gray-500 font-medium">
+                                    <span className="text-gray-400">via </span>
+                                    <span className="font-bold text-gray-700">{pincodeResult.courier || 'Courier Partner'}</span>
+                                  </div>
+                                  <div className={`flex items-center gap-1 text-[8.5px] font-bold px-2 py-0.5 rounded-full ${
+                                    pincodeResult.cod 
+                                      ? 'bg-green-50 text-green-600 border border-green-100' 
+                                      : 'bg-orange-50 text-orange-600 border border-orange-100'
+                                  }`}>
+                                    <span>{pincodeResult.cod ? '💵 COD Available' : '🏦 Prepaid Only'}</span>
+                                  </div>
                                 </div>
-                                <div className="text-[8.5px] text-gray-400 font-light font-mono">
-                                  {pincodeResult.message}
-                                </div>
+                                {/* Disclaimer */}
+                                {pincodeResult.disclaimer && (
+                                  <div className="bg-gray-50/80 border-t border-gray-100 px-3 py-1">
+                                    <span className="text-[8px] text-gray-400 font-light italic">{pincodeResult.disclaimer}</span>
+                                  </div>
+                                )}
                               </div>
                             ) : (
-                              <div className="text-red-600 bg-red-50/70 border border-red-100 p-2 rounded-lg font-bold flex items-center gap-1">
-                                <span>🔴</span>
-                                <span>{pincodeResult.message || "Delivery unavailable to this pincode."}</span>
+                              <div className="text-red-600 bg-red-50/70 border border-red-100 p-2.5 rounded-xl flex items-start gap-2">
+                                <span className="text-sm">🔴</span>
+                                <div>
+                                  <div className="text-[10px] font-bold">{pincodeResult.message || "Delivery unavailable to this pincode."}</div>
+                                  <div className="text-[8.5px] text-red-400 font-light mt-0.5">Please contact us for alternative delivery options.</div>
+                                </div>
                               </div>
                             )}
                           </div>
