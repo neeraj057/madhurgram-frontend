@@ -151,6 +151,40 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"buy" | "story" | "specs">("buy");
 
+  // Lock body scroll when modal is active using position:fixed technique
+  // (overflow:hidden alone doesn't work reliably on iOS and some desktop browsers)
+  useEffect(() => {
+    if (product) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.overflow = "hidden";
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
+    }
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      }
+    };
+  }, [product]);
+
   useEffect(() => {
     if (product) {
       const vars = product.variants || getProductVariants(product);
@@ -161,6 +195,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
       setCustName("");
       setCustPhone("");
       setCustAddress("");
+      setPincodeCheckVal("");
+      setPincodeResult(null);
     }
   }, [product]);
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
@@ -170,6 +206,17 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
   const [custName, setCustName] = useState("");
   const [custPhone, setCustPhone] = useState("");
   const [custAddress, setCustAddress] = useState("");
+  
+  // Pincode checker states
+  const [pincodeCheckVal, setPincodeCheckVal] = useState("");
+  const [pincodeResult, setPincodeResult] = useState<{
+    available: boolean;
+    tier: string;
+    sla: string;
+    message: string;
+    location?: string;
+  } | null>(null);
+  const [pincodeChecking, setPincodeChecking] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -189,18 +236,43 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
     };
     fetchWhatsAppConfig();
   }, [product]);
+
+  const handleCheckPincode = async () => {
+    const trimmed = pincodeCheckVal.trim();
+    if (!trimmed || !/^[1-9][0-9]{5}$/.test(trimmed)) {
+      showToast("Please enter a valid 6-digit Indian Pincode.", "error");
+      return;
+    }
+    setPincodeChecking(true);
+    setPincodeResult(null);
+    try {
+      const res = await fetch(API_ENDPOINTS.checkPincode(trimmed));
+      if (res.ok) {
+        const data = await res.json();
+        setPincodeResult(data);
+      } else {
+        showToast("Error checking delivery availability for this pincode.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Network error checking delivery availability.", "error");
+    } finally {
+      setPincodeChecking(false);
+    }
+  };
+
   if (!product) return null;
 
   const displayProduct = variants ? getVariantProduct(product, selectedVolume) : product;
   const highlights = getProductHighlights(product);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300">
+    <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm transition-opacity duration-300" style={{ zIndex: 99999 }}>
       {/* Backdrop click close */}
       <div className="absolute inset-0" onClick={onClose} />
       
-      {/* Modal Box - Optimized for Mobile Viewport Height (Zero Scroll) */}
-      <div className="relative w-full max-w-2xl bg-[#FDFBF7] text-[#111111] rounded-2xl overflow-hidden shadow-2xl border border-gray-200 flex flex-col sm:flex-row z-10 max-h-[90vh] sm:max-h-none overflow-y-auto sm:overflow-visible animate-fadeIn">
+      {/* Modal Box - max height capped, internal scroll only */}
+      <div className="relative w-full max-w-2xl bg-[#FDFBF7] text-[#111111] rounded-2xl overflow-hidden shadow-2xl border border-gray-200 flex flex-col sm:flex-row z-10 max-h-[92vh] animate-fadeIn">
         
         {/* Close Button */}
         <button 
@@ -231,7 +303,7 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
         </div>
 
         {/* Right Side: Heritage Details Pane (Tabbed Navigation for Dynamic storytelling) */}
-        <div className="w-full sm:w-7/12 p-6 flex flex-col justify-between">
+        <div className="w-full sm:w-7/12 p-6 flex flex-col justify-between overflow-y-auto">
           <div>
             {!showWhatsAppForm ? (
               <>
@@ -293,8 +365,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
               </>
             )}
 
-            {/* Tab Contents Pane (Fixed height to prevent modal size jumps) */}
-            <div className="mt-4 h-[160px] sm:h-[185px] overflow-y-auto scrollbar-thin pr-1">
+            {/* Tab Contents Pane — fixed height so modal NEVER resizes on tab switch */}
+            <div className="mt-4 h-[260px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent pr-1">
               
               {showWhatsAppForm ? (
                 <div className="space-y-3 animate-fadeIn pr-1 text-[#111111] select-none">
@@ -306,6 +378,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                       value={custName}
                       onChange={(e) => setCustName(e.target.value)}
                       placeholder="e.g. Ramesh Kumar"
+                      autoComplete="off"
+                      autoCorrect="off"
                       className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-semibold"
                     />
                   </div>
@@ -317,6 +391,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                       value={custPhone}
                       onChange={(e) => setCustPhone(e.target.value)}
                       placeholder="e.g. 9876543210"
+                      autoComplete="off"
+                      autoCorrect="off"
                       className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-mono font-bold"
                     />
                   </div>
@@ -328,6 +404,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                       value={custAddress}
                       onChange={(e) => setCustAddress(e.target.value)}
                       placeholder="e.g. Near Shiv Temple, Gopiganj, Bhadohi, PIN: 221303"
+                      autoComplete="off"
+                      autoCorrect="off"
                       className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-medium leading-relaxed"
                     />
                   </div>
@@ -378,7 +456,7 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                       <div className="flex items-center justify-between bg-gray-50/60 p-2.5 rounded-xl border border-gray-150/40">
                         <div className="flex flex-col">
                           <span className="text-[9px] text-gray-400 uppercase tracking-widest font-mono">Price</span>
-                          <span className="text-lg font-extrabold text-[#111111]">₹{displayProduct.price}</span>
+                          <span className="text-lg font-extrabold text-[#111111]">₹{displayProduct.price * quantity}</span>
                         </div>
                         
                         {displayProduct.stock > 0 && (
@@ -410,15 +488,55 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                         )}
                       </div>
 
-                      {/* Highlights Summary */}
-                      <ul className="space-y-1 text-[10px] text-gray-500 font-medium">
-                        {highlights.slice(0, 2).map((h, i) => (
-                          <li key={i} className="flex items-start gap-1.5">
-                            <span className="text-[#D4AF37]">✓</span>
-                            <span className="leading-tight">{h}</span>
-                          </li>
-                        ))}
-                      </ul>
+
+
+                      {/* Pincode Availability Checker Widget */}
+                      <div className="border border-gray-200 rounded-xl bg-gray-50/30 p-2.5 space-y-2 select-none">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[9px] uppercase tracking-wider text-gray-500 font-bold">Delivery Availability</label>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            maxLength={6}
+                            value={pincodeCheckVal}
+                            onChange={(e) => setPincodeCheckVal(e.target.value.replace(/\D/g, ""))}
+                            placeholder="Enter 6-digit Pincode"
+                            className="flex-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs text-[#111] outline-none focus:border-[#D4AF37] font-mono font-bold"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleCheckPincode}
+                            disabled={pincodeChecking}
+                            className="px-4 py-1.5 bg-[#111111] hover:bg-[#D4AF37] text-[#FDFBF7] hover:text-[#111111] text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all disabled:opacity-50 cursor-pointer"
+                          >
+                            {pincodeChecking ? "Checking..." : "Check"}
+                          </button>
+                        </div>
+                        {pincodeResult && (
+                          <div className="text-[10px] leading-tight animate-fadeIn">
+                            {pincodeResult.available ? (
+                              <div className="text-green-600 bg-green-50/70 border border-green-100 p-2 rounded-lg space-y-1">
+                                <div className="flex items-center gap-1 font-bold">
+                                  <span>✓</span>
+                                  <span>Delivery Available {pincodeResult.location ? `(${pincodeResult.location})` : ""}</span>
+                                </div>
+                                <div className="text-[9.5px] font-semibold text-gray-700">
+                                  Expected Delivery: <span className="text-green-700 font-extrabold">{pincodeResult.sla}</span>
+                                </div>
+                                <div className="text-[8.5px] text-gray-400 font-light font-mono">
+                                  {pincodeResult.message}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-red-600 bg-red-50/70 border border-red-100 p-2 rounded-lg font-bold flex items-center gap-1">
+                                <span>🔴</span>
+                                <span>{pincodeResult.message || "Delivery unavailable to this pincode."}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -439,15 +557,25 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
 
                   {/* Tab 3: Purity Specs */}
                   {activeTab === "specs" && (
-                    <div className="space-y-2.5 animate-fadeIn">
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">Quality Specifications</span>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="animate-fadeIn">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37]">Quality Specifications</span>
+                        <div className="flex-1 h-px bg-gradient-to-r from-[#D4AF37]/40 to-transparent" />
+                      </div>
+                      <div className="space-y-1.5">
                         {getProductSpecs(product).map((s, i) => (
-                          <div key={i} className="bg-gray-50 p-2 rounded-lg border border-gray-150/45 flex flex-col justify-center">
-                            <span className="text-[9px] text-gray-400 font-mono uppercase leading-none mb-1">{s.label}</span>
-                            <span className="font-bold text-gray-800 leading-tight">{s.value}</span>
+                          <div key={i} className="flex items-center justify-between px-3 py-2 rounded-xl bg-gradient-to-r from-[#FDFBF7] to-gray-50/60 border border-gray-100 hover:border-[#D4AF37]/30 transition-colors group">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] flex-shrink-0 group-hover:scale-125 transition-transform" />
+                              <span className="text-[9.5px] text-gray-400 uppercase tracking-wider font-semibold font-mono">{s.label}</span>
+                            </div>
+                            <span className="text-[11px] font-extrabold text-[#111111] text-right leading-tight">{s.value}</span>
                           </div>
                         ))}
+                      </div>
+                      <div className="mt-3 flex items-center gap-1.5 text-[9px] text-[#D4AF37] font-bold bg-amber-50/60 border border-amber-100/50 px-3 py-1.5 rounded-lg w-max select-none">
+                        <span>🛡️</span>
+                        <span>Lab Tested & Certified Pure</span>
                       </div>
                     </div>
                   )}
@@ -513,9 +641,10 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                       return;
                     }
                     
-                    let message = whatsappTemplate || "Hello MadhurGram,\n\nMy name is *{custName}*.\nI want to order *{productName}* ({volume}).\nMy delivery address is: *{custAddress}*.\n\nPlease confirm my order.";
+                    let message = whatsappTemplate || "Hello MadhurGram,\n\nMy name is *{custName}*.\nI want to order *{productName}* ({volume}) - {quantity} unit(s).\nMy delivery address is: *{custAddress}*.\n\nPlease confirm my order.";
                     message = message.replace(/{productName}/g, product.name);
                     message = message.replace(/{volume}/g, selectedVolume);
+                    message = message.replace(/{quantity}/g, quantity.toString());
                     
                     // Replace inputs
                     message = message.replace(/{custName}/g, custName.trim());
@@ -526,9 +655,9 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                     if (!message.includes(custName.trim()) || !message.includes(custAddress.trim())) {
                       const isEnglish = !whatsappTemplate || /^[a-zA-Z0-9\s,.:'!?()&*-]+$/.test(whatsappTemplate.replace(/[^\x00-\x7F]/g, ""));
                       if (isEnglish) {
-                        message = `Hello MadhurGram,\n\nMy name is *${custName.trim()}*.\nI want to order *${product.name}* (${selectedVolume}).\nMy delivery address is: *${custAddress.trim()}*.\n\nPlease confirm my order.`;
+                        message = `Hello MadhurGram,\n\nMy name is *${custName.trim()}*.\nI want to order *${product.name}* (${selectedVolume}) - ${quantity} unit(s).\nMy delivery address is: *${custAddress.trim()}*.\n\nPlease confirm my order.`;
                       } else {
-                        message = `नमस्ते MadhurGram,\n\nमेरा नाम: *${custName.trim()}*\nफ़ोन: *${custPhone.trim() || "—"}*\nपता: *${custAddress.trim()}*\n\nमुझे *${product.name}* (${selectedVolume}) आर्डर करना है। कृपया कन्फर्म करें।`;
+                        message = `नमस्ते MadhurGram,\n\nमेरा नाम: *${custName.trim()}*\nफ़ोन: *${custPhone.trim() || "—"}*\nपता: *${custAddress.trim()}*\n\nमुझे *${product.name}* (${selectedVolume}) की *${quantity}* यूनिट्स आर्डर करना है। कृपया कन्फर्म करें।`;
                       }
                     }
                     

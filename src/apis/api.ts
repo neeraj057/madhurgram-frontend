@@ -81,4 +81,9 @@ export const API_ENDPOINTS = {
   getWhatsAppConfig: `${BASE_URL}/api/public/settings/whatsapp`,
   adminWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
   updateWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
+
+  // 📍 Pincode SLA Config & Check Endpoints
+  checkPincode: (pincode: string) => `${BASE_URL}/api/public/pincode/check?pincode=${pincode}`,
+  adminPincodeConfig: `${BASE_URL}/api/admin/settings/pincode`,
+  updatePincodeConfig: `${BASE_URL}/api/admin/settings/pincode`,
 };

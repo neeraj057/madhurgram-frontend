@@ -41,6 +41,12 @@ export default function AdminMarketingPage() {
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
   const [whatsappSaving, setWhatsappSaving] = useState(false);
 
+  // Pincode SLA Tiers states
+  const [pincodeSlaLocal, setPincodeSlaLocal] = useState("1-2 Business Days");
+  const [pincodeSlaRegional, setPincodeSlaRegional] = useState("2-3 Business Days");
+  const [pincodeSlaNational, setPincodeSlaNational] = useState("4-6 Business Days");
+  const [pincodeSaving, setPincodeSaving] = useState(false);
+
   const fetchReviewsQueue = async () => {
     try {
       const res = await fetch(API_ENDPOINTS.adminMarketingReviews, getAuthFetchOptions());
@@ -196,8 +202,45 @@ export default function AdminMarketingPage() {
     }
   };
 
+  const fetchPincodeConfig = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.adminPincodeConfig, getAuthFetchOptions());
+      if (res.ok) {
+        const data = await res.json();
+        setPincodeSlaLocal(data.pincodeSlaLocal || "1-2 Business Days");
+        setPincodeSlaRegional(data.pincodeSlaRegional || "2-3 Business Days");
+        setPincodeSlaNational(data.pincodeSlaNational || "4-6 Business Days");
+      }
+    } catch (e) {
+      console.error("Error fetching Pincode config:", e);
+    }
+  };
+
+  const handleSavePincodeConfig = async () => {
+    setPincodeSaving(true);
+    try {
+      const res = await fetch(API_ENDPOINTS.updatePincodeConfig, getAuthFetchOptions("PUT", JSON.stringify({
+        pincodeSlaLocal,
+        pincodeSlaRegional,
+        pincodeSlaNational
+      }), "application/json"));
+      if (res.ok) {
+        showToast("Pincode SLA settings updated successfully.", "success");
+        fetchPincodeConfig();
+      } else {
+        showToast("Failed to update Pincode SLA settings.", "error");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Error updating Pincode settings.", "error");
+    } finally {
+      setPincodeSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchWhatsAppConfig();
+    fetchPincodeConfig();
     fetchCampaigns();
     fetchProducts();
     fetchReviewsQueue();
@@ -473,6 +516,70 @@ export default function AdminMarketingPage() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+    </section>
+
+    {/* 📍 PINCODE DELIVERY SLA CONFIGURATION BOARD */}
+    <section className="rounded-3xl border border-gray-800 bg-[#161616] p-8 shadow-sm mt-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-5 mb-6 gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-amber-500" />
+            Courier Delivery SLA Configurations
+          </h2>
+          <p className="text-sm text-gray-400">Configure expected delivery timelines for each geographic tier based on customer pincode validation.</p>
+        </div>
+        <button
+          onClick={handleSavePincodeConfig}
+          disabled={pincodeSaving}
+          className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-[#FDFBF7] text-xs font-bold uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+        >
+          {pincodeSaving ? "Saving SLAs..." : "Save SLA Configurations"}
+        </button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Local Tier */}
+        <div className="space-y-2">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">Local Tier SLA (Bhadohi/Varanasi)</label>
+          <input
+            type="text"
+            value={pincodeSlaLocal}
+            onChange={(e) => setPincodeSlaLocal(e.target.value)}
+            placeholder="e.g. 1-2 Business Days"
+            className="w-full rounded-xl border border-gray-800 bg-[#0d0d0d] px-3.5 py-2 text-xs text-white outline-none focus:border-amber-500 font-semibold"
+            style={{ color: "#FFFFFF", opacity: 1 }}
+          />
+          <p className="text-[9px] text-gray-500 mt-1">Expected delivery SLA message shown for local districts.</p>
+        </div>
+
+        {/* Regional Tier */}
+        <div className="space-y-2">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">Regional Tier SLA (Uttar Pradesh)</label>
+          <input
+            type="text"
+            value={pincodeSlaRegional}
+            onChange={(e) => setPincodeSlaRegional(e.target.value)}
+            placeholder="e.g. 2-3 Business Days"
+            className="w-full rounded-xl border border-gray-800 bg-[#0d0d0d] px-3.5 py-2 text-xs text-white outline-none focus:border-amber-500 font-semibold"
+            style={{ color: "#FFFFFF", opacity: 1 }}
+          />
+          <p className="text-[9px] text-gray-500 mt-1">Expected delivery SLA message shown for customers in rest of UP.</p>
+        </div>
+
+        {/* National Tier */}
+        <div className="space-y-2">
+          <label className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">National Tier SLA (Rest of India)</label>
+          <input
+            type="text"
+            value={pincodeSlaNational}
+            onChange={(e) => setPincodeSlaNational(e.target.value)}
+            placeholder="e.g. 4-6 Business Days"
+            className="w-full rounded-xl border border-gray-800 bg-[#0d0d0d] px-3.5 py-2 text-xs text-white outline-none focus:border-amber-500 font-semibold"
+            style={{ color: "#FFFFFF", opacity: 1 }}
+          />
+          <p className="text-[9px] text-gray-500 mt-1">Expected delivery SLA message shown for other valid Indian states.</p>
         </div>
       </div>
     </section>
