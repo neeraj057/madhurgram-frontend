@@ -33,7 +33,7 @@ export const ProductService = {
    * Retrieves products in the catalog by category.
    */
   getProductsByCategory: async (category: string): Promise<Product[]> => {
-    return apiClient<Product[]>(`/api/products?category=${encodeURIComponent(category)}`);
+    return apiClient<Product[]>(`/api/v1/products?category=${encodeURIComponent(category)}`);
   },
 
   /**

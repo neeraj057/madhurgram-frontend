@@ -66,7 +66,7 @@ export function AdminBundleManager() {
 
   const fetchProducts = async () => {
     try {
-      const res = await apiClient<any>("/api/products?category=shop-all");
+      const res = await apiClient<any>("/api/v1/products?category=shop-all");
       setProducts(res.content || res || []);
     } catch (err) {
       console.error("Failed to fetch products:", err);

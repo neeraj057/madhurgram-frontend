@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Dynamic Product Routes
-    const res = await fetch(`${apiBaseUrl}/api/products?category=shop-all`, {
+    const res = await fetch(`${apiBaseUrl}/api/v1/products?category=shop-all`, {
       next: { revalidate: 3600 } // Cache for 1 hour
     });
     

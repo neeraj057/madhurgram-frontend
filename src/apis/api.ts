@@ -7,7 +7,7 @@ const BASE_URL =
 export const API_ENDPOINTS = {
   // 🛒 Product Endpoints
   getProducts: (category: string) =>
-    `${BASE_URL}/api/products?category=${category}`,
+    `${BASE_URL}/api/v1/products?category=${category}`,
 
   // 💳 Order Endpoints
   placeOrder: `${BASE_URL}/api/orders/place`,
