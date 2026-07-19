@@ -40,7 +40,7 @@ export const useCustomerCRM = () => {
   const fetchHistory = async (phone: string) => {
     setLoading(true);
     try {
-      const data = await apiClient<CustomerHistory>(`/api/admin/customers/${phone.trim()}/history`);
+      const data = await apiClient<CustomerHistory>(`/api/v1/admin/customers/${phone.trim()}/history`);
       setHistory(data);
     } catch (err) {
       console.error("Failed to fetch history", err);
@@ -52,7 +52,7 @@ export const useCustomerCRM = () => {
   const fetchCustomers = async (pageIndex = page) => {
     setLoading(true);
     try {
-      const data = await apiClient<any>(`/api/admin/customers?page=${pageIndex}&size=10`);
+      const data = await apiClient<any>(`/api/v1/admin/customers?page=${pageIndex}&size=10`);
       if (Array.isArray(data)) {
         setCustomers(data);
         setTotalPages(1);
@@ -74,8 +74,8 @@ export const useCustomerCRM = () => {
     setLoading(true);
     try {
       const url = search.trim()
-        ? `/api/admin/customers?search=${encodeURIComponent(search)}&page=${pageIndex}&size=10`
-        : `/api/admin/customers?page=${pageIndex}&size=10`;
+        ? `/api/v1/admin/customers?search=${encodeURIComponent(search)}&page=${pageIndex}&size=10`
+        : `/api/v1/admin/customers?page=${pageIndex}&size=10`;
       const data = await apiClient<any>(url);
       if (Array.isArray(data)) {
         setCustomers(data);

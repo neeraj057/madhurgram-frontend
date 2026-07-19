@@ -27,7 +27,7 @@ export const useAdminProducts = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const data = await apiClient<Product[]>("/api/admin/products");
+      const data = await apiClient<Product[]>("/api/v1/admin/products");
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -46,7 +46,7 @@ export const useAdminProducts = () => {
   const saveProduct = async (product: Product) => {
     setIsSubmitting(true);
     const isUpdate = !!product.id;
-    const url = isUpdate ? `/api/admin/products/${product.id}` : "/api/admin/products";
+    const url = isUpdate ? `/api/v1/admin/products/${product.id}` : "/api/v1/admin/products";
     const method = isUpdate ? "PUT" : "POST";
 
     try {
@@ -68,7 +68,7 @@ export const useAdminProducts = () => {
 
   const deleteProduct = async (id: number) => {
     try {
-      await apiClient<void>(`/api/admin/products/${id}`, {
+      await apiClient<void>(`/api/v1/admin/products/${id}`, {
         method: "DELETE",
       });
 

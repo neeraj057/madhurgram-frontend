@@ -31,7 +31,7 @@ export const useAdminMarketing = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient<BroadcastCampaign[]>("/api/admin/marketing/campaigns");
+      const data = await apiClient<BroadcastCampaign[]>("/api/v1/admin/marketing/campaigns");
       setCampaigns(data);
     } catch (err) {
       console.error("Marketing load error:", err);
@@ -45,7 +45,7 @@ export const useAdminMarketing = () => {
     setSubmitting(true);
     setError(null);
     try {
-      const created = await apiClient<BroadcastCampaign>("/api/admin/marketing/broadcast", {
+      const created = await apiClient<BroadcastCampaign>("/api/v1/admin/marketing/broadcast", {
         method: "POST",
         body: JSON.stringify(payload),
       });

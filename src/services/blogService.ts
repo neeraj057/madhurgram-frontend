@@ -13,7 +13,7 @@ export interface Blog {
 
 export async function getAllBlogs(): Promise<Blog[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/public/blogs`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/v1/public/blogs`, {
       next: { revalidate: 60 } // Revalidate every 60 seconds
     });
     if (!res.ok) throw new Error('Failed to fetch blogs');
@@ -26,7 +26,7 @@ export async function getAllBlogs(): Promise<Blog[]> {
 
 export async function getBlogBySlug(slug: string): Promise<Blog | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/public/blogs/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/v1/public/blogs/${slug}`, {
       next: { revalidate: 60 }
     });
     if (!res.ok) return null;

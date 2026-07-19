@@ -23,7 +23,7 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
   }
 
   // Auto-inject admin token if requested or if targeting an admin endpoint
-  const isDocAdminRoute = endpoint.includes("/api/admin/") || requireAuth;
+  const isDocAdminRoute = endpoint.includes("/api/v1/admin/") || requireAuth;
   if (isDocAdminRoute) {
     const token = getAdminToken();
     if (token) {

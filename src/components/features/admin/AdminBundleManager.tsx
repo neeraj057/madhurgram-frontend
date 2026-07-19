@@ -53,9 +53,9 @@ export function AdminBundleManager() {
 
   const fetchData = async () => {
     try {
-      const bundleRes = await apiClient<Bundle[]>("/api/admin/bundles", { requireAuth: true });
+      const bundleRes = await apiClient<Bundle[]>("/api/v1/admin/bundles", { requireAuth: true });
       setBundles(bundleRes || []);
-      const modeRes = await apiClient<{ mode: string }>("/api/admin/footer-mode", { requireAuth: true });
+      const modeRes = await apiClient<{ mode: string }>("/api/v1/admin/footer-mode", { requireAuth: true });
       setFooterMode(modeRes.mode || "BRAND_STORY");
     } catch (err) {
       console.error("Failed to fetch bundles:", err);
@@ -75,7 +75,7 @@ export function AdminBundleManager() {
 
   const handleToggleMode = async (mode: string) => {
     try {
-      await apiClient<{ mode: string }>("/api/admin/footer-mode", { 
+      await apiClient<{ mode: string }>("/api/v1/admin/footer-mode", { 
         method: "PUT",
         body: JSON.stringify({ mode }),
         requireAuth: true 
@@ -88,7 +88,7 @@ export function AdminBundleManager() {
 
   const handleToggleActive = async (id: number) => {
     try {
-      await apiClient(`/api/admin/bundles/${id}/toggle`, { method: "PATCH", requireAuth: true });
+      await apiClient(`/api/v1/admin/bundles/${id}/toggle`, { method: "PATCH", requireAuth: true });
       fetchData();
     } catch (err) {
       alert("Failed to toggle bundle status");
@@ -98,7 +98,7 @@ export function AdminBundleManager() {
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this bundle?")) {
       try {
-        await apiClient(`/api/admin/bundles/${id}`, { method: "DELETE", requireAuth: true });
+        await apiClient(`/api/v1/admin/bundles/${id}`, { method: "DELETE", requireAuth: true });
         fetchData();
       } catch (err) {
         alert("Failed to delete bundle");
@@ -138,13 +138,13 @@ export function AdminBundleManager() {
 
     try {
       if (form.id) {
-        await apiClient(`/api/admin/bundles/${form.id}`, { 
+        await apiClient(`/api/v1/admin/bundles/${form.id}`, { 
           method: "PUT",
           body: JSON.stringify(form),
           requireAuth: true 
         });
       } else {
-        await apiClient("/api/admin/bundles", { 
+        await apiClient("/api/v1/admin/bundles", { 
           method: "POST",
           body: JSON.stringify(form),
           requireAuth: true 
@@ -165,7 +165,7 @@ export function AdminBundleManager() {
     
     setIsGenerating(true);
     try {
-      const res = await apiClient<any>("/api/admin/bundles/generate-copy", {
+      const res = await apiClient<any>("/api/v1/admin/bundles/generate-copy", {
         method: "POST",
         body: JSON.stringify({
           productIds: form.productIds,

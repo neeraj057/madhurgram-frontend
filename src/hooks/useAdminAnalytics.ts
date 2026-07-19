@@ -36,7 +36,7 @@ export const useAdminAnalytics = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient<AdminAnalytics>(`/api/admin/analytics/daily?days=${queryDays}`);
+      const data = await apiClient<AdminAnalytics>(`/api/v1/admin/analytics/daily?days=${queryDays}`);
       setMetrics(data);
     } catch (err) {
       console.error("Dashboard Error:", err);

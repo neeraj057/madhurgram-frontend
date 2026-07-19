@@ -26,7 +26,7 @@ export const useAdminFeedback = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient<any>(`/api/admin/feedback?page=${pageIndex}&size=10`);
+      const data = await apiClient<any>(`/api/v1/admin/feedback?page=${pageIndex}&size=10`);
       if (Array.isArray(data)) {
         setFeedbacks(data);
         setTotalPages(1);
@@ -45,7 +45,7 @@ export const useAdminFeedback = () => {
 
   const approveFeedback = async (id: number) => {
     try {
-      await apiClient<CustomerFeedback>(`/api/admin/feedback/${id}/approve`, {
+      await apiClient<CustomerFeedback>(`/api/v1/admin/feedback/${id}/approve`, {
         method: "PUT"
       });
       showToast("रिव्यू को सफलतापूर्वक अप्रूव कर दिया गया है! 💛", "success");
@@ -60,7 +60,7 @@ export const useAdminFeedback = () => {
 
   const deleteFeedback = async (id: number) => {
     try {
-      await apiClient<void>(`/api/admin/feedback/${id}`, {
+      await apiClient<void>(`/api/v1/admin/feedback/${id}`, {
         method: "DELETE"
       });
       showToast("रिव्यू को रिजेक्ट/डिलीट कर दिया गया है।", "success");

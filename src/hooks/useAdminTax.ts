@@ -16,7 +16,7 @@ export const useAdminTax = () => {
   const fetchTaxSlabs = async () => {
     setLoading(true);
     try {
-      const data = await apiClient<TaxSlab[]>("/api/admin/tax-slabs");
+      const data = await apiClient<TaxSlab[]>("/api/v1/admin/tax-slabs");
       setTaxSlabs(data);
     } catch (error) {
       console.error("Error fetching tax slabs:", error);
@@ -32,8 +32,8 @@ export const useAdminTax = () => {
   const saveTaxSlab = async (slab: TaxSlab, isUpdate: boolean) => {
     setIsSubmitting(true);
     const url = isUpdate 
-      ? `/api/admin/tax-slabs/${slab.hsnCode.trim()}` 
-      : "/api/admin/tax-slabs";
+      ? `/api/v1/admin/tax-slabs/${slab.hsnCode.trim()}` 
+      : "/api/v1/admin/tax-slabs";
     const method = isUpdate ? "PUT" : "POST";
 
     try {
@@ -56,7 +56,7 @@ export const useAdminTax = () => {
 
   const deleteTaxSlab = async (hsnCode: string) => {
     try {
-      await apiClient<void>(`/api/admin/tax-slabs/${hsnCode.trim()}`, {
+      await apiClient<void>(`/api/v1/admin/tax-slabs/${hsnCode.trim()}`, {
         method: "DELETE",
       });
 

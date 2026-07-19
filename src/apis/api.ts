@@ -22,35 +22,35 @@ export const API_ENDPOINTS = {
   deleteCustomerAddress: (phone: string, addressId: number) =>
     `${BASE_URL}/api/customers/${phone.trim()}/addresses/${addressId}`,
   // 📊 Analytics Endpoints
-  getDailyAnalytics: (days: number = 7) => `${BASE_URL}/api/admin/analytics/daily?days=${days}`,
-  adminProducts: `${BASE_URL}/api/admin/products`,
-  adminTaxSlabs: `${BASE_URL}/api/admin/tax-slabs`,
-  adminCustomers: `${BASE_URL}/api/admin/customers`,
-  adminMarketingBroadcast: `${BASE_URL}/api/admin/marketing/broadcast`,
-  adminMarketingCampaigns: `${BASE_URL}/api/admin/marketing/campaigns`,
+  getDailyAnalytics: (days: number = 7) => `${BASE_URL}/api/v1/admin/analytics/daily?days=${days}`,
+  adminProducts: `${BASE_URL}/api/v1/admin/products`,
+  adminTaxSlabs: `${BASE_URL}/api/v1/admin/tax-slabs`,
+  adminCustomers: `${BASE_URL}/api/v1/admin/customers`,
+  adminMarketingBroadcast: `${BASE_URL}/api/v1/admin/marketing/broadcast`,
+  adminMarketingCampaigns: `${BASE_URL}/api/v1/admin/marketing/campaigns`,
   adminLogin: `${BASE_URL}/api/auth/admin/login`,
-  publicProducts: `${BASE_URL}/api/public/products`,
-  publicHeartbeat: `${BASE_URL}/api/public/analytics/heartbeat`,
+  publicProducts: `${BASE_URL}/api/v1/public/products`,
+  publicHeartbeat: `${BASE_URL}/api/v1/public/analytics/heartbeat`,
   customerHistory: (phone: string) =>
-    `${BASE_URL}/api/admin/customers/${phone.trim()}/history`,
+    `${BASE_URL}/api/v1/admin/customers/${phone.trim()}/history`,
   
   // 🛒 Abandoned Cart Retention Endpoints
   updateCart: `${BASE_URL}/api/cart/update`,
   recoverCart: (phone: string) => `${BASE_URL}/api/cart/recover?phone=${phone.trim()}`,
-  adminAbandonedCarts: `${BASE_URL}/api/admin/abandoned-carts`,
-  adminGetAutoRecovery: `${BASE_URL}/api/admin/settings/auto-recovery`,
-  adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/admin/settings/auto-recovery?enabled=${enabled}`,
+  adminAbandonedCarts: `${BASE_URL}/api/v1/admin/abandoned-carts`,
+  adminGetAutoRecovery: `${BASE_URL}/api/v1/admin/settings/auto-recovery`,
+  adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/v1/admin/settings/auto-recovery?enabled=${enabled}`,
   trackOrder: (orderId: number) => `${BASE_URL}/api/orders/${orderId}`,
   
   // 🎟️ Coupon Endpoints
   validateCoupon: (code: string, phone: string, amount: number) =>
     `${BASE_URL}/api/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`,
-  adminCoupons: `${BASE_URL}/api/admin/coupons`,
-  adminCouponById: (id: number) => `${BASE_URL}/api/admin/coupons/${id}`,
+  adminCoupons: `${BASE_URL}/api/v1/admin/coupons`,
+  adminCouponById: (id: number) => `${BASE_URL}/api/v1/admin/coupons/${id}`,
 
   // 📦 Procurement & Returns Endpoints
-  adminProcurementPOs: `${BASE_URL}/api/admin/procurement/pos`,
-  adminProcurementApprovePO: (id: number) => `${BASE_URL}/api/admin/procurement/pos/${id}/approve`,
+  adminProcurementPOs: `${BASE_URL}/api/v1/admin/procurement/pos`,
+  adminProcurementApprovePO: (id: number) => `${BASE_URL}/api/v1/admin/procurement/pos/${id}/approve`,
   adminReturnsAll: `${BASE_URL}/api/returns/admin/all`,
   adminReturnsApprove: (id: number) => `${BASE_URL}/api/returns/admin/${id}/approve`,
   adminReturnsReject: (id: number) => `${BASE_URL}/api/returns/admin/${id}/reject`,
@@ -59,31 +59,31 @@ export const API_ENDPOINTS = {
   publicReturnShippingLabel: (id: number) => `${BASE_URL}/api/returns/label/${id}`,
 
   // 📝 Google Reviews Endpoints
-  adminMarketingReviews: `${BASE_URL}/api/admin/marketing/reviews`,
-  adminMarketingReviewsConfig: `${BASE_URL}/api/admin/marketing/reviews/config`,
-  adminMarketingReviewsSendNow: (id: number) => `${BASE_URL}/api/admin/marketing/reviews/${id}/send-now`,
-  adminMarketingReviewsSendTest: `${BASE_URL}/api/admin/marketing/reviews/send-test`,
+  adminMarketingReviews: `${BASE_URL}/api/v1/admin/marketing/reviews`,
+  adminMarketingReviewsConfig: `${BASE_URL}/api/v1/admin/marketing/reviews/config`,
+  adminMarketingReviewsSendNow: (id: number) => `${BASE_URL}/api/v1/admin/marketing/reviews/${id}/send-now`,
+  adminMarketingReviewsSendTest: `${BASE_URL}/api/v1/admin/marketing/reviews/send-test`,
 
   // 📝 Feedback Endpoints
-  adminFeedback: `${BASE_URL}/api/admin/feedback`,
-  publicFeedbackTestimonials: `${BASE_URL}/api/public/feedback/testimonials`,
+  adminFeedback: `${BASE_URL}/api/v1/admin/feedback`,
+  publicFeedbackTestimonials: `${BASE_URL}/api/v1/public/feedback/testimonials`,
   publicFeedbackSuggestions: (orderId?: string | number) => 
-    `${BASE_URL}/api/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`,
-  publicFeedbackUpload: `${BASE_URL}/api/public/feedback/upload`,
-  publicFeedbackSubmit: `${BASE_URL}/api/public/feedback`,
+    `${BASE_URL}/api/v1/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`,
+  publicFeedbackUpload: `${BASE_URL}/api/v1/public/feedback/upload`,
+  publicFeedbackSubmit: `${BASE_URL}/api/v1/public/feedback`,
 
   // ⚙️ Hero Section Config Endpoints
-  getHeroConfig: `${BASE_URL}/api/public/settings/hero`,
-  adminHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
-  updateHeroConfig: `${BASE_URL}/api/admin/settings/hero`,
+  getHeroConfig: `${BASE_URL}/api/v1/public/settings/hero`,
+  adminHeroConfig: `${BASE_URL}/api/v1/admin/settings/hero`,
+  updateHeroConfig: `${BASE_URL}/api/v1/admin/settings/hero`,
 
   // 💬 WhatsApp Quick Buy Config Endpoints
-  getWhatsAppConfig: `${BASE_URL}/api/public/settings/whatsapp`,
-  adminWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
-  updateWhatsAppConfig: `${BASE_URL}/api/admin/settings/whatsapp`,
+  getWhatsAppConfig: `${BASE_URL}/api/v1/public/settings/whatsapp`,
+  adminWhatsAppConfig: `${BASE_URL}/api/v1/admin/settings/whatsapp`,
+  updateWhatsAppConfig: `${BASE_URL}/api/v1/admin/settings/whatsapp`,
 
   // 📍 Pincode SLA Config & Check Endpoints
-  checkPincode: (pincode: string) => `${BASE_URL}/api/public/pincode/check?pincode=${pincode}`,
-  adminPincodeConfig: `${BASE_URL}/api/admin/settings/pincode`,
-  updatePincodeConfig: `${BASE_URL}/api/admin/settings/pincode`,
+  checkPincode: (pincode: string) => `${BASE_URL}/api/v1/public/pincode/check?pincode=${pincode}`,
+  adminPincodeConfig: `${BASE_URL}/api/v1/admin/settings/pincode`,
+  updatePincodeConfig: `${BASE_URL}/api/v1/admin/settings/pincode`,
 };

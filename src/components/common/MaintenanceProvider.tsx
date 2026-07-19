@@ -28,7 +28,7 @@ export default function MaintenanceProvider({ children }: MaintenanceProviderPro
 
       try {
         const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-        const res = await fetch(`${baseUrl}/api/public/feedback/testimonials`, {
+        const res = await fetch(`${baseUrl}/api/v1/public/feedback/testimonials`, {
           method: "GET",
           signal: AbortSignal.timeout(2000), // 2-second timeout
         });

@@ -40,14 +40,14 @@ export const ProductService = {
    * Admin: Retrieves all products (including inactive ones).
    */
   getAllProductsForAdmin: async (): Promise<Product[]> => {
-    return apiClient<Product[]>("/api/admin/products");
+    return apiClient<Product[]>("/api/v1/admin/products");
   },
 
   /**
    * Admin: Adds a new product.
    */
   addProduct: async (product: Partial<Product>): Promise<Product> => {
-    return apiClient<Product>("/api/admin/products", {
+    return apiClient<Product>("/api/v1/admin/products", {
       method: "POST",
       body: JSON.stringify(product),
     });
@@ -57,7 +57,7 @@ export const ProductService = {
    * Admin: Updates an existing product.
    */
   updateProduct: async (id: number, product: Partial<Product>): Promise<Product> => {
-    return apiClient<Product>(`/api/admin/products/${id}`, {
+    return apiClient<Product>(`/api/v1/admin/products/${id}`, {
       method: "PUT",
       body: JSON.stringify(product),
     });
@@ -67,7 +67,7 @@ export const ProductService = {
    * Admin: Deletes (or deactivates) a product.
    */
   deleteProduct: async (id: number): Promise<void> => {
-    return apiClient<void>(`/api/admin/products/${id}`, {
+    return apiClient<void>(`/api/v1/admin/products/${id}`, {
       method: "DELETE",
     });
   }

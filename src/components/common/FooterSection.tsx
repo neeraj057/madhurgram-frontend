@@ -40,7 +40,7 @@ export default function FooterSection({ onAddToCart }: FooterSectionProps) {
   useEffect(() => {
     async function fetchFooterData() {
       try {
-        const res = await apiClient<any>("/api/public/footer");
+        const res = await apiClient<any>("/api/v1/public/footer");
         if (res) {
           setFooterMode(res.footerMode || "BRAND_STORY");
           setBundles(res.bundles || []);
