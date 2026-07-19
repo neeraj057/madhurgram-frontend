@@ -310,6 +310,11 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
           <div>
             {!showWhatsAppForm ? (
               <>
+                {displayProduct.clearanceActive && (
+                  <div className="mb-3 w-full bg-orange-50 border border-orange-200 text-orange-600 rounded-lg p-2 text-center text-[10px] font-bold uppercase tracking-wider animate-pulse shadow-sm">
+                    ⚡ Clearance Flash Sale: Nearing expiry batch, grab it before it's gone!
+                  </div>
+                )}
                 <span className="text-[8px] font-bold tracking-[0.25em] text-[#D4AF37] uppercase">
                   {displayProduct.category}
                 </span>

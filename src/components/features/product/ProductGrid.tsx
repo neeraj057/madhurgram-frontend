@@ -116,6 +116,10 @@ function ProductCard({
         <span className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-full bg-red-500/10 border border-red-500/25 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-red-400 z-10 animate-fadeIn">
           Sold Out
         </span>
+      ) : displayProduct.clearanceActive ? (
+        <span className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-full bg-orange-600 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-white z-10 animate-pulse shadow-md">
+          ⚡ {displayProduct.tag || "Clearance"}
+        </span>
       ) : (displayProduct.tag && displayProduct.tag.toLowerCase() !== "out of stock") ? (
         <span className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-full bg-[#111111] px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#D4AF37] z-10">
           {displayProduct.tag}

@@ -257,7 +257,7 @@ export default function FooterSection({ onAddToCart }: FooterSectionProps) {
         <div className="mx-auto max-w-7xl">
 
           {/* Sitemap Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-16 border-b border-gray-800/50">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-16 border-b border-gray-800/50">
 
             <div className="space-y-4">
               <div className="relative h-14 w-52 flex items-center justify-start">
@@ -270,6 +270,13 @@ export default function FooterSection({ onAddToCart }: FooterSectionProps) {
               <p className="text-xs text-gray-400 leading-relaxed font-light">
                 Artisanal ghee, jaggery &amp; cold-pressed oils. Handcrafted with love from the farms of Gopiganj, Uttar Pradesh.
               </p>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#D4AF37]">Discover</h4>
+              <ul className="space-y-2.5 text-xs text-gray-400">
+                <li><Link href="/blog" className="hover:text-[#D4AF37] transition-colors">Village Stories</Link></li>
+              </ul>
             </div>
 
             <div className="space-y-4">
