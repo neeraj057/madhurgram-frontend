@@ -7,7 +7,7 @@ import { AdminOrderList } from "@/components/features/admin/AdminOrderList"; // 
 
 export default function AdminDashboard() {
   // हुक से स्टेट्स और फंक्शन्स निकाले
-  const { orders, loading, updatingId, handleStatusChange, fetchOrders } = useAdminOrders();
+  const { orders, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders } = useAdminOrders();
 
   return (
     <main className="min-h-screen bg-[#111111] text-[#FDFBF7] p-8 md:p-16">
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
           <div className="flex items-center space-x-4">
             {/* 🔄 Sync Button */}
             <button
-              onClick={fetchOrders}
+              onClick={() => fetchOrders(page)}
               disabled={loading}
               className="flex items-center space-x-2 px-4 py-2 bg-[#161616] border border-gray-800 rounded-lg text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 transition-all active:scale-95 disabled:opacity-50"
             >
@@ -62,6 +62,29 @@ export default function AdminDashboard() {
           updatingId={updatingId}
           onStatusChange={handleStatusChange}
         />
+
+        {/* Pagination Controls */}
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-gray-800/60 pt-6 mt-8">
+            <button
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
+              className="px-4 py-2 border border-gray-800 bg-[#161616] rounded-lg text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            >
+              Previous
+            </button>
+            <span className="text-xs font-mono text-gray-400">
+              Page <span className="text-[#D4AF37] font-bold">{page + 1}</span> of <span className="text-white font-bold">{totalPages}</span>
+            </span>
+            <button
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page === totalPages - 1}
+              className="px-4 py-2 border border-gray-800 bg-[#161616] rounded-lg text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+            >
+              Next
+            </button>
+          </div>
+        )}
         
       </div>
     </main>

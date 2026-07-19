@@ -9,10 +9,10 @@ import { CustomerCRMList } from "@/components/features/admin/CustomerCRMList";
 export default function AdminCustomersPage() {
   const [customerSearch, setCustomerSearch] = useState("");
   const [activeTab, setActiveTab] = useState<"ALL" | "VIP" | "LOYAL" | "OCCASIONAL">("ALL");
-  const { history, loading, customers, fetchHistory, fetchCustomers, searchCustomers } = useCustomerCRM();
+  const { history, loading, customers, page, totalPages, totalElements, setPage, fetchHistory, fetchCustomers, searchCustomers } = useCustomerCRM();
 
   // Helper count methods for stats counters
-  const totalCustomersCount = customers.length;
+  const totalCustomersCount = totalElements;
   const vipCount = customers.filter(c => c.vip).length;
   const loyalCount = customers.filter(c => c.segment?.toUpperCase() === "LOYAL").length;
 
@@ -64,7 +64,7 @@ export default function AdminCustomersPage() {
               <ArrowLeft className="inline h-3.5 w-3.5 mr-1" /> Dashboard
             </Link>
             <button
-              onClick={fetchCustomers}
+              onClick={() => fetchCustomers(page)}
               disabled={loading}
               className="inline-flex items-center gap-2 rounded-xl border border-gray-800 bg-[#121212] hover:border-[#D4AF37]/50 hover:text-[#D4AF37] px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-gray-300 transition-all disabled:opacity-50"
             >
@@ -240,6 +240,29 @@ export default function AdminCustomersPage() {
                   ))
                 )}
               </div>
+
+              {/* Pagination Controls */}
+              {!loading && totalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-gray-800/60 pt-6 mt-8">
+                  <button
+                    onClick={() => setPage(Math.max(0, page - 1))}
+                    disabled={page === 0}
+                    className="px-4 py-2 border border-gray-800 bg-[#0a0a0a] rounded-xl text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-mono text-gray-400">
+                    Page <span className="text-[#D4AF37] font-bold">{page + 1}</span> of <span className="text-white font-bold">{totalPages}</span>
+                  </span>
+                  <button
+                    onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+                    disabled={page === totalPages - 1}
+                    className="px-4 py-2 border border-gray-800 bg-[#0a0a0a] rounded-xl text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </section>
 

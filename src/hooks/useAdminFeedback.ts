@@ -17,15 +17,24 @@ export interface CustomerFeedback {
 
 export const useAdminFeedback = () => {
   const [feedbacks, setFeedbacks] = useState<CustomerFeedback[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFeedbacks = async () => {
+  const fetchFeedbacks = async (pageIndex = page) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiClient<CustomerFeedback[]>("/api/admin/feedback");
-      setFeedbacks(data);
+      const data = await apiClient<any>(`/api/admin/feedback?page=${pageIndex}&size=10`);
+      if (Array.isArray(data)) {
+        setFeedbacks(data);
+        setTotalPages(1);
+      } else {
+        setFeedbacks(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setPage(data.number || 0);
+      }
     } catch (err: any) {
       console.error("Feedback fetch error:", err);
       setError(err?.message || "Unable to connect to the MadhurGram server.");
@@ -40,7 +49,7 @@ export const useAdminFeedback = () => {
         method: "PUT"
       });
       showToast("रिव्यू को सफलतापूर्वक अप्रूव कर दिया गया है! 💛", "success");
-      await fetchFeedbacks();
+      await fetchFeedbacks(page);
       return true;
     } catch (err: any) {
       console.error("Approve feedback error:", err);
@@ -55,7 +64,7 @@ export const useAdminFeedback = () => {
         method: "DELETE"
       });
       showToast("रिव्यू को रिजेक्ट/डिलीट कर दिया गया है।", "success");
-      await fetchFeedbacks();
+      await fetchFeedbacks(page);
       return true;
     } catch (err: any) {
       console.error("Delete feedback error:", err);
@@ -65,8 +74,8 @@ export const useAdminFeedback = () => {
   };
 
   useEffect(() => {
-    fetchFeedbacks();
-  }, []);
+    fetchFeedbacks(page);
+  }, [page]);
 
-  return { feedbacks, loading, error, approveFeedback, deleteFeedback, refresh: fetchFeedbacks };
+  return { feedbacks, page, totalPages, setPage, loading, error, approveFeedback, deleteFeedback, refresh: () => fetchFeedbacks(page) };
 };

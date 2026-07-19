@@ -18,17 +18,26 @@ interface ReturnRequest {
 
 export default function AdminReturnsPage() {
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState<number | null>(null);
 
-  const fetchReturns = async () => {
+  const fetchReturns = async (pageIndex = page) => {
     setLoading(true);
     try {
-      const res = await fetch(API_ENDPOINTS.adminReturnsAll, getAuthFetchOptions());
+      const res = await fetch(`${API_ENDPOINTS.adminReturnsAll}?page=${pageIndex}&size=10`, getAuthFetchOptions());
       if (await handleAuthError(res)) return;
       if (res.ok) {
         const data = await res.json();
-        setReturns(data);
+        if (Array.isArray(data)) {
+          setReturns(data);
+          setTotalPages(1);
+        } else {
+          setReturns(data.content || []);
+          setTotalPages(data.totalPages || 1);
+          setPage(data.number || 0);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -39,8 +48,8 @@ export default function AdminReturnsPage() {
   };
 
   useEffect(() => {
-    fetchReturns();
-  }, []);
+    fetchReturns(page);
+  }, [page]);
 
   const handleApprove = async (id: number) => {
     setActioningId(id);
@@ -49,7 +58,7 @@ export default function AdminReturnsPage() {
       if (await handleAuthError(res)) return;
       if (res.ok) {
         showToast("Return Request approved. Refund issued successfully!", "success");
-        fetchReturns();
+        fetchReturns(page);
       } else {
         showToast("Failed to approve return.", "error");
       }
@@ -68,7 +77,7 @@ export default function AdminReturnsPage() {
       if (await handleAuthError(res)) return;
       if (res.ok) {
         showToast("Return request rejected.", "success");
-        fetchReturns();
+        fetchReturns(page);
       } else {
         showToast("Failed to reject return.", "error");
       }
@@ -101,7 +110,7 @@ export default function AdminReturnsPage() {
           <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-gray-900/40">
             <h2 className="text-sm font-bold uppercase tracking-wider text-gray-300">Return Requests Queue</h2>
             <button 
-              onClick={fetchReturns}
+              onClick={() => fetchReturns(page)}
               className="text-xs text-[#D4AF37] border border-[#D4AF37]/20 hover:bg-[#D4AF37]/10 px-3 py-1.5 rounded-lg transition-all"
             >
               Refresh Queue
@@ -219,6 +228,29 @@ export default function AdminReturnsPage() {
               </table>
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {!loading && totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-gray-800/60 p-5 bg-gray-900/20">
+              <button
+                onClick={() => setPage(Math.max(0, page - 1))}
+                disabled={page === 0}
+                className="px-4 py-2 border border-gray-800 bg-[#161616] rounded-xl text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                Previous
+              </button>
+              <span className="text-xs font-mono text-gray-400">
+                Page <span className="text-[#D4AF37] font-bold">{page + 1}</span> of <span className="text-white font-bold">{totalPages}</span>
+              </span>
+              <button
+                onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+                disabled={page === totalPages - 1}
+                className="px-4 py-2 border border-gray-800 bg-[#161616] rounded-xl text-xs font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

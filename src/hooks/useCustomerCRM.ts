@@ -32,6 +32,9 @@ export interface CustomerHistory {
 export const useCustomerCRM = () => {
   const [history, setHistory] = useState<CustomerHistory | null>(null);
   const [customers, setCustomers] = useState<CustomerStats[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchHistory = async (phone: string) => {
@@ -46,11 +49,20 @@ export const useCustomerCRM = () => {
     }
   };
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (pageIndex = page) => {
     setLoading(true);
     try {
-      const data = await apiClient<CustomerStats[]>("/api/admin/customers");
-      setCustomers(data);
+      const data = await apiClient<any>(`/api/admin/customers?page=${pageIndex}&size=10`);
+      if (Array.isArray(data)) {
+        setCustomers(data);
+        setTotalPages(1);
+        setTotalElements(data.length);
+      } else {
+        setCustomers(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalElements(data.totalElements || 0);
+        setPage(data.number || 0);
+      }
     } catch (err) {
       console.error("Failed to fetch customers", err);
     } finally {
@@ -58,14 +70,24 @@ export const useCustomerCRM = () => {
     }
   };
 
-  const searchCustomers = async (search: string) => {
+  const searchCustomers = async (search: string, pageIndex = 0) => {
     setLoading(true);
     try {
       const url = search.trim()
-        ? `/api/admin/customers?search=${encodeURIComponent(search)}`
-        : "/api/admin/customers";
-      const data = await apiClient<CustomerStats[]>(url);
-      setCustomers(data);
+        ? `/api/admin/customers?search=${encodeURIComponent(search)}&page=${pageIndex}&size=10`
+        : `/api/admin/customers?page=${pageIndex}&size=10`;
+      const data = await apiClient<any>(url);
+      if (Array.isArray(data)) {
+        setCustomers(data);
+        setTotalPages(1);
+        setTotalElements(data.length);
+        setPage(0);
+      } else {
+        setCustomers(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalElements(data.totalElements || 0);
+        setPage(data.number || 0);
+      }
     } catch (err) {
       console.error("Failed to search customers", err);
     } finally {
@@ -76,9 +98,9 @@ export const useCustomerCRM = () => {
   useEffect(() => {
     // Run asynchronously to avoid calling setState synchronously within the effect body
     Promise.resolve().then(() => {
-      fetchCustomers();
+      fetchCustomers(page);
     });
-  }, []);
+  }, [page]);
 
-  return { history, customers, loading, fetchHistory, fetchCustomers, searchCustomers };
+  return { history, customers, page, totalPages, totalElements, setPage, loading, fetchHistory, fetchCustomers, searchCustomers };
 };

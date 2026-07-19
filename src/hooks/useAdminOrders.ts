@@ -27,13 +27,22 @@ export interface Order {
 
 export const useAdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (pageIndex = page) => {
     try {
-      const data = await apiClient<Order[]>("/api/orders");
-      setOrders(data);
+      const data = await apiClient<any>(`/api/orders?page=${pageIndex}&size=10`);
+      if (Array.isArray(data)) {
+        setOrders(data);
+        setTotalPages(1);
+      } else {
+        setOrders(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setPage(data.number || 0);
+      }
     } catch (error) {
       console.error("Error fetching admin orders:", error);
     } finally {
@@ -45,16 +54,16 @@ export const useAdminOrders = () => {
   useEffect(() => {
     // Run asynchronously to avoid calling setState synchronously within the effect body
     Promise.resolve().then(() => {
-      fetchOrders();
+      fetchOrders(page);
     });
 
     const interval = setInterval(() => {
       console.log("Refreshing live orders...");
-      fetchOrders();
+      fetchOrders(page);
     }, LIVE_POLLING_INTERVAL);
 
     return () => clearInterval(interval); // कंपोनेंट हटते ही इंटरवल बंद
-  }, []);
+  }, [page]);
 
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     setUpdatingId(orderId);
@@ -71,11 +80,11 @@ export const useAdminOrders = () => {
     } catch (error) {
       console.error("Network or Client Error:", error);
       showToast(error instanceof Error ? error.message : "Something went wrong with the connection.", "error");
-      fetchOrders();
+      fetchOrders(page);
     } finally {
       setUpdatingId(null);
     }
   };
 
-  return { orders, loading, updatingId, handleStatusChange, fetchOrders };
+  return { orders, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders };
 };
