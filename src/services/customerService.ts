@@ -89,7 +89,7 @@ export const CustomerService = {
    * Synchronizes current cart items to database for abandoned cart recovery.
    */
   syncCart: async (payload: SyncCartPayload): Promise<any> => {
-    return apiClient<any>("/api/cart/update", {
+    return apiClient<any>("/api/v1/cart/update", {
       method: "POST",
       body: JSON.stringify(payload),
     });
@@ -99,7 +99,7 @@ export const CustomerService = {
    * Recovers a previously saved checkout cart session by phone number.
    */
   fetchRecoveredCart: async (phone: string): Promise<any> => {
-    return apiClient<any>(`/api/cart/recover?phone=${phone.trim()}`);
+    return apiClient<any>(`/api/v1/cart/recover?phone=${phone.trim()}`);
   },
 
   /**

@@ -57,7 +57,8 @@ export const useAdminOrders = () => {
       } else {
         setOrders(data.content || []);
         setTotalPages(data.totalPages || 1);
-        setPage(data.number || 0);
+        const serverPage = data.page !== undefined ? data.page : (data.number !== undefined ? data.number : pageIndex);
+        setPage(serverPage);
       }
     } catch (error) {
       console.error("Error fetching admin orders:", error);
