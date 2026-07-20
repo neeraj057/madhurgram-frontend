@@ -7,7 +7,7 @@ import { AdminOrderList } from "@/components/features/admin/AdminOrderList"; // 
 
 export default function AdminDashboard() {
   // हुक से स्टेट्स और फंक्शन्स निकाले
-  const { orders, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders } = useAdminOrders();
+  const { orders, stats, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders } = useAdminOrders();
 
   return (
     <main className="min-h-screen bg-[#111111] text-[#FDFBF7] p-8 md:p-16">
@@ -58,6 +58,7 @@ export default function AdminDashboard() {
         {/* 🚀 UI रेंडर करने के लिए डेटा पास कर दिया */}
         <AdminOrderList
           orders={orders}
+          stats={stats}
           loading={loading}
           updatingId={updatingId}
           onStatusChange={handleStatusChange}

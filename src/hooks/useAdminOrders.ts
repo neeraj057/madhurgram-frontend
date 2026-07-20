@@ -31,10 +31,26 @@ export const useAdminOrders = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    todayOrders: 0,
+    yesterdayOrders: 0,
+    pendingOrders: 0,
+    processingOrders: 0,
+    completedOrders: 0
+  });
 
   const fetchOrders = async (pageIndex = page) => {
     try {
-      const data = await apiClient<any>(`/api/orders?page=${pageIndex}&size=10`);
+      const [data, statsData] = await Promise.all([
+        apiClient<any>(`/api/v1/orders?page=${pageIndex}&size=10`),
+        apiClient<any>(`/api/v1/orders/stats`)
+      ]);
+      
+      if (statsData) {
+        setStats(statsData);
+      }
+
       if (Array.isArray(data)) {
         setOrders(data);
         setTotalPages(1);
@@ -68,7 +84,7 @@ export const useAdminOrders = () => {
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     setUpdatingId(orderId);
     try {
-      await apiClient<Order>(`/api/orders/${orderId}/status?status=${encodeURIComponent(newStatus)}`, {
+      await apiClient<Order>(`/api/v1/orders/${orderId}/status?status=${encodeURIComponent(newStatus)}`, {
         method: "PATCH"
       });
 
@@ -86,5 +102,5 @@ export const useAdminOrders = () => {
     }
   };
 
-  return { orders, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders };
+  return { orders, stats, page, totalPages, setPage, loading, updatingId, handleStatusChange, fetchOrders };
 };

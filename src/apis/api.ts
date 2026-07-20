@@ -1,6 +1,6 @@
 import { API_BASE_URL_FALLBACK } from "@/utils/constants";
 
-// मथुरग्राम एपीआई कॉन्फ़िगरेशन मैनेजर
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL_FALLBACK;
 
@@ -10,10 +10,10 @@ export const API_ENDPOINTS = {
     `${BASE_URL}/api/v1/products?category=${category}`,
 
   // 💳 Order Endpoints
-  placeOrder: `${BASE_URL}/api/orders/place`,
-  getAllOrders: `${BASE_URL}/api/orders`,
+  placeOrder: `${BASE_URL}/api/v1/orders/place`,
+  getAllOrders: `${BASE_URL}/api/v1/orders`,
   updateOrderStatus: (orderId: number, status: string) =>
-    `${BASE_URL}/api/orders/${orderId}/status?status=${status}`,
+    `${BASE_URL}/api/v1/orders/${orderId}/status?status=${status}`,
   // 👤 Customer Endpoints
   getCustomerProfile: (phone: string) =>
     `${BASE_URL}/api/customers/${phone.trim()}`,
@@ -33,15 +33,15 @@ export const API_ENDPOINTS = {
   publicHeartbeat: `${BASE_URL}/api/v1/public/analytics/heartbeat`,
   customerHistory: (phone: string) =>
     `${BASE_URL}/api/v1/admin/customers/${phone.trim()}/history`,
-  
+
   // 🛒 Abandoned Cart Retention Endpoints
   updateCart: `${BASE_URL}/api/cart/update`,
   recoverCart: (phone: string) => `${BASE_URL}/api/cart/recover?phone=${phone.trim()}`,
   adminAbandonedCarts: `${BASE_URL}/api/v1/admin/abandoned-carts`,
   adminGetAutoRecovery: `${BASE_URL}/api/v1/admin/settings/auto-recovery`,
   adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/v1/admin/settings/auto-recovery?enabled=${enabled}`,
-  trackOrder: (orderId: number) => `${BASE_URL}/api/orders/${orderId}`,
-  
+  trackOrder: (orderId: number) => `${BASE_URL}/api/v1/orders/${orderId}`,
+
   // 🎟️ Coupon Endpoints
   validateCoupon: (code: string, phone: string, amount: number) =>
     `${BASE_URL}/api/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`,
@@ -67,7 +67,7 @@ export const API_ENDPOINTS = {
   // 📝 Feedback Endpoints
   adminFeedback: `${BASE_URL}/api/v1/admin/feedback`,
   publicFeedbackTestimonials: `${BASE_URL}/api/v1/public/feedback/testimonials`,
-  publicFeedbackSuggestions: (orderId?: string | number) => 
+  publicFeedbackSuggestions: (orderId?: string | number) =>
     `${BASE_URL}/api/v1/public/feedback/suggestions${orderId ? `?orderId=${orderId}` : ""}`,
   publicFeedbackUpload: `${BASE_URL}/api/v1/public/feedback/upload`,
   publicFeedbackSubmit: `${BASE_URL}/api/v1/public/feedback`,

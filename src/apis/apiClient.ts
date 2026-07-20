@@ -22,14 +22,16 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
     headers.set("Content-Type", "application/json");
   }
 
-  // Auto-inject admin token if requested or if targeting an admin endpoint
-  const isDocAdminRoute = endpoint.includes("/api/v1/admin/") || requireAuth;
-  if (isDocAdminRoute) {
-    const token = getAdminToken();
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
+  // Always inject the admin token if it exists in storage — the backend uses it
+  // to resolve the caller's role (e.g. SUPER_ADMIN vs SUPPORT_STAFF) for masking.
+  // We don't restrict this to /admin/ routes because order, stats, and other
+  // endpoints also need role-aware responses.
+  const token = getAdminToken();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
   }
+  // requireAuth = true means we must have a token (used for strict-auth flows)
+  const isDocAdminRoute = endpoint.includes("/api/v1/admin/") || requireAuth;
 
   // Ensure absolute URL if endpoint is relative (starts with /)
   const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL.trim().replace(/\/+$/, "")}${endpoint}`;

@@ -26,6 +26,7 @@ export enum OrderStatus {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
   SHIPPED = "SHIPPED",
+  OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY",
   DELIVERED = "DELIVERED",
   CANCELLED = "CANCELLED"
 }
@@ -105,7 +106,7 @@ export const CustomerService = {
    * Submits checkout details to place a COD or prepaid order.
    */
   placeOrder: async (orderData: any): Promise<any> => {
-    return apiClient<any>("/api/orders/place", {
+    return apiClient<any>("/api/v1/orders/place", {
       method: "POST",
       body: JSON.stringify(orderData),
     });
@@ -119,14 +120,14 @@ export const CustomerService = {
     if (!cleanPhone || cleanPhone.length < 10) {
       throw new Error("Please enter a valid 10-digit phone number.");
     }
-    return apiClient<CustomerOrder[]>(`/api/orders/customer/${cleanPhone}`);
+    return apiClient<CustomerOrder[]>(`/api/v1/orders/customer/${cleanPhone}`);
   },
 
   /**
    * Retrieves single order details for tracking status.
    */
   trackOrder: async (orderId: number): Promise<any> => {
-    return apiClient<any>(`/api/orders/${orderId}`);
+    return apiClient<any>(`/api/v1/orders/${orderId}`);
   },
 
   /**

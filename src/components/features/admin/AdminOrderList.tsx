@@ -16,9 +16,18 @@ import {
 } from "lucide-react";
 import { Order } from "@/hooks/useAdminOrders";
 import { downloadInvoicePDF, getFormattedOrderNumber } from "@/utils/invoiceGenerator";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface AdminOrderListProps {
   orders: Order[];
+  stats?: {
+    totalOrders: number;
+    todayOrders: number;
+    yesterdayOrders: number;
+    pendingOrders: number;
+    processingOrders: number;
+    completedOrders: number;
+  };
   loading: boolean;
   updatingId: number | null;
   onStatusChange: (orderId: number, newStatus: string) => void;
@@ -26,12 +35,29 @@ interface AdminOrderListProps {
 
 export const AdminOrderList: React.FC<AdminOrderListProps> = ({
   orders,
+  stats,
   loading,
   updatingId,
   onStatusChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"active" | "pending" | "today" | "yesterday" | "completed" | "all">("active");
+  const [confirmState, setConfirmState] = useState<{ open: boolean; orderId: number | null }>({ open: false, orderId: null });
+
+  const handleCancelClick = (orderId: number) => {
+    setConfirmState({ open: true, orderId });
+  };
+
+  const handleCancelConfirm = () => {
+    if (confirmState.orderId !== null) {
+      onStatusChange(confirmState.orderId, "CANCELLED");
+    }
+    setConfirmState({ open: false, orderId: null });
+  };
+
+  const handleCancelDismiss = () => {
+    setConfirmState({ open: false, orderId: null });
+  };
 
   if (loading) {
     return (
@@ -42,18 +68,10 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
     );
   }
 
-  // --- STATS CALCULATIONS ---
   const todayStr = new Date().toDateString();
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toDateString();
-
-  const totalCount = orders.length;
-  const todayCount = orders.filter(o => new Date(o.orderDate).toDateString() === todayStr).length;
-  const yesterdayCount = orders.filter(o => new Date(o.orderDate).toDateString() === yesterdayStr).length;
-  const pendingCount = orders.filter(o => o.orderStatus === "PENDING").length;
-  const processingCount = orders.filter(o => ["CONFIRMED", "SHIPPED", "OUT_FOR_DELIVERY"].includes(o.orderStatus)).length;
-  const completedCount = orders.filter(o => o.orderStatus === "DELIVERED").length;
 
   // --- SEARCH & TABS FILTERING ---
   const filteredOrders = orders.filter(order => {
@@ -115,12 +133,12 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
       {/* 📊 Executive Pipeline Stats Row */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
-          { label: "Active Orders", count: pendingCount + processingCount, color: "text-[#D4AF37] border-gray-800" },
-          { label: "Pending Actions", count: pendingCount, color: "text-amber-400 border-amber-500/10" },
-          { label: "Today's Orders", count: todayCount, color: "text-emerald-400 border-emerald-500/10" },
-          { label: "Yesterday's", count: yesterdayCount, color: "text-gray-400 border-gray-800" },
-          { label: "Completed Today", count: completedCount, color: "text-green-400 border-green-500/10" },
-          { label: "Total Orders", count: totalCount, color: "text-white border-gray-800" }
+          { label: "Active Orders", count: (stats?.pendingOrders || 0) + (stats?.processingOrders || 0), color: "text-[#D4AF37] border-gray-800" },
+          { label: "Pending Actions", count: stats?.pendingOrders || 0, color: "text-amber-400 border-amber-500/10" },
+          { label: "Today's Orders", count: stats?.todayOrders || 0, color: "text-emerald-400 border-emerald-500/10" },
+          { label: "Yesterday's", count: stats?.yesterdayOrders || 0, color: "text-gray-400 border-gray-800" },
+          { label: "Completed Orders", count: stats?.completedOrders || 0, color: "text-green-400 border-green-500/10" },
+          { label: "Total Orders", count: stats?.totalOrders || 0, color: "text-white border-gray-800" }
         ].map((stat, idx) => (
           <div key={idx} className={`bg-[#161616] border ${stat.color} rounded-2xl p-4 flex flex-col justify-between hover:scale-[1.02] transition-all`}>
             <span className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">{stat.label}</span>
@@ -291,11 +309,7 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
                         {(order.orderStatus === "PENDING" || order.orderStatus === "CONFIRMED") && (
                           <button
                             disabled={updatingId === order.id}
-                            onClick={() => {
-                              if (confirm("Are you sure you want to CANCEL this order?")) {
-                                onStatusChange(order.id, "CANCELLED");
-                              }
-                            }}
+                            onClick={() => handleCancelClick(order.id)}
                             className="px-3.5 py-2.5 bg-transparent border border-red-900/40 text-red-500 font-mono text-[9px] font-bold uppercase tracking-widest rounded-xl hover:bg-red-950/20 hover:border-red-600 transition-all disabled:opacity-50 active:scale-95"
                           >
                             Cancel Order
@@ -354,6 +368,18 @@ export const AdminOrderList: React.FC<AdminOrderListProps> = ({
           })}
         </div>
       )}
+
+      {/* Cancel Order Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmState.open}
+        title="Cancel This Order?"
+        message="This action will cancel the order and automatically restore stock for all items. This cannot be undone."
+        confirmLabel="Yes, Cancel Order"
+        cancelLabel="Go Back"
+        variant="danger"
+        onConfirm={handleCancelConfirm}
+        onCancel={handleCancelDismiss}
+      />
     </div>
   );
 };
