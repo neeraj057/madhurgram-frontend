@@ -135,7 +135,7 @@ export const CustomerService = {
    */
   validateCoupon: async (code: string, phone: string, amount: number): Promise<any> => {
     return apiClient<any>(
-      `/api/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`
+      `/api/v1/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`
     );
   }
 };
