@@ -36,6 +36,8 @@ export const AdminSidebar = () => {
     { name: "Recover Sales", href: "/admin/abandoned-carts", icon: Clock },
   ];
 
+  if (pathname === "/admin/login") return null;
+
   return (
     <aside className="w-64 bg-[#161616] border-r border-gray-800 flex flex-col h-screen hidden md:flex shrink-0">
       <div className="h-20 flex items-center px-6 border-b border-gray-800">
