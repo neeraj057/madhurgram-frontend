@@ -21,6 +21,7 @@ export default function AdminLoginPage() {
       const response = await fetch(API_ENDPOINTS.adminLogin, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Receive HttpOnly refresh token cookie from backend
         body: JSON.stringify({ username, password }),
       });
 
@@ -30,12 +31,13 @@ export default function AdminLoginPage() {
 
       const data = await response.json();
       
-      // 🗝️ 1. टोकन को ब्राउज़र के LocalStorage में सेव करो
-      localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-      // 🍪 2. Middleware के लिए टोकन को Cookie में भी सेट कर दो (10 घंटे की वैलिडिटी)
-      document.cookie = `${ADMIN_COOKIE_NAME}=${data.token}; path=/; max-age=${ADMIN_COOKIE_MAX_AGE}`;
+      // 🗝️ 1. Access token को localStorage में सेव करो (API calls के लिए)
+      localStorage.setItem(ADMIN_TOKEN_KEY, data.accessToken);
+      // 🍪 2. Middleware check के लिए access token को Cookie में भी सेट करो
+      document.cookie = `${ADMIN_COOKIE_NAME}=${data.accessToken}; path=/; max-age=${ADMIN_COOKIE_MAX_AGE}`;
+      // 🔒 Refresh token backend ने HttpOnly cookie में already set कर दिया है
       
-      // 🚀 2. सक्सेस होते ही सीधा प्रोडक्ट्स पेज पर भेज दो
+      // 🚀 3. सक्सेस होते ही सीधा प्रोडक्ट्स पेज पर भेज दो
       router.push("/admin/products");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to connect to server";

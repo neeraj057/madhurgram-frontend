@@ -29,6 +29,8 @@ export const API_ENDPOINTS = {
   adminMarketingBroadcast: `${BASE_URL}/api/v1/admin/marketing/broadcast`,
   adminMarketingCampaigns: `${BASE_URL}/api/v1/admin/marketing/campaigns`,
   adminLogin: `${BASE_URL}/api/auth/admin/login`,
+  adminRefreshToken: `${BASE_URL}/api/auth/admin/refresh`,
+  adminLogout: `${BASE_URL}/api/auth/admin/logout`,
   publicProducts: `${BASE_URL}/api/v1/public/products`,
   publicHeartbeat: `${BASE_URL}/api/v1/public/analytics/heartbeat`,
   customerHistory: (phone: string) =>

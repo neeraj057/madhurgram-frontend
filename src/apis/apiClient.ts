@@ -1,4 +1,4 @@
-import { getAdminToken, handleAuthError, parseApiError } from "@/utils/adminAuth";
+import { getAdminToken, handleAuthError, parseApiError, isTokenExpiringSoon, silentRefresh } from "@/utils/adminAuth";
 import { API_BASE_URL_FALLBACK } from "@/utils/constants";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || API_BASE_URL_FALLBACK;
@@ -11,9 +11,18 @@ export interface ApiOptions extends RequestInit {
  * Standardized HTTP API client wrapper.
  * Automatically handles base URL routing, JSON content types, authorization tokens,
  * HTTP error parses, and session redirection.
+ *
+ * Before each request, checks if the admin token is expiring soon and silently
+ * refreshes it to prevent session expiration errors.
  */
 export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { requireAuth = false, headers: customHeaders, ...restOptions } = options;
+
+  // 🔄 Silent token refresh — if token is about to expire, refresh it before making the call
+  const token = getAdminToken();
+  if (token && isTokenExpiringSoon()) {
+    await silentRefresh();
+  }
 
   const headers = new Headers(customHeaders);
 
@@ -26,9 +35,10 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
   // to resolve the caller's role (e.g. SUPER_ADMIN vs SUPPORT_STAFF) for masking.
   // We don't restrict this to /admin/ routes because order, stats, and other
   // endpoints also need role-aware responses.
-  const token = getAdminToken();
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  // Re-read token after potential refresh above
+  const currentToken = getAdminToken();
+  if (currentToken) {
+    headers.set("Authorization", `Bearer ${currentToken}`);
   }
   // requireAuth = true means we must have a token (used for strict-auth flows)
   const isDocAdminRoute = endpoint.includes("/api/v1/admin/") || requireAuth;
@@ -39,6 +49,7 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
   const response = await fetch(url, {
     ...restOptions,
     headers,
+    credentials: "include", // Send/receive HttpOnly cookies (refresh token)
   });
 
   // Intercept 401/403 to auto-redirect user to admin login
@@ -61,3 +72,4 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
 
   return response.json();
 }
+
