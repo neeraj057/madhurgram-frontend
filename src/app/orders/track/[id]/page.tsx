@@ -86,7 +86,7 @@ export default function OrderTrackingPage() {
     setRetryingPayment(true);
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-      const response = await fetch(`${BASE_URL}/api/payments/webhook`, {
+      const response = await fetch(`${BASE_URL}/api/v1/payments/webhook`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

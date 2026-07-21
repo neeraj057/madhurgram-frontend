@@ -42,6 +42,11 @@ export const API_ENDPOINTS = {
   adminSetAutoRecovery: (enabled: boolean) => `${BASE_URL}/api/v1/admin/settings/auto-recovery?enabled=${enabled}`,
   trackOrder: (orderId: number) => `${BASE_URL}/api/v1/orders/${orderId}`,
 
+  // 💳 Payment Endpoints
+  paymentWebhook: `${BASE_URL}/api/v1/payments/webhook`,
+  createPaymentSession: (orderId: number) => `${BASE_URL}/api/v1/payments/create-session/${orderId}`,
+  verifyPaymentSignature: `${BASE_URL}/api/v1/payments/verify-signature`,
+
   // 🎟️ Coupon Endpoints
   validateCoupon: (code: string, phone: string, amount: number) =>
     `${BASE_URL}/api/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`,

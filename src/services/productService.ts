@@ -14,6 +14,7 @@ export interface Product {
   showSalesCount?: boolean;
   salesCount?: number;
   realSalesCount?: number;
+  clearanceActive?: boolean;
   variants?: {
     id: number;
     name: string;
