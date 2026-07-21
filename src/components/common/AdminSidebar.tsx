@@ -39,10 +39,10 @@ export const AdminSidebar = () => {
   if (pathname === "/admin/login") return null;
 
   return (
-    <aside className="w-64 bg-[#161616] border-r border-gray-800 flex flex-col h-screen hidden md:flex shrink-0">
+    <aside className="w-64 bg-[#161616]/95 backdrop-blur-md border-r border-gray-800/80 flex flex-col h-screen hidden md:flex shrink-0">
       <div className="h-20 flex items-center px-6 border-b border-gray-800">
         <div className="flex items-center space-x-3">
-          <div className="h-8 w-8 bg-[#D4AF37]/10 flex items-center justify-center rounded-lg border border-[#D4AF37]/30">
+          <div className="h-8 w-8 bg-gradient-to-br from-[#D4AF37]/20 to-transparent flex items-center justify-center rounded-lg border border-[#D4AF37]/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]">
             <Store className="h-4 w-4 text-[#D4AF37]" />
           </div>
           <span className="font-serif text-lg font-bold text-[#FDFBF7] tracking-wide">MadhurGram</span>
@@ -58,13 +58,13 @@ export const AdminSidebar = () => {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
+              className={`group flex items-center space-x-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                 isActive
-                  ? "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20"
+                  ? "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 shadow-[0_0_10px_rgba(212,175,55,0.05)]"
                   : "text-gray-400 hover:text-[#FDFBF7] hover:bg-gray-800/50 border border-transparent"
               }`}
             >
-              <Icon className={`h-4 w-4 ${isActive ? "text-[#D4AF37]" : "text-gray-500"}`} />
+              <Icon className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-[#D4AF37]" : "text-gray-500"}`} />
               <span>{item.name}</span>
             </Link>
           );
