@@ -63,14 +63,14 @@ export const CustomerService = {
    * Fetches customer profile information and saved addresses by phone number.
    */
   fetchProfile: async (phone: string): Promise<CustomerProfile> => {
-    return apiClient<CustomerProfile>(`/api/customers/${phone.trim()}`);
+    return apiClient<CustomerProfile>(`/api/v1/customers/${phone.trim()}`);
   },
 
   /**
    * Adds a new delivery address to the customer's profile.
    */
   addAddress: async (phone: string, address: Address): Promise<CustomerProfile> => {
-    return apiClient<CustomerProfile>(`/api/customers/${phone.trim()}/addresses`, {
+    return apiClient<CustomerProfile>(`/api/v1/customers/${phone.trim()}/addresses`, {
       method: "POST",
       body: JSON.stringify(address),
     });
@@ -80,7 +80,7 @@ export const CustomerService = {
    * Deletes a delivery address from the customer's profile by ID.
    */
   deleteAddress: async (phone: string, addressId: number): Promise<CustomerProfile> => {
-    return apiClient<CustomerProfile>(`/api/customers/${phone.trim()}/addresses/${addressId}`, {
+    return apiClient<CustomerProfile>(`/api/v1/customers/${phone.trim()}/addresses/${addressId}`, {
       method: "DELETE",
     });
   },
