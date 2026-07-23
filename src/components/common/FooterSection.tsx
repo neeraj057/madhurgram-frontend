@@ -230,7 +230,7 @@ export default function FooterSection({ onAddToCart }: FooterSectionProps) {
                 From the Heart of<br />Gopiganj Village
               </h3>
               <p className="mt-5 text-sm tracking-wide leading-relaxed text-gray-600 font-light">
-                MadhurGram was born in Gopiganj, Bhadohi — where the art of handcrafting pure A2 Ghee, village Jaggery, and cold-pressed oils has been passed down for generations. Our farmers raise indigenous cows on natural grass, free from hormones. Every jar of ghee is Bilona-churned by hand.
+                MadhurGram was born in Gopiganj, Bhadohi — where the art of handcrafting pure Desi Ghee, village Jaggery, and cold-pressed oils has been passed down for generations. Our farmers raise indigenous cows on natural grass, free from hormones. Every jar of ghee is slow-cooked traditionally on low flame in small batches.
               </p>
             </div>
             <div className="flex flex-col justify-center lg:items-end">

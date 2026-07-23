@@ -48,10 +48,10 @@ export default function TrustStrip() {
   const promises = [
     {
       icon: <BilonaIcon />,
-      title: "पारंपरिक बिलोना विधि",
-      englishTitle: "Traditional Bilona Ghee",
-      description: "हमारा घी पारंपरिक रूप से गाय के दूध से दही बनाकर, फिर मथनी से मथकर (बिलोना विधि) तैयार किया जाता है, न कि दूध की मलाई से।",
-      englishDesc: "Churned from curd using traditional wooden churners, preserving maximum nutrition and granular texture."
+      title: "धीमी आँच पर पका घी",
+      englishTitle: "Traditional Slow-Cooked Ghee",
+      description: "हमारा घी 100% ताज़ा शुद्ध मलाई को धीमी आँच पर तपाकर पारंपरिक विधि से तैयार किया जाता है, जिससे इसकी सोंधी महक और प्राकृतिक दानेदार बनावट बनी रहती है।",
+      englishDesc: "Slow-cooked on low flame from pure fresh cream, preserving authentic village aroma and granular texture."
     },
     {
       icon: <OrganicIcon />,

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-cormorant), Georgia, serif;
+}
+
 @layer base {
   html, body {
     background-color: #FDFBF7 !important;

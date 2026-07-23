@@ -13,6 +13,8 @@ import TrustStrip from "@/components/common/TrustStrip";
 import FAQSection from "@/components/common/FAQSection";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
 
+import { showToast } from "@/components/ui/Toast";
+
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("shop-all");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false); // चेकआउट मोडल कंट्रोल स्टेट
@@ -27,6 +29,7 @@ export default function Home() {
     updateQuantity,
     removeFromCart,
     loadCart,
+    clearCart,
     totalCartCount,
   } = useCart();
 
@@ -73,12 +76,11 @@ export default function Home() {
   // सबटोटल की गणना ताकि चेकआउट को अमाउंट भेजा जा सके
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  // ऑर्डर सक्सेसफुल होने पर कार्ट क्लियर करने का हैंडलर
+  // ऑर्डर सक्सेसफुल होने पर कार्ट क्लियर करने का हैंडलर (बिना ब्राउज़र रिफ्रेश)
   const handleOrderSuccess = () => {
     setIsCheckoutOpen(false);
-    // यहाँ हम मैन्युअली रिफ्रेश या स्टेट को क्लियर कर सकते हैं
-    // अभी के लिए सिंपल यूआई सिमुलेशन
-    window.location.reload(); 
+    clearCart();
+    showToast("बधाई हो! आपका ऑर्डर सफलतापूर्वक दर्ज कर लिया गया है। 💛", "success");
   };
 
   const handleAddToCart = (product: Omit<CartItem, 'quantity'>, quantity: number = 1) => {

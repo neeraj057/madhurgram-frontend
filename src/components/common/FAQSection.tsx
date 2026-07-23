@@ -15,10 +15,10 @@ export default function FAQSection() {
 
   const faqs: FAQItem[] = [
     {
-      q: "बिलोना घी (Bilona Ghee) क्या है और यह सामान्य घी से कैसे अलग है?",
-      qEng: "What is Bilona Ghee and how is it different from normal ghee?",
-      a: "साधारण घी को दूध की डायरेक्ट मलाई या क्रीम को पिघलाकर मशीनों द्वारा बनाया जाता है। इसके विपरीत, हमारा पारंपरिक 'बिलोना घी' दूध को उबालने, उसका दही जमाने, और फिर लकड़ी की मथनी से दोनों दिशाओं (clockwise and anti-clockwise) में मथकर निकाले गए मक्खन को हल्की आँच पर तपाकर बनाया जाता है। यह पचने में आसान, दानेदार, सुगंधित और पोषक तत्वों से भरपूर (A2 युक्त) होता है।",
-      aEng: "Normal ghee is made quickly by melting raw milk cream. Traditional Bilona ghee is made by boiling milk, turning it into curd, churning the curd with wooden churners to extract butter (makhon), and then heating the butter on low fire. This ancient method preserves nutrients, adds a granular texture, and makes it rich in A2 proteins."
+      q: "धीमी आँच (Slow-Cooked) पर बना घी सामान्य मशीनी घी से कैसे अलग है?",
+      qEng: "How is Slow-Cooked Desi Ghee different from commercial machine ghee?",
+      a: "व्यावसायिक मशीनी घी को हाई-हीट पर केमिकल्स या क्विक मेल्टिंग से तुरंत तैयार किया जाता है। इसके विपरीत, हमारा पारंपरिक 'धीमी आँच पर पका घी' ताज़ा शुद्ध मलाई को हल्की आँच (Slow Cooking) पर घंटों तपाकर बनाया जाता है। यह धीमी प्रक्रिया घी की प्राकृतिक सोंधी महक, दानेदार बनावट, और पोषक तत्वों को सुरक्षित रखती है।",
+      aEng: "Commercial ghee is rapidly processed on high industrial heat. MadhurGram Slow-Cooked Ghee is made by gently simmering 100% pure fresh cream on a low flame for hours. This patient slow-cooking preserves the rich natural aroma, golden granular texture, and essential healthy fats."
     },
     {
       q: "क्या आपके गुड़ (Jaggery) में किसी प्रकार के रसायन या रंग का प्रयोग होता है?",
@@ -35,8 +35,8 @@ export default function FAQSection() {
     {
       q: "घी और तेल को स्टोर करने का सही तरीका क्या है और इनकी शेल्फ लाइफ क्या है?",
       qEng: "What is the shelf life and correct storage method for ghee and oil?",
-      a: "शुद्ध बिलोना घी की शेल्फ लाइफ 12 महीने से अधिक होती है। इसे फ्रिज में रखने की आवश्यकता नहीं होती, बल्कि कमरे के तापमान पर सीधे धूप से दूर सूखी जगह पर रखना चाहिए। सरसों के तेल को भी आप 12 महीने तक आसानी से रख सकते हैं। ध्यान रखें कि हमेशा सूखे चम्मच का ही प्रयोग करें ताकि नमी अंदर न जाए।",
-      aEng: "Pure Bilona ghee has a shelf life of over 12 months. Do not refrigerate it; store it at room temperature in a dry place away from direct sunlight. Cold-pressed oils also last up to 12 months. Always use a clean, dry spoon to prevent moisture contamination."
+      a: "शुद्ध धीमी आँच पर पके देशी घी की शेल्फ लाइफ 12 महीने से अधिक होती है। इसे फ्रिज में रखने की आवश्यकता नहीं होती, बल्कि कमरे के तापमान पर सीधे धूप से दूर सूखी जगह पर रखना चाहिए। सरसों के तेल को भी आप 12 महीने तक आसानी से रख सकते हैं। ध्यान रखें कि हमेशा सूखे चम्मच का ही प्रयोग करें ताकि नमी अंदर न जाए।",
+      aEng: "Pure Slow-Cooked Desi Ghee has a shelf life of over 12 months. Do not refrigerate it; store it at room temperature in a dry place away from direct sunlight. Cold-pressed oils also last up to 12 months. Always use a clean, dry spoon to prevent moisture contamination."
     },
     {
       q: "ऑर्डर करने के बाद डिलीवरी में कितना समय लगता है?",

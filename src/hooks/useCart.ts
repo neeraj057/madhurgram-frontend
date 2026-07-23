@@ -81,6 +81,11 @@ export function useCart() {
     setCartItems(items);
   };
 
+  // 🧹 कार्ट पूरी तरह साफ़ (clear) करने का फंक्शन
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   // 🧮 कुल आइटम्स की संख्या गिनना (हेडर में कार्ट आइकॉन के ऊपर बैज दिखाने के लिए)
   const totalCartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -92,6 +97,7 @@ export function useCart() {
     updateQuantity,
     removeFromCart,
     loadCart,
+    clearCart,
     totalCartCount,
   };
 }

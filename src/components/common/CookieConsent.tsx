@@ -41,7 +41,7 @@ export default function CookieConsent() {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#FDFBF7]">Cookie Consent</h4>
             <p className="text-[11px] text-gray-400 leading-relaxed font-light">
-              MadhurGram uses cookies to enhance your shopping experience and optimize our local Bilona product delivery logs. Do you agree?
+              MadhurGram uses cookies to enhance your shopping experience and optimize our local artisanal product delivery logs. Do you agree?
             </p>
             
             <div className="flex gap-2 pt-2 border-t border-gray-800/40">

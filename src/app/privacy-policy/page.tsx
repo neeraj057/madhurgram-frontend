@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         {/* Content Body */}
         <div className="space-y-8 text-sm leading-relaxed text-gray-700 font-light">
           <p>
-            At MadhurGram, we respect your privacy and are committed to protecting the personal data of our customers who enjoy Gopiganj's traditional Bilona products. This policy describes how we collect, store, and utilize your personal information.
+            At MadhurGram, we respect your privacy and are committed to protecting the personal data of our customers who enjoy Gopiganj's traditional artisanal food products. This policy describes how we collect, store, and utilize your personal information.
           </p>
 
           <section className="space-y-4">

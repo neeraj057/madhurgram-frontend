@@ -26,7 +26,7 @@ function getProductHighlights(product: Product): string[] {
 
   if (nameLower.includes("ghee")) {
     return [
-      "Pure A2 Cow Ghee made using Curd-Churned Bilona method",
+      "100% Pure Desi Ghee slow-cooked from fresh cream",
       "Slow-cooked in small village batches for rich grainy texture",
       "Naturally packed with healthy fats & essential vitamins A, D, E, K"
     ];
@@ -74,7 +74,7 @@ function getProductStory(product: Product): string {
   const nameLower = product.name.toLowerCase();
   
   if (nameLower.includes("ghee")) {
-    return "Our A2 Cow Ghee is made using the ancient Bilona method. We boil pure milk, set it to curd overnight, churn it with a wooden churner to separate butter, and slow-cook the butter on firewood until it clarifies into golden, granular ghee.";
+    return "Our Desi Ghee is made using the traditional slow-cooking method. We take 100% pure fresh cream and gently simmer it on low fire in small batches until it clarifies into golden, highly aromatic, and naturally granular ghee.";
   }
   if (nameLower.includes("dahi")) {
     return "Fermented slowly inside clay vessels, our dahi preserves live gut microbes. We set fresh village milk using natural heirloom starter cultures, allowing it to solidify naturally over 8-12 hours without any stabilizers.";
@@ -105,8 +105,8 @@ function getProductSpecs(product: Product): ProductSpec[] {
 
   if (nameLower.includes("ghee")) {
     specs.unshift(
-      { label: "Ingredients", value: "A2 Cow Milk Curd Butter" },
-      { label: "Process", value: "Bilona Hand-Churned" },
+      { label: "Ingredients", value: "100% Pure Fresh Cream" },
+      { label: "Process", value: "Traditional Slow-Cooked" },
       { label: "Shelf Life", value: "12 Months (Granular)" }
     );
   } else if (nameLower.includes("dahi")) {

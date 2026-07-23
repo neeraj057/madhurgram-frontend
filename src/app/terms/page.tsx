@@ -34,7 +34,7 @@ export default function TermsPage() {
               <Award className="h-5 w-5 text-[#D4AF37]" /> 1. Freshness & Traditional Variation
             </h2>
             <p>
-              All MadhurGram products (including our hand-churned Bilona Cow Ghee) are handcrafted in small rural batches. Natural variations in grain size, color tone, and aroma are normal characteristics of traditional dairy processing and do not indicate product defects.
+              All MadhurGram products (including our slow-cooked Desi Ghee) are handcrafted in small rural batches. Natural variations in grain size, color tone, and aroma are normal characteristics of traditional dairy processing and do not indicate product defects.
             </p>
           </section>
 
