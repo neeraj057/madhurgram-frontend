@@ -137,5 +137,12 @@ export const CustomerService = {
     return apiClient<any>(
       `/api/v1/coupons/validate?code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&amount=${amount}`
     );
+  },
+
+  /**
+   * Fetches the coupon info (like min order value) dynamically without validating usage.
+   */
+  fetchCouponInfo: async (code: string): Promise<any> => {
+    return apiClient<any>(`/api/v1/coupons/info?code=${encodeURIComponent(code)}`);
   }
 };

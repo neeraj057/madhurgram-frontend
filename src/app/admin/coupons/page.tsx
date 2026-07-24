@@ -8,7 +8,8 @@ import { showToast } from "@/components/ui/Toast";
 interface Coupon {
   id?: number;
   code: string;
-  discountPercentage: number;
+  discountValue: number;
+  discountType: 'PERCENTAGE' | 'FLAT';
   minOrderValue: number;
   isActive: boolean;
   maxUsagePerUser: number;
@@ -27,7 +28,8 @@ export default function AdminCouponsPage() {
   // Form states
   const initialFormState: Coupon = {
     code: "",
-    discountPercentage: 10,
+    discountValue: 10,
+    discountType: "PERCENTAGE",
     minOrderValue: 999,
     isActive: true,
     maxUsagePerUser: 1,
@@ -210,7 +212,9 @@ export default function AdminCouponsPage() {
               {coupons.map((coupon) => (
                 <tr key={coupon.id} className="hover:bg-gray-900/50 transition-colors">
                   <td className="px-6 py-4 font-mono font-bold text-[#FDFBF7] text-base">{coupon.code}</td>
-                  <td className="px-6 py-4 font-semibold text-amber-500 font-mono">{coupon.discountPercentage}% OFF</td>
+                  <td className="px-6 py-4 font-semibold text-amber-500 font-mono">
+                    {coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}% OFF` : `₹${coupon.discountValue} OFF`}
+                  </td>
                   <td className="px-6 py-4 font-mono">₹{coupon.minOrderValue.toFixed(2)}</td>
                   <td className="px-6 py-4 font-mono">{coupon.maxUsagePerUser} Time</td>
                   <td className="px-6 py-4">
@@ -311,19 +315,31 @@ export default function AdminCouponsPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Discount Percentage (%)</label>
-                <input 
-                  type="number" 
-                  min="0.01"
-                  max="100"
-                  step="0.01"
-                  value={formData.discountPercentage ?? ""} 
-                  onChange={(e) => setFormData({...formData, discountPercentage: parseFloat(e.target.value) || 0})} 
-                  className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none font-mono" 
-                  placeholder="e.g. 10.00" 
-                  required
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Discount Type</label>
+                  <select
+                    value={formData.discountType || "PERCENTAGE"}
+                    onChange={(e) => setFormData({...formData, discountType: e.target.value as 'PERCENTAGE' | 'FLAT'})}
+                    className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none font-mono"
+                  >
+                    <option value="PERCENTAGE">Percentage (%)</option>
+                    <option value="FLAT">Flat Amount (₹)</option>
+                  </select>
+                </div>
+                <div className="flex-1">
+                  <label className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Discount Value</label>
+                  <input 
+                    type="number" 
+                    min="0.01"
+                    step="0.01"
+                    value={formData.discountValue ?? ""} 
+                    onChange={(e) => setFormData({...formData, discountValue: parseFloat(e.target.value) || 0})} 
+                    className="w-full bg-[#161616] border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-white focus:outline-none font-mono" 
+                    placeholder="e.g. 10.00" 
+                    required
+                  />
+                </div>
               </div>
 
               <div>

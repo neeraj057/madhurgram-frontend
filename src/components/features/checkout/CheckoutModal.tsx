@@ -364,7 +364,9 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   };
 
   const discountAmount = appliedCoupon 
-    ? Math.round((subtotal * appliedCoupon.discountPercentage) / 100)
+    ? appliedCoupon.discountType === 'PERCENTAGE'
+      ? Math.round((subtotal * appliedCoupon.discountValue) / 100)
+      : appliedCoupon.discountValue
     : 0;
   const finalPayable = subtotal - discountAmount;
 
@@ -1256,7 +1258,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                         {/* Full Address */}
                         <div>
-                          <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Shipping Address (Smart Auto-complete)</label>
+                          <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Full Address (House, Street, Village / पूरा पता)</label>
                           <div className="relative">
                             <input 
                               ref={inputRef}
@@ -1295,7 +1297,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         {/* City and State Grid */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">City</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">City / Village (शहर / गाँव)</label>
                             <input 
                               required 
                               type="text" 
@@ -1306,7 +1308,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                             />
                           </div>
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">State</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">State (राज्य)</label>
                             <input 
                               required 
                               type="text" 
@@ -1443,14 +1445,19 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         </button>
                       )}
                     </div>
+                    {!appliedCoupon && !couponError && (
+                      <p className="text-[10px] text-gray-500 font-medium mt-1.5 italic">
+                        💡 Tip: Check your email for exclusive promo codes!
+                      </p>
+                    )}
                     {couponError && (
                       <p className="text-[10px] text-red-500 font-medium mt-1 leading-relaxed">
                         {couponError}
                       </p>
                     )}
                     {appliedCoupon && (
-                      <p className="text-[10px] text-green-400 font-medium mt-1 flex items-center gap-1 animate-fadeIn">
-                        ✓ Coupon "{appliedCoupon.code}" applied successfully! ({appliedCoupon.discountPercentage}% discount)
+                      <p className="text-xs text-green-500 font-medium">
+                        ✓ Coupon "{appliedCoupon.code}" applied successfully! ({appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`} discount)
                       </p>
                     )}
                   </div>
@@ -1467,9 +1474,9 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                   <span className="font-mono">₹{subtotal}.00</span>
                 </div>
                 {appliedCoupon && (
-                  <div className="flex justify-between text-amber-500 font-medium">
-                    <span>Coupon Discount ({appliedCoupon.code} - {appliedCoupon.discountPercentage}%):</span>
-                    <span className="font-mono">-₹{discountAmount}.00</span>
+                  <div className="flex justify-between items-center text-sm font-medium text-green-500">
+                    <span>Coupon Discount ({appliedCoupon.code} - {appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`}):</span>
+                    <span>-₹{discountAmount}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center text-sm pt-1.5 text-white border-t border-gray-900/60 font-semibold mt-1">
