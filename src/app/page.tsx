@@ -13,7 +13,7 @@ import { useCart, CartItem } from "@/hooks/useCart";
 import { fetchRecoveredCart } from "@/apis/cartRecovery";
 import TestimonialsSection from "@/components/features/feedback/TestimonialsSection";
 import TrustStrip from "@/components/common/TrustStrip";
-import FAQSection from "@/components/common/FAQSection";
+import VillageAestheticsGrid from "@/components/common/VillageAestheticsGrid";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
 
 import { showToast } from "@/components/ui/Toast";
@@ -137,10 +137,11 @@ export default function Home() {
 
       <TrustStrip />
 
-      <FAQSection />
-
-      {/* 🌟 Authentic Customer Feedback (Replaces Video Testimonials) */}
+      {/* 🌟 Authentic Customer Feedback (Moved Up for better Social Proof conversion) */}
       <TestimonialsSection />
+
+      {/* 🌟 Instagram Style Aesthetic Grid */}
+      <VillageAestheticsGrid />
 
       <FooterSection onAddToCart={handleAddToCart} />
 
