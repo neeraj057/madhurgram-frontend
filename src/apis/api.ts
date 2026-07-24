@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   // 📊 Analytics Endpoints
   getDailyAnalytics: (days: number = 7) => `${BASE_URL}/api/v1/admin/analytics/daily?days=${days}`,
   adminProducts: `${BASE_URL}/api/v1/admin/products`,
+  adminCategories: `${BASE_URL}/api/v1/products/categories`,
   adminTaxSlabs: `${BASE_URL}/api/v1/admin/tax-slabs`,
   adminCustomers: `${BASE_URL}/api/v1/admin/customers`,
   adminMarketingBroadcast: `${BASE_URL}/api/v1/admin/marketing/broadcast`,

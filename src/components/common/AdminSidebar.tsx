@@ -16,6 +16,7 @@ import {
   Undo2,
   Percent,
   Ticket,
+  LayoutTemplate,
 } from "lucide-react";
 
 export const AdminSidebar = () => {
@@ -33,6 +34,7 @@ export const AdminSidebar = () => {
     { name: "Procurement", href: "/admin/procurement", icon: ClipboardList },
     { name: "Returns Portal", href: "/admin/returns", icon: Undo2 },
     { name: "Marketing", href: "/admin/marketing", icon: Sparkles },
+    { name: "Storefront", href: "/admin/storefront", icon: LayoutTemplate },
     { name: "Recover Sales", href: "/admin/abandoned-carts", icon: Clock },
   ];
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Header from "@/components/common/Header";
+import FlashSaleStrip from "@/components/common/FlashSaleStrip";
 import HeroSection from "@/components/common/HeroSection";
 import ProductGrid from "@/components/features/product/ProductGrid";
 import FooterSection from "@/components/common/FooterSection";
@@ -105,7 +106,8 @@ export default function Home() {
         }}
       />
       
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <FlashSaleStrip onClaimClick={() => document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' })} />
         <Header 
           activeCategory={activeCategory} 
           setActiveCategory={setActiveCategory} 
@@ -116,7 +118,7 @@ export default function Home() {
       
       <HeroSection />
       
-      <div className="w-full">
+      <div id="products-section" className="w-full scroll-mt-24">
         <ProductGrid activeCategory={activeCategory} onAddToCart={handleAddToCart} addedProductId={recentlyAddedId} />
       </div>
 
