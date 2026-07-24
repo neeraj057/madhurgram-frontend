@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from "@/apis/api";
 
 export interface HeroSlide {
   id: string | number;
-  type: "video" | "image" | "offer";
+  type: "video" | "image" | "offer" | "custom";
   bgMedia?: string;
   badge: string;
   headline: string;
@@ -61,7 +61,7 @@ export function useHeroBanners() {
         if (res.ok) {
           const config = await res.json();
           // If admin configured an active promo offer, prepend offer slide dynamically
-          if (config.heroContentType === "offer" || (config.offerTitle && config.offerTitle.trim() !== "")) {
+          if (config.heroContentType === "offer" || (config.offerTitle && config.offerTitle.trim() !== "" && config.heroContentType !== "custom")) {
             const offerSlide: HeroSlide = {
               id: "admin-offer",
               type: "offer",
@@ -74,6 +74,18 @@ export function useHeroBanners() {
               couponCode: config.offerCoupon || "",
             };
             setSlides([offerSlide, ...DEFAULT_SLIDES]);
+          } else if (config.heroContentType === "custom") {
+            const customSlide: HeroSlide = {
+              id: "admin-custom",
+              type: "custom",
+              bgMedia: config.customImageUrl || "/images/hero_offer.png",
+              badge: "",
+              headline: "",
+              subtitle: "",
+              ctaText: "",
+              ctaLink: config.offerLink || "/#products",
+            };
+            setSlides([customSlide, ...DEFAULT_SLIDES]);
           } else {
             setSlides(DEFAULT_SLIDES);
           }
