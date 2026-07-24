@@ -4,12 +4,13 @@ import { getBlogBySlug } from '@/services/blogService';
 import Link from 'next/link';
 
 interface BlogPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // Dynamic SEO Generation using SSR
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
-  const blog = await getBlogBySlug(params.slug);
+  const resolvedParams = await params;
+  const blog = await getBlogBySlug(resolvedParams.slug);
   if (!blog) {
     return { title: 'Story Not Found | MadhurGram' };
   }
@@ -23,7 +24,8 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const blog = await getBlogBySlug(params.slug);
+  const resolvedParams = await params;
+  const blog = await getBlogBySlug(resolvedParams.slug);
 
   if (!blog) {
     return (
@@ -43,52 +45,79 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
   });
 
   return (
-    <div className="bg-[#FAF9F5] min-h-screen pt-24 pb-20">
-      <div className="max-w-4xl mx-auto px-6 md:px-16">
-        
-        {/* Back Link */}
-        <div className="mb-8 animate-fadeIn">
-          <Link href="/blog" className="text-[10px] uppercase tracking-widest font-bold text-gray-400 hover:text-[#D4AF37] transition-colors">
-            ← Back to Stories
-          </Link>
-        </div>
-
-        {/* Header Section */}
-        <div className="text-center mb-10 animate-fadeIn">
-          <span className="text-[10px] font-bold tracking-widest text-[#D4AF37] uppercase bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
-            {blog.category}
-          </span>
-          <h1 className="mt-6 font-serif text-3xl md:text-5xl font-bold text-[#111111] leading-tight">
-            {blog.title}
-          </h1>
-          <div className="mt-6 flex items-center justify-center gap-3 text-xs text-gray-500 font-mono">
-            <span>{formattedDate}</span>
-            <span>•</span>
-            <span className="font-bold text-[#111111]">By {blog.author}</span>
-          </div>
-        </div>
-
-        {/* Hero Image */}
+    <div className="bg-[#FAF9F5] min-h-screen pb-20">
+      
+      {/* Cinematic Hero Section */}
+      <div className="relative w-full h-[60vh] md:h-[80vh] min-h-[400px] bg-[#111111]">
         {blog.imageUrl && (
-          <div className="w-full h-64 md:h-[400px] rounded-3xl overflow-hidden mb-12 shadow-lg animate-fadeIn">
-            <img 
-              src={blog.imageUrl} 
-              alt={blog.title} 
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <img 
+            src={blog.imageUrl} 
+            alt={blog.title} 
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          />
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F5] via-black/40 to-black/10" />
+        
+        <div className="absolute bottom-0 left-0 w-full px-6 md:px-16 pb-16 md:pb-24 pt-32">
+          <div className="max-w-4xl mx-auto">
+            {/* Back Link */}
+            <Link href="/blog" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-bold text-white/70 hover:text-[#D4AF37] transition-colors mb-8">
+              <span className="text-[#D4AF37]">←</span> Back to Journal
+            </Link>
+            
+            <div className="animate-slideUp">
+              <span className="inline-block text-[10px] font-bold tracking-widest text-[#111111] uppercase bg-[#F7D070] px-4 py-1.5 rounded-full mb-6">
+                {blog.category}
+              </span>
+              <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-8 drop-shadow-lg">
+                {blog.title}
+              </h1>
+              
+              <div className="flex items-center gap-4 text-xs text-white/80 font-mono tracking-wider">
+                <span>{formattedDate}</span>
+                <span className="text-[#D4AF37]">✦</span>
+                <span className="font-bold text-white">By {blog.author}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Article Content */}
+      <div className="max-w-3xl mx-auto px-6 md:px-16 mt-16 md:mt-24">
+        {/* Article Content - Editorial Style */}
         <article 
-          className="prose prose-lg md:prose-xl prose-stone max-w-none prose-headings:font-serif prose-headings:text-[#111111] prose-a:text-[#D4AF37] prose-p:text-gray-700 animate-fadeIn"
+          className="prose prose-lg md:prose-xl prose-stone max-w-none 
+          prose-headings:font-serif prose-headings:text-[#111111] prose-headings:font-bold
+          prose-h2:text-3xl prose-h3:text-2xl
+          prose-a:text-[#D4AF37] prose-a:decoration-[#D4AF37]/30 hover:prose-a:decoration-[#D4AF37]
+          prose-p:text-gray-700 prose-p:leading-relaxed
+          prose-blockquote:border-l-[#D4AF37] prose-blockquote:bg-white prose-blockquote:p-6 prose-blockquote:rounded-r-xl prose-blockquote:shadow-sm prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:text-gray-800 prose-blockquote:italic
+          prose-ul:list-none prose-li:relative
+          [&>p:first-of-type]:first-letter:text-7xl [&>p:first-of-type]:first-letter:font-serif [&>p:first-of-type]:first-letter:text-[#D4AF37] [&>p:first-of-type]:first-letter:mr-3 [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:leading-[0.8] [&>p:first-of-type]:first-letter:mt-2
+          animate-fadeIn delay-300"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
 
-        <div className="mt-16 pt-8 border-t border-gray-200 text-center animate-fadeIn">
-          <p className="text-sm text-gray-500 mb-6">Experience the purity of our village products.</p>
-          <Link href="/shop" className="bg-[#111111] text-[#FDFBF7] px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#D4AF37] hover:text-[#111111] transition-colors shadow-md">
-            Explore the Shop
+        {/* Elegant Author Bio */}
+        <div className="mt-20 pt-12 border-t border-[#EAE3D1] animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <div className="w-20 h-20 rounded-full bg-[#111111] flex items-center justify-center shrink-0 border border-[#D4AF37]/30">
+              <span className="text-[#D4AF37] font-serif text-3xl font-bold">{blog.author.charAt(0)}</span>
+            </div>
+            <div className="text-center sm:text-left">
+              <h4 className="font-serif text-xl font-bold text-[#111111] mb-2">{blog.author}</h4>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Dedicated to bringing the authentic taste of the village to your table. We explore traditional methods, uncompromised purity, and the rich heritage of Indian farming.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="mt-16 text-center animate-fadeIn">
+          <p className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest">Experience the purity</p>
+          <Link href="/#products" className="inline-block bg-[#111111] text-[#F7D070] px-10 py-4 rounded-full font-bold uppercase tracking-[0.2em] text-xs hover:bg-[#D4AF37] hover:text-[#111111] hover:scale-105 hover:shadow-[0_10px_20px_rgba(212,175,55,0.2)] transition-all duration-300">
+            Explore Our Shop
           </Link>
         </div>
 

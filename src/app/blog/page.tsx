@@ -33,11 +33,11 @@ export default async function BlogIndexPage() {
         </div>
 
         {blogs.length === 0 ? (
-          <div className="text-center py-20 text-gray-400 tracking-widest text-sm border border-dashed border-gray-300 rounded-2xl bg-white/50">
+          <div className="text-center py-20 text-gray-400 tracking-widest text-sm border border-dashed border-[#EAE3D1] rounded-3xl bg-white/50">
             No stories published yet. Check back soon!
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-10 lg:gap-16">
             {blogs.map((blog) => (
               <BlogCard key={blog.id} blog={blog} />
             ))}
