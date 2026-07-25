@@ -867,17 +867,17 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center max-sm:items-end p-4 max-sm:p-0 bg-black/75 backdrop-blur-sm transition-all duration-300">
       <div className="absolute inset-0" onClick={!placedOrderId && !isSubmitting ? onClose : undefined} />
       
-      <div className="relative w-full max-w-lg bg-[#111111]/70 backdrop-blur-xl text-[#FDFBF7] rounded-3xl p-8 border border-[#D4AF37]/30 shadow-[0_0_50px_rgba(212,175,55,0.15)] z-10 max-h-[90vh] flex flex-col transition-all duration-500">
+      <div className="relative w-full max-w-lg bg-[#FCFAF6] text-[#111111] rounded-[28px] max-sm:rounded-t-3xl max-sm:rounded-b-none p-6 sm:p-8 border border-[#EAE3D1] sm:border-[#D4AF37]/35 shadow-[0_20px_60px_-15px_rgba(212,175,55,0.15)] z-10 max-sm:h-[88vh] max-sm:max-h-[88vh] sm:max-h-[90vh] flex flex-col transition-all duration-500 max-sm:animate-slideUpMobile">
         
         {/* Top Right Close Button */}
         {!placedOrderId && !isSubmitting && (
           <button 
             type="button"
             onClick={onClose}
-            className="absolute top-5 right-5 p-1.5 rounded-full bg-white/5 border border-gray-800 text-gray-400 hover:text-white hover:bg-white/10 transition-colors z-20 shadow-sm"
+            className="absolute top-5 right-5 p-1.5 rounded-full bg-gray-100 border border-gray-200 text-gray-400 hover:text-gray-900 hover:bg-gray-200/80 transition-colors z-20 shadow-sm cursor-pointer"
             title="Close Checkout"
           >
             <X className="h-4.5 w-4.5" />
@@ -887,20 +887,20 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
         {/* 🎉 Success Screen */}
         {placedOrderId ? (
           <div className="flex flex-col items-center text-center py-6 animate-fadeIn overflow-y-auto">
-            <div className="h-20 w-20 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mb-6 border border-[#D4AF37]/30 text-[#D4AF37] animate-bounce">
+            <div className="h-20 w-20 rounded-full bg-[#D4AF37]/10 flex items-center justify-center mb-6 border border-[#D4AF37]/30 text-[#8C6B1C] animate-bounce">
               <CheckCircle2 className="h-12 w-12" />
             </div>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase">Order Confirmed</span>
-            <h3 className="font-serif text-3xl font-bold tracking-wide mt-2">Aapka Koshish, Hamara Vaada!</h3>
-            <div className="mt-4 bg-[#161616] border border-gray-800/60 px-6 py-3 rounded-xl font-mono text-xs text-gray-400">
-              Order ID: <span className="text-[#D4AF37] font-bold">MG-000{placedOrderId}</span>
+            <span className="text-[10px] font-bold tracking-[0.3em] text-[#8C6B1C] uppercase">Order Confirmed</span>
+            <h3 className="font-serif text-3xl font-bold tracking-wide mt-2 text-[#111111]">Aapka Koshish, Hamara Vaada!</h3>
+            <div className="mt-4 bg-[#FAF6EC] border border-[#EAE3D1] px-6 py-3 rounded-xl font-mono text-xs text-gray-700">
+              Order ID: <span className="text-[#8C6B1C] font-bold">MG-000{placedOrderId}</span>
             </div>
-            <p className="text-xs text-gray-500 max-w-sm mt-6 leading-relaxed font-light">
+            <p className="text-xs text-gray-600 max-w-sm mt-6 leading-relaxed font-light">
               Thank you for supporting traditional village artisans. Your batch of pure, handcrafted essentials is being securely packed at our MadhurGram facility and will be dispatched shortly.
             </p>
             <button 
               onClick={handleFinalClose}
-              className="mt-8 w-full py-4 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-widest flex items-center justify-center space-x-2 hover:bg-[#FDFBF7] transition-all group active:scale-95"
+              className="mt-8 w-full py-4 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-widest flex items-center justify-center space-x-2 hover:bg-[#111111] hover:text-[#FDFBF7] transition-all group active:scale-95 cursor-pointer shadow-sm"
             >
               <span>Continue Shopping</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -911,17 +911,17 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
             <div className="space-y-6 flex-1 flex flex-col justify-center items-center">
               <div className="relative flex items-center justify-center">
                 <div className="absolute inset-0 rounded-full bg-[#D4AF37]/10 animate-ping h-20 w-20" />
-                <div className="h-16 w-16 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37]">
+                <div className="h-16 w-16 rounded-full bg-[#D4AF37]/25 border border-[#D4AF37]/45 flex items-center justify-center text-[#8C6B1C]">
                   <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <span className="text-[9px] font-bold tracking-[0.2em] text-[#D4AF37] uppercase">Secure Processing</span>
-                <h4 className="font-serif text-xl font-bold tracking-wide text-white">
+                <span className="text-[9px] font-bold tracking-[0.2em] text-[#8C6B1C] uppercase">Secure Processing</span>
+                <h4 className="font-serif text-xl font-bold tracking-wide text-[#111111]">
                   {selectedUpiApp ? `Opening ${selectedUpiApp}...` : `Request Sent`}
                 </h4>
-                <p className="text-xs text-gray-400 max-w-xs mx-auto leading-relaxed font-light">
+                <p className="text-xs text-gray-600 max-w-xs mx-auto leading-relaxed font-light">
                   {selectedUpiApp ? (
                     <>
                       We have sent a transaction request of <strong>₹{finalPayable}.00</strong> to your mobile app. Please verify and approve it on your phone.
@@ -934,14 +934,14 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 </p>
               </div>
 
-              <div className="bg-[#161616] px-4 py-2 border border-gray-800 rounded-full font-mono text-[10px] text-gray-500">
-                Verifying transaction status in <span className="text-[#D4AF37] font-bold">{upiCountdown}s</span>...
+              <div className="bg-[#FAF6EC] px-6 py-2 border border-[#EAE3D1] rounded-full font-mono text-[10px] text-gray-600 shadow-sm">
+                Verifying transaction status in <span className="text-[#8C6B1C] font-bold">{upiCountdown}s</span>...
               </div>
             </div>
 
             <button
               onClick={handleSimulatedPaymentCancel}
-              className="mt-6 w-full py-3.5 border border-gray-800 text-gray-400 hover:text-white rounded-lg text-xs uppercase tracking-widest transition-colors font-bold"
+              className="mt-6 w-full py-3.5 border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg text-xs uppercase tracking-widest transition-colors font-bold cursor-pointer"
             >
               Cancel Payment
             </button>
@@ -980,10 +980,10 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
             </div>
             
             <div className="mt-6 space-y-6 overflow-y-auto flex-1 pr-2 custom-scrollbar text-center py-4">
-              <div className="bg-[#161616] border border-gray-800/80 p-5 rounded-2xl max-w-sm mx-auto space-y-3">
-                <span className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">MadhurGram Checkout</span>
-                <p className="text-2xl font-mono font-bold text-white">₹{finalPayable}.00</p>
-                <div className="text-[10px] text-gray-500">Simulated Test Mode</div>
+              <div className="bg-[#FAF6EC] border border-[#EAE3D1] p-5 rounded-2xl max-w-sm mx-auto space-y-3 shadow-sm">
+                <span className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block font-bold">MadhurGram Checkout</span>
+                <p className="text-2xl font-mono font-bold text-[#111111]">₹{finalPayable}.00</p>
+                <div className="text-[10px] text-gray-500 font-medium">Simulated Test Mode</div>
               </div>
 
               {paymentTab === "UPI" ? (
@@ -994,28 +994,28 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         setSelectedUpiApp("PhonePe");
                         setCustomUpiId("");
                       }} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
-                        selectedUpiApp === "PhonePe" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
+                      className={`bg-white border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "PhonePe" ? "border-[#D4AF37] bg-[#FAF6EC] shadow-sm" : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0 border border-gray-100">
                         <svg viewBox="0 0 100 100" className="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <rect width="100" height="100" rx="20" fill="#5F259F"/>
                           <path d="M50 20C33.4 20 20 33.4 20 50C20 66.6 33.4 80 50 80C66.6 80 80 66.6 80 50C80 33.4 66.6 20 50 20ZM53 62H42V38H53C58 38 61 40 61 44C61 48 58 50 53 50H49V56H53C55.8 56 57.5 57.5 57.5 60C57.5 61.2 57 62 53 62Z" fill="white"/>
                         </svg>
                       </div>
-                      <span className="text-[10px] font-bold text-gray-300">PhonePe</span>
+                      <span className="text-[10px] font-bold text-gray-700">PhonePe</span>
                     </div>
                     <div 
                       onClick={() => {
                         setSelectedUpiApp("Google Pay");
                         setCustomUpiId("");
                       }} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
-                        selectedUpiApp === "Google Pay" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
+                      className={`bg-white border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "Google Pay" ? "border-[#D4AF37] bg-[#FAF6EC] shadow-sm" : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0 border border-gray-100">
                         <svg viewBox="0 0 24 24" className="w-7 h-7" xmlns="http://www.w3.org/2000/svg">
                           <path d="M21.35 11.1c0-.7-.06-1.35-.17-2H12v3.8h5.25c-.23 1.2-1 2.2-2.05 2.9v2.4h3.3c1.9-1.75 3-4.35 3-7.1z" fill="#4285F4"/>
                           <path d="M12 20.6c2.7 0 5-.9 6.6-2.4l-3.3-2.4c-.9.6-2.05 1-3.3 1-2.55 0-4.7-1.7-5.45-4H3.2v2.5c1.6 3.2 4.9 5.3 8.8 5.3z" fill="#34A853"/>
@@ -1023,26 +1023,26 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                           <path d="M12 6.4c1.45 0 2.75.5 3.8 1.5l2.85-2.85C16.9 3.4 14.65 2.5 12 2.5c-3.9 0-7.2 2.1-8.8 5.3l3.35 2.9c.75-2.3 2.9-4.1 5.45-4.1z" fill="#EA4335"/>
                         </svg>
                       </div>
-                      <span className="text-[10px] font-bold text-gray-300">Google Pay</span>
+                      <span className="text-[10px] font-bold text-gray-700">Google Pay</span>
                     </div>
                     <div 
                       onClick={() => {
                         setSelectedUpiApp("Paytm");
                         setCustomUpiId("");
                       }} 
-                      className={`bg-[#161616] border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
-                        selectedUpiApp === "Paytm" ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-gray-800 hover:border-gray-700"
+                      className={`bg-white border p-3.5 rounded-xl cursor-pointer transition-all flex flex-col items-center gap-2.5 active:scale-95 ${
+                        selectedUpiApp === "Paytm" ? "border-[#D4AF37] bg-[#FAF6EC] shadow-sm" : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                      <div className="h-10 w-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0 border border-gray-100">
                         <span className="text-[#002970] font-black font-sans text-xs italic tracking-tighter">pay<span className="text-[#00BAF2]">tm</span></span>
                       </div>
-                      <span className="text-[10px] font-bold text-gray-300">Paytm</span>
+                      <span className="text-[10px] font-bold text-gray-700">Paytm</span>
                     </div>
                   </div>
 
-                  <div className="text-left bg-[#161616]/40 p-4 rounded-xl border border-gray-800/40 space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">Or Enter UPI ID</label>
+                  <div className="text-left bg-[#FAF6EC]/60 p-4 rounded-xl border border-[#EAE3D1] space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block font-bold">Or Enter UPI ID</label>
                     <input 
                       type="text" 
                       placeholder="e.g. customer@okaxis" 
@@ -1051,24 +1051,24 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         setCustomUpiId(e.target.value);
                         setSelectedUpiApp(null);
                       }}
-                      className="w-full bg-black/60 border border-gray-800 focus:border-[#D4AF37]/50 rounded-lg p-2.5 text-xs text-gray-200 font-mono focus:outline-none transition-colors" 
+                      className="w-full bg-white border border-[#EAE3D1] focus:border-[#D4AF37] rounded-lg p-2.5 text-xs text-[#111111] font-mono focus:outline-none transition-colors" 
                     />
                   </div>
                 </div>
               ) : (
-                <div className="text-left max-w-sm mx-auto space-y-4 bg-[#161616]/40 p-5 rounded-2xl border border-gray-800/40">
+                <div className="text-left max-w-sm mx-auto space-y-4 bg-[#FAF6EC]/60 p-5 rounded-2xl border border-[#EAE3D1]">
                   <div className="space-y-1">
                     <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">Dummy Card Number</label>
-                    <input type="text" disabled value="4242 4242 4242 4242" className="w-full bg-black/60 border border-gray-800 rounded-lg p-2.5 text-xs text-gray-400 font-mono focus:outline-none" />
+                    <input type="text" disabled value="4242 4242 4242 4242" className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs text-gray-500 font-mono focus:outline-none" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">Expiry</label>
-                      <input type="text" disabled value="12 / 29" className="w-full bg-black/60 border border-gray-800 rounded-lg p-2.5 text-xs text-gray-400 font-mono focus:outline-none" />
+                      <input type="text" disabled value="12 / 29" className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs text-gray-500 font-mono focus:outline-none" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">CVV</label>
-                      <input type="text" disabled value="***" className="w-full bg-black/60 border border-gray-800 rounded-lg p-2.5 text-xs text-gray-400 font-mono focus:outline-none" />
+                      <input type="text" disabled value="***" className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-xs text-gray-500 font-mono focus:outline-none" />
                     </div>
                   </div>
                 </div>
@@ -1081,19 +1081,19 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
               )}
             </div>
 
-            <div className="border-t border-gray-800 pt-4 mt-6 shrink-0 bg-[#111111]">
+            <div className="border-t border-[#EAE3D1] pt-4 mt-6 shrink-0 bg-[#FCFAF6]">
               <div className="flex space-x-3">
                 <button
                   disabled={isSubmitting}
                   onClick={handleSimulatedPaymentCancel}
-                  className="flex-1 py-3.5 border border-gray-800 text-gray-400 rounded-lg text-xs uppercase tracking-wider hover:bg-gray-900 transition-colors disabled:opacity-50"
+                  className="flex-1 py-3.5 border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg text-xs uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   disabled={isSubmitting || (paymentTab === "UPI" && !selectedUpiApp && !customUpiId.trim())}
                   onClick={handlePayClick}
-                  className="flex-1 py-3.5 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-3.5 bg-[#D4AF37] text-[#111111] font-bold rounded-lg text-xs uppercase tracking-wider hover:bg-[#111111] hover:text-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -1109,29 +1109,29 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
           </div>
         ) : (
           /* 📦 Smart Shipping Flow */
-          <div className="flex flex-col h-full max-h-full overflow-hidden relative">
+          <div className="flex flex-col h-full max-h-full overflow-hidden relative text-[#111111]">
             
-            <h3 className="font-serif text-3xl font-bold tracking-wide text-center bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] bg-clip-text text-transparent pb-1 shrink-0">
-              Shipping Information
+            <h3 className="font-serif text-2xl font-bold tracking-wide text-center text-[#8C6B1C] pb-1 shrink-0 mt-1">
+              Shipping & Delivery
             </h3>
             
             {/* Step Progress Indicator */}
             <div className="flex items-center justify-center gap-2 mb-2 mt-2 shrink-0 select-none">
-              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                 checkoutStep === 1 
-                  ? "bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/35" 
-                  : "bg-[#161616] text-gray-500 border border-transparent cursor-pointer"
+                  ? "bg-[#D4AF37]/15 text-[#8C6B1C] border border-[#D4AF37]/35 shadow-sm" 
+                  : "bg-gray-100 text-gray-400 border border-gray-200/60 cursor-pointer hover:bg-gray-200"
               }`} onClick={() => setCheckoutStep(1)}>
-                <span className="h-4 w-4 rounded-full bg-black/40 flex items-center justify-center text-[10px]">1</span>
+                <span className="h-4 w-4 rounded-full bg-white flex items-center justify-center text-[10px] shadow-sm font-mono">1</span>
                 <span>Address</span>
               </div>
-              <div className="h-[1px] w-8 bg-gray-800" />
-              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+              <div className="h-[1px] w-8 bg-[#EAE3D1]" />
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                 checkoutStep === 2 
-                  ? "bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/35" 
-                  : "bg-[#161616] text-gray-500 border border-transparent"
+                  ? "bg-[#D4AF37]/15 text-[#8C6B1C] border border-[#D4AF37]/35 shadow-sm" 
+                  : "bg-gray-100 text-gray-400 border border-gray-200/60"
               }`}>
-                <span className="h-4 w-4 rounded-full bg-black/40 flex items-center justify-center text-[10px]">2</span>
+                <span className="h-4 w-4 rounded-full bg-white flex items-center justify-center text-[10px] shadow-sm font-mono">2</span>
                 <span>Payment</span>
               </div>
             </div>
@@ -1142,13 +1142,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 /* Step 1: Address Details View */
                 <div className="space-y-6 animate-fadeIn">
                   {/* Step 1: Contact Info */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[#111111]">
                     <div>
-                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold flex items-center justify-between">
+                      <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1.5 font-bold flex items-center justify-between">
                         <span>Phone Number</span>
                         {isPhoneVerified ? (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[8px] bg-green-500/20 text-green-400 border border-green-500/35 px-1.5 py-0.5 rounded uppercase tracking-wider font-extrabold select-none">Verified</span>
+                            <span className="text-[8px] bg-green-500/20 text-green-600 border border-green-500/35 px-1.5 py-0.5 rounded uppercase tracking-wider font-extrabold select-none">Verified</span>
                             <button 
                               type="button" 
                               onClick={() => {
@@ -1156,7 +1156,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                                 setOtpSent(false);
                                 setOtpCode("");
                               }}
-                              className="text-[9px] text-[#D4AF37] hover:underline font-bold"
+                              className="text-[9px] text-[#8C6B1C] hover:underline font-bold"
                             >
                               Edit
                             </button>
@@ -1164,7 +1164,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         ) : null}
                       </label>
                       <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-mono">+91</span>
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-mono">+91</span>
                         <input 
                           required 
                           type="tel" 
@@ -1172,29 +1172,29 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                           value={phone} 
                           disabled={isPhoneVerified}
                           onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl pl-12 pr-3 py-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono disabled:opacity-60 disabled:cursor-not-allowed" placeholder="10-digit number" 
+                          className="w-full bg-white border border-[#EAE3D1] focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl pl-12 pr-3 py-3 text-sm text-[#111111] focus:outline-none transition-all placeholder-gray-400 font-mono disabled:opacity-60 disabled:cursor-not-allowed" placeholder="10-digit number" 
                         />
-                        {isLoadingProfile && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#D4AF37]" />}
+                        {isLoadingProfile && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#8C6B1C]" />}
                       </div>
                     </div>
                     <div>
-                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">Full Name</label>
+                      <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1.5 font-bold">Full Name</label>
                       <input 
                         required 
                         type="text" 
                         value={fullName} 
                         disabled={isPhoneVerified}
                         onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
-                        className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono disabled:opacity-60 disabled:cursor-not-allowed" placeholder="Enter your name" 
+                        className="w-full bg-white border border-[#EAE3D1] focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] focus:outline-none transition-all placeholder-gray-400 disabled:opacity-60 disabled:cursor-not-allowed" placeholder="Enter your name" 
                       />
                     </div>
                   </div>
      
                   {/* Locked/Guidance State */}
                   {(phone.length < 10 || fullName.trim().length < 2) && (
-                    <div className="bg-[#161616]/40 backdrop-blur-md border border-gray-800/80 rounded-2xl p-8 text-center space-y-4 shadow-inner animate-fadeIn">
-                      <MapPin className="h-10 w-10 text-gray-600 mx-auto animate-pulse" />
-                      <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Delivery Destination</h4>
+                    <div className="bg-white border border-[#EAE3D1] rounded-2xl p-8 text-center space-y-4 shadow-sm animate-fadeIn">
+                      <MapPin className="h-10 w-10 text-gray-400 mx-auto animate-pulse" />
+                      <h4 className="text-sm font-bold text-gray-600 uppercase tracking-widest">Delivery Destination</h4>
                       <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed font-light">
                         Enter your name and a valid 10-digit phone number above to proceed with the delivery address.
                       </p>
@@ -1203,8 +1203,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                   {/* 🔐 OTP Verification Flow Box */}
                   {phone.length === 10 && fullName.trim().length >= 2 && !isPhoneVerified && (
-                    <div className="bg-[#161616]/60 backdrop-blur-md border border-[#D4AF37]/20 rounded-2xl p-6 text-center space-y-4 shadow-md animate-fadeIn">
-                      <div className="text-xs text-gray-400 font-medium">
+                    <div className="bg-[#FAF6EC] border border-[#D4AF37]/25 rounded-2xl p-6 text-center space-y-4 shadow-sm animate-fadeIn">
+                      <div className="text-xs text-gray-600 font-medium">
                         {!otpSent 
                           ? "Security Check: We need to verify your phone number before retrieving or saving your addresses."
                           : `Enter the 4-digit verification code sent to +91 ${phone}`
@@ -1216,7 +1216,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                           type="button"
                           onClick={handleSendOtp}
                           disabled={isSendingOtp}
-                          className="w-full py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#FDFBF7] transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                          className="w-full py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#111111] hover:text-[#FDFBF7] transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
                         >
                           {isSendingOtp ? (
                             <>
@@ -1236,7 +1236,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               placeholder="••••"
                               value={otpCode}
                               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                              className="bg-black/60 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl px-6 py-3 text-center text-xl font-bold tracking-[0.7em] text-[#D4AF37] focus:outline-none w-32"
+                              className="bg-white border border-[#EAE3D1] focus:border-[#D4AF37] rounded-xl px-6 py-3 text-center text-xl font-bold tracking-[0.7em] text-[#111111] focus:outline-none w-32 shadow-inner"
                             />
                           </div>
                           
@@ -1245,7 +1245,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               type="button"
                               onClick={handleSendOtp}
                               disabled={isSendingOtp}
-                              className="flex-1 py-3 border border-gray-800 text-gray-400 hover:text-white rounded-xl text-xs uppercase tracking-widest font-bold transition-all disabled:opacity-50"
+                              className="flex-1 py-3 border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-xl text-xs uppercase tracking-widest font-bold transition-all disabled:opacity-50 cursor-pointer"
                             >
                               Resend
                             </button>
@@ -1253,7 +1253,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               type="button"
                               onClick={handleVerifyOtp}
                               disabled={isVerifyingOtp || otpCode.length !== 4}
-                              className="flex-1 py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                              className="flex-1 py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#111111] hover:text-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                             >
                               {isVerifyingOtp ? (
                                 <>
@@ -1272,12 +1272,12 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                   {/* Step 2: Address Selection */}
                   {isPhoneVerified && profile && !isAddingNew && (
-                    <div className="space-y-4 animate-fadeIn">
+                    <div className="space-y-4 animate-fadeIn text-[#111111]">
                       <div className="flex items-center justify-between">
-                        <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">Saved Address</label>
+                        <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block font-bold">Saved Address</label>
                         <button 
                           onClick={() => setIsAddingNew(true)} 
-                          className="text-xs text-[#D4AF37] flex items-center gap-1 hover:underline font-bold"
+                          className="text-xs text-[#8C6B1C] hover:text-[#111111] flex items-center gap-1 font-bold cursor-pointer"
                         >
                           <Plus className="h-3.5 w-3.5" /> Add New Address
                         </button>
@@ -1291,13 +1291,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               onClick={() => setSelectedAddressId(addr.id!)}
                               className={`cursor-pointer p-4 rounded-xl border transition-all duration-300 ${
                                 isSelected 
-                                  ? "bg-[#D4AF37]/10 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.05)]" 
-                                  : "bg-[#161616] border-gray-800 hover:border-gray-700"
+                                  ? "bg-[#FAF6EC] border-[#D4AF37] shadow-[0_4px_15px_rgba(212,175,55,0.08)]" 
+                                  : "bg-white border-[#EAE3D1] hover:border-gray-300 text-gray-700"
                               }`}
                             >
                               <div className="flex items-start gap-3 justify-between">
                                 <div className="flex items-start gap-3 flex-1">
-                                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#D4AF37]/20 text-[#D4AF37]" : "bg-black/40 text-gray-500"}`}>
+                                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#D4AF37]/15 text-[#8C6B1C]" : "bg-gray-100 text-gray-400"}`}>
                                     {addr.addressType === 'HOME' ? (
                                       <Home className="h-4 w-4" />
                                     ) : addr.addressType === 'OFFICE' ? (
@@ -1308,16 +1308,16 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                                   </div>
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
-                                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300">
+                                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600">
                                         {addr.addressType}
                                       </span>
                                       {addr.isDefault && (
-                                        <span className="text-[8px] bg-gray-800 px-1.5 py-0.5 rounded text-gray-400 font-bold uppercase">
+                                        <span className="text-[8px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-bold uppercase">
                                           Default
                                         </span>
                                       )}
                                     </div>
-                                    <p className="text-sm text-gray-400 font-light leading-relaxed">
+                                    <p className="text-sm text-gray-600 font-light leading-relaxed">
                                       {addr.fullAddress}, {addr.city}, {addr.state} - <span className="font-mono text-xs">{addr.pincode}</span>
                                     </p>
                                   </div>
@@ -1330,7 +1330,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                                     e.stopPropagation(); // prevent address card selection
                                     performAddressDelete(addr.id!);
                                   }}
-                                  className="text-gray-500 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-500/10 transition-all active:scale-95 self-start shrink-0"
+                                  className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50/60 transition-all active:scale-95 self-start shrink-0 cursor-pointer"
                                   title="Delete Address"
                                 >
                                   <Trash2 className="h-4.5 w-4.5" />
@@ -1345,34 +1345,34 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                   {/* Step 3: Add New Address Form (Rendered inline for unified submission) */}
                   {isPhoneVerified && profile && isAddingNew && (
-                    <div className="space-y-4 animate-fadeIn">
+                    <div className="space-y-4 animate-fadeIn text-[#111111]">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] uppercase tracking-widest text-[#D4AF37] block font-bold font-serif">Delivery Address</label>
+                        <label className="text-[10px] uppercase tracking-widest text-[#8C6B1C] block font-bold font-serif">Delivery Address</label>
                         {profile.addresses.length > 0 && (
                           <button 
                             type="button" 
                             onClick={() => setIsAddingNew(false)} 
-                            className="text-xs text-gray-500 hover:text-white"
+                            className="text-xs text-gray-500 hover:text-gray-850 cursor-pointer font-bold"
                           >
                             Cancel
                           </button>
                         )}
                       </div>
                       
-                      <div className="space-y-4 bg-[#161616]/40 backdrop-blur-md p-5 rounded-2xl border border-[#D4AF37]/20 shadow-inner">
+                      <div className="space-y-4 bg-white p-5 rounded-2xl border border-[#EAE3D1] shadow-sm">
                         {/* Address Type Selection */}
                         <div>
-                          <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-2 font-bold">Address Type</label>
+                          <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-2 font-bold">Address Type</label>
                           <div className="flex gap-2">
                             {['HOME', 'OFFICE', 'OTHER'].map((type) => (
                               <button 
                                 key={type} 
                                 type="button" 
                                 onClick={() => setNewAddress({...newAddress, addressType: type as AddressType})} 
-                                className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all duration-200 ${
+                                className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all duration-200 cursor-pointer ${
                                   newAddress.addressType === type 
                                     ? "bg-[#D4AF37] text-[#111111] border-[#D4AF37]" 
-                                    : "bg-black/40 text-gray-400 border-gray-800 hover:border-gray-700"
+                                    : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
                                 }`}
                               >
                                 {type}
@@ -1383,7 +1383,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                         {/* Full Address */}
                         <div>
-                          <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Full Address (House, Street, Village / पूरा पता)</label>
+                          <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1 font-bold">Full Address (House, Street, Village / पूरा पता)</label>
                           <div className="relative">
                             <input 
                               ref={inputRef}
@@ -1400,17 +1400,17 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               onBlur={() => {
                                   setTimeout(() => setShowDropdown(false), 200);
                               }}
-                              className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                              className="w-full bg-white border border-gray-250 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] placeholder-gray-400 focus:outline-none transition-all" 
                             />
                             {showDropdown && suggestions.length > 0 && !googleMapsKey && (
-                              <div className="absolute left-0 right-0 mt-1 bg-[#161616] border border-gray-800 rounded-xl overflow-hidden shadow-2xl z-50 divide-y divide-gray-900/60 max-h-48 overflow-y-auto">
+                              <div className="absolute left-0 right-0 mt-1 bg-white border border-[#EAE3D1] rounded-xl overflow-hidden shadow-2xl z-50 divide-y divide-gray-100 max-h-48 overflow-y-auto">
                                 {suggestions.map((loc, idx) => (
                                   <div
                                     key={idx}
                                     onClick={() => handleSelectSuggestion(loc)}
-                                    className="px-4 py-2.5 text-xs text-gray-300 hover:text-white hover:bg-[#D4AF37]/10 cursor-pointer transition-all flex items-center gap-2"
+                                    className="px-4 py-2.5 text-xs text-gray-700 hover:text-gray-900 hover:bg-[#FAF6EC] cursor-pointer transition-all flex items-center gap-2"
                                   >
-                                    <MapPin className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                                    <MapPin className="h-3.5 w-3.5 text-[#8C6B1C] shrink-0" />
                                     <span className="truncate">{loc.description}</span>
                                   </div>
                                 ))}
@@ -1422,25 +1422,25 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         {/* City and State Grid */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">City / Village (शहर / गाँव)</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1.5 font-bold">City / Village (शहर / गाँव)</label>
                             <input 
                               required 
                               type="text" 
                               placeholder="City" 
                               value={newAddress.city} 
                               onChange={(e) => setNewAddress({...newAddress, city: e.target.value.replace(/[^a-zA-Z\s]/g, "")})} 
-                              className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                              className="w-full bg-white border border-gray-250 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] placeholder-gray-400 focus:outline-none transition-all" 
                             />
                           </div>
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">State (राज्य)</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1.5 font-bold">State (राज्य)</label>
                             <input 
                               required 
                               type="text" 
                               placeholder="State" 
                               value={newAddress.state} 
                               onChange={(e) => setNewAddress({...newAddress, state: e.target.value.replace(/[^a-zA-Z\s]/g, "")})} 
-                              className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                              className="w-full bg-white border border-gray-250 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] placeholder-gray-400 focus:outline-none transition-all" 
                             />
                           </div>
                         </div>
@@ -1448,7 +1448,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         {/* Pincode & Alternative Phone Grid */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Pincode</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1 font-bold">Pincode</label>
                             <input 
                               required 
                               type="text" 
@@ -1456,18 +1456,18 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                               maxLength={6} 
                               value={newAddress.pincode} 
                               onChange={(e) => setNewAddress({...newAddress, pincode: e.target.value.replace(/\D/g, "")})} 
-                              className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                              className="w-full bg-white border border-gray-250 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] font-mono placeholder-gray-400 focus:outline-none transition-all" 
                             />
                           </div>
                           <div>
-                            <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1 font-bold">Alternative Phone (Optional)</label>
+                            <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block mb-1 font-bold">Alternative Phone (Optional)</label>
                             <input 
                               type="tel" 
                               maxLength={10} 
                               placeholder="Optional contact" 
                               value={alternativePhone} 
                               onChange={(e) => setAlternativePhone(e.target.value.replace(/\D/g, ""))} 
-                              className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] font-mono placeholder-gray-700 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all" 
+                              className="w-full bg-white border border-gray-250 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-sm text-[#111111] font-mono placeholder-gray-400 focus:outline-none transition-all" 
                             />
                           </div>
                         </div>
@@ -1477,13 +1477,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                 </div>
               ) : (
                 /* Step 2: Payment & Coupons View */
-                <div className="space-y-6 animate-fadeIn">
+                <div className="space-y-6 animate-fadeIn text-[#111111]">
                   {/* Selected Address Summary Card */}
-                  <div className="p-4 bg-[#161616] border border-gray-800 rounded-2xl flex items-center justify-between shadow-inner">
+                  <div className="p-4 bg-[#FAF6EC] border border-[#EAE3D1] rounded-2xl flex items-center justify-between shadow-sm">
                     <div className="flex-1 min-w-0">
-                      <span className="text-[9px] uppercase tracking-widest text-[#D4AF37] font-bold block mb-1">Delivering to</span>
-                      <p className="text-xs text-[#FDFBF7] font-bold truncate">{fullName} ({phone})</p>
-                      <p className="text-xs text-gray-500 font-light mt-0.5 leading-relaxed">
+                      <span className="text-[9px] uppercase tracking-widest text-[#8C6B1C] font-bold block mb-1">Delivering to</span>
+                      <p className="text-xs text-[#111111] font-bold truncate">{fullName} ({phone})</p>
+                      <p className="text-xs text-gray-600 font-light mt-0.5 leading-relaxed">
                         {isAddingNew 
                           ? `${newAddress.fullAddress}, ${newAddress.city}, ${newAddress.state} - ${newAddress.pincode}`
                           : (() => {
@@ -1498,7 +1498,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     <button 
                       type="button" 
                       onClick={() => setCheckoutStep(1)}
-                      className="text-xs text-[#D4AF37] hover:underline font-bold shrink-0 ml-4 border border-[#D4AF37]/25 px-3 py-1.5 rounded-lg bg-[#D4AF37]/5"
+                      className="text-xs text-[#8C6B1C] hover:underline font-bold shrink-0 ml-4 border border-[#D4AF37]/25 px-3 py-1.5 rounded-lg bg-white shadow-sm cursor-pointer"
                     >
                       Change
                     </button>
@@ -1506,30 +1506,30 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                   {/* Payment Method Selection */}
                   <div className="space-y-3">
-                    <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">Payment Method</label>
+                    <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block font-bold">Payment Method</label>
                     <div className="flex gap-3">
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("ONLINE")}
-                        className={`flex-1 p-4 rounded-xl border text-left transition-all duration-300 ${
+                        className={`flex-1 p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                           paymentMethod === "ONLINE"
-                            ? "bg-[#D4AF37]/10 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.05)]"
-                            : "bg-[#161616] border-gray-800 hover:border-gray-700"
+                            ? "bg-[#FAF6EC] border-[#D4AF37] shadow-sm"
+                            : "bg-white border-[#EAE3D1] hover:border-gray-300"
                         }`}
                       >
-                        <div className="font-bold text-xs text-white">Online Prepaid</div>
+                        <div className="font-bold text-xs text-[#111111]">Online Prepaid</div>
                         <div className="text-[10px] text-gray-500 mt-1">UPI, Cards, Netbanking</div>
                       </button>
                       <button
                         type="button"
                         onClick={() => setPaymentMethod("COD")}
-                        className={`flex-1 p-4 rounded-xl border text-left transition-all duration-300 ${
+                        className={`flex-1 p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
                           paymentMethod === "COD"
-                            ? "bg-[#D4AF37]/10 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.05)]"
-                            : "bg-[#161616] border-gray-800 hover:border-gray-700"
+                            ? "bg-[#FAF6EC] border-[#D4AF37] shadow-sm"
+                            : "bg-white border-[#EAE3D1] hover:border-gray-300"
                         }`}
                       >
-                        <div className="font-bold text-xs text-white">Cash on Delivery</div>
+                        <div className="font-bold text-xs text-[#111111]">Cash on Delivery</div>
                         <div className="text-[10px] text-gray-500 mt-1">Pay with cash at doorstep</div>
                       </button>
                     </div>
@@ -1537,7 +1537,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
                   {/* Coupon Code Input Section */}
                   <div className="space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block font-bold">Promo / Coupon Code</label>
+                    <label className="text-[9px] uppercase tracking-widest text-[#8C6B1C] block font-bold">Promo / Coupon Code</label>
                     <div className="flex gap-2">
                       <input 
                         type="text"
@@ -1545,13 +1545,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         value={couponInput}
                         disabled={isCouponValidating || appliedCoupon !== null}
                         onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                        className="flex-1 bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-xs text-[#FDFBF7] font-mono uppercase placeholder-gray-800 focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all"
+                        className="flex-1 bg-white border border-[#EAE3D1] focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/15 rounded-xl p-3 text-xs text-[#111111] font-mono uppercase placeholder-gray-400 focus:outline-none transition-all"
                       />
                       {appliedCoupon ? (
                         <button
                           type="button"
                           onClick={handleRemoveCoupon}
-                          className="px-4 bg-red-950/40 border border-red-500/35 hover:bg-red-950/60 text-red-400 font-bold rounded-xl text-xs uppercase tracking-wider transition-all"
+                          className="px-4 bg-red-55/40 border border-red-200 hover:bg-red-50 text-red-600 font-bold rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer"
                         >
                           Remove
                         </button>
@@ -1560,7 +1560,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                           type="button"
                           disabled={isCouponValidating || !couponInput.trim()}
                           onClick={() => handleValidateCoupon(couponInput)}
-                          className="px-5 bg-[#D4AF37] hover:bg-[#FDFBF7] text-[#111111] font-bold rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                          className="px-5 bg-[#D4AF37] hover:bg-[#111111] hover:text-[#FDFBF7] text-[#111111] font-bold rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                         >
                           {isCouponValidating ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1581,7 +1581,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                       </p>
                     )}
                     {appliedCoupon && (
-                      <p className="text-xs text-green-500 font-medium">
+                      <p className="text-xs text-green-600 font-medium">
                         ✓ Coupon "{appliedCoupon.code}" applied successfully! ({appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`} discount)
                       </p>
                     )}
@@ -1592,31 +1592,31 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
             </div>
 
             {/* 💵 Footer: Pricing & Action Buttons */}
-            <div className="border-t border-gray-800/80 pt-4 mt-6 shrink-0 bg-transparent">
-              <div className="space-y-1.5 border-b border-gray-950 pb-3 mb-3 text-xs text-gray-400 font-light">
+            <div className="border-t border-[#EAE3D1] pt-4 mt-6 shrink-0 bg-transparent">
+              <div className="space-y-1.5 border-b border-gray-100 pb-3 mb-3 text-xs text-gray-500 font-light">
                 <div className="flex justify-between">
                   <span>Cart Subtotal:</span>
-                  <span className="font-mono">₹{subtotal}.00</span>
+                  <span className="font-mono text-gray-700 font-medium">₹{subtotal}.00</span>
                 </div>
                 {appliedCoupon && (
-                  <div className="flex justify-between items-center text-sm font-medium text-green-500">
+                  <div className="flex justify-between items-center text-sm font-medium text-green-600">
                     <span>Coupon Discount ({appliedCoupon.code} - {appliedCoupon.discountType === 'PERCENTAGE' ? `${appliedCoupon.discountValue}%` : `₹${appliedCoupon.discountValue}`}):</span>
                     <span>-₹{discountAmount}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center text-sm pt-1.5 text-white border-t border-gray-900/60 font-semibold mt-1">
+                <div className="flex justify-between items-center text-sm pt-1.5 text-[#111111] border-t border-[#EAE3D1] font-semibold mt-1">
                   <span>Total Payable:</span>
-                  <span className="font-mono text-[#D4AF37] font-bold text-xl drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]">
+                  <span className="font-mono text-[#8C6B1C] font-bold text-xl drop-shadow-sm">
                     ₹{finalPayable}.00
                   </span>
                 </div>
               </div>
               
-              <div className="max-h-20 overflow-y-auto space-y-1 mb-4 bg-black/30 p-2.5 rounded-xl border border-gray-900 custom-scrollbar">
+              <div className="max-h-20 overflow-y-auto space-y-1 mb-4 bg-gray-50 p-2.5 rounded-xl border border-gray-100 custom-scrollbar">
                 {cartItems && cartItems.map(item => (
                   <div key={item.id} className="flex justify-between text-[11px] text-gray-500">
                     <span>{item.name} (x{item.quantity})</span>
-                    <span className="font-mono">₹{item.price * item.quantity}</span>
+                    <span className="font-mono text-gray-600">₹{item.price * item.quantity}</span>
                   </div>
                 ))}
               </div>
@@ -1629,7 +1629,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
 
               {checkoutStep === 2 && (
                 <p className="text-[10px] text-gray-500 mb-4 tracking-wide font-light">
-                  Payment Method: <span className="text-gray-300 font-medium">{paymentMethod === "COD" ? "Cash on Delivery (COD)" : "Online Payment (Prepaid)"}</span>
+                  Payment Method: <span className="text-gray-800 font-medium">{paymentMethod === "COD" ? "Cash on Delivery (COD)" : "Online Payment (Prepaid)"}</span>
                 </p>
               )}
               
@@ -1639,7 +1639,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     <button 
                       type="button" 
                       onClick={onClose} 
-                      className="flex-1 py-3.5 border border-gray-800 text-gray-400 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-900/60 hover:text-white transition-all active:scale-95 font-bold"
+                      className="flex-1 py-3.5 border border-gray-250 text-gray-500 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-100 hover:text-gray-805 transition-all active:scale-95 font-bold cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -1649,8 +1649,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                       disabled={!phone || phone.length < 10 || (!selectedAddressId && !isAddingNew)}
                       className={`flex-1 py-3.5 font-bold rounded-xl text-xs uppercase tracking-widest transition-all active:scale-95 text-center ${
                         (!phone || phone.length < 10 || (!selectedAddressId && !isAddingNew))
-                          ? "bg-gray-800 text-gray-500 cursor-not-allowed opacity-40 shadow-none"
-                          : "bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] hover:from-[#F3E5AB] hover:to-[#D4AF37] text-[#111111] shadow-[0_0_20px_rgba(212,175,55,0.15)] cursor-pointer"
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60 shadow-none"
+                          : "bg-[#D4AF37] hover:bg-[#111111] hover:text-[#FDFBF7] text-[#111111] shadow-sm cursor-pointer"
                       }`}
                     >
                       Continue to Payment
@@ -1661,7 +1661,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     <button 
                       type="button" 
                       onClick={() => setCheckoutStep(1)} 
-                      className="flex-1 py-3.5 border border-gray-800 text-gray-400 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-900/60 hover:text-white transition-all active:scale-95 font-bold"
+                      className="flex-1 py-3.5 border border-gray-250 text-gray-500 rounded-xl text-xs uppercase tracking-wider hover:bg-gray-100 hover:text-gray-805 transition-all active:scale-95 font-bold cursor-pointer"
                     >
                       Back to Address
                     </button>
@@ -1670,8 +1670,8 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                       disabled={isSubmitting} 
                       className={`flex-1 py-3.5 font-bold rounded-xl text-xs uppercase tracking-widest transition-all active:scale-95 text-center ${
                         isSubmitting
-                          ? "bg-gray-800 text-gray-500 cursor-not-allowed opacity-40 shadow-none"
-                          : "bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B38F00] hover:from-[#F3E5AB] hover:to-[#D4AF37] text-[#111111] shadow-[0_0_20px_rgba(212,175,55,0.15)] cursor-pointer"
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60 shadow-none"
+                          : "bg-[#D4AF37] hover:bg-[#111111] hover:text-[#FDFBF7] text-[#111111] shadow-sm cursor-pointer"
                       }`}
                     >
                       {isSubmitting ? (
