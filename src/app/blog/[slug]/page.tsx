@@ -88,12 +88,14 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         <article 
           className="prose prose-lg md:prose-xl prose-stone max-w-none 
           prose-headings:font-serif prose-headings:text-[#111111] prose-headings:font-bold
-          prose-h2:text-3xl prose-h3:text-2xl
+          prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:pb-4 prose-h2:border-b prose-h2:border-[#EAE3D1]
+          prose-h3:text-2xl prose-h3:mt-8
           prose-a:text-[#D4AF37] prose-a:decoration-[#D4AF37]/30 hover:prose-a:decoration-[#D4AF37]
-          prose-p:text-gray-700 prose-p:leading-relaxed
-          prose-blockquote:border-l-[#D4AF37] prose-blockquote:bg-white prose-blockquote:p-6 prose-blockquote:rounded-r-xl prose-blockquote:shadow-sm prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:text-gray-800 prose-blockquote:italic
-          prose-ul:list-none prose-li:relative
-          [&>p:first-of-type]:first-letter:text-7xl [&>p:first-of-type]:first-letter:font-serif [&>p:first-of-type]:first-letter:text-[#D4AF37] [&>p:first-of-type]:first-letter:mr-3 [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:leading-[0.8] [&>p:first-of-type]:first-letter:mt-2
+          prose-p:text-gray-700 prose-p:leading-[1.8] prose-p:tracking-wide
+          prose-blockquote:border-l-[3px] prose-blockquote:border-l-[#D4AF37] prose-blockquote:bg-gradient-to-r prose-blockquote:from-[#FDFBF7] prose-blockquote:to-transparent prose-blockquote:p-8 prose-blockquote:rounded-r-2xl prose-blockquote:shadow-sm prose-blockquote:font-serif prose-blockquote:text-2xl prose-blockquote:text-gray-800 prose-blockquote:italic
+          prose-ul:list-none prose-ul:pl-0 prose-li:relative prose-li:pl-8 prose-li:mb-4
+          prose-li:before:content-['✦'] prose-li:before:text-[#D4AF37] prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-1 prose-li:before:text-sm
+          [&>p:first-of-type]:first-letter:text-[90px] [&>p:first-of-type]:first-letter:font-serif [&>p:first-of-type]:first-letter:text-[#D4AF37] [&>p:first-of-type]:first-letter:mr-4 [&>p:first-of-type]:first-letter:float-left [&>p:first-of-type]:first-letter:leading-[0.7] [&>p:first-of-type]:first-letter:mt-3
           animate-fadeIn delay-300"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />

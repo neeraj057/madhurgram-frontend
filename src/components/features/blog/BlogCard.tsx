@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Blog } from '@/services/blogService';
+import BlogImage from './BlogImage';
 
 interface BlogCardProps {
   blog: Blog;
@@ -17,18 +18,13 @@ export default function BlogCard({ blog }: BlogCardProps) {
   return (
     <Link href={`/blog/${blog.slug}`} className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_20px_40px_rgba(212,175,55,0.15)] border border-[#EAE3D1] hover:border-[#D4AF37]/50 hover:-translate-y-2 transition-all duration-500 h-full">
       <div className="relative h-64 w-full bg-[#FAF9F5] overflow-hidden">
-        {blog.imageUrl ? (
-          <img 
-            src={blog.imageUrl} 
-            alt={blog.title} 
-            className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
-            onError={(e) => { e.currentTarget.src = "/images/newlogo.svg?v=2"; e.currentTarget.className = "w-full h-full object-contain p-8 opacity-30" }}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full w-full opacity-30 p-8">
-            <img src="/images/newlogo.svg?v=2" alt="MadhurGram" className="max-h-full max-w-full object-contain" />
-          </div>
-        )}
+        <BlogImage 
+          src={blog.imageUrl} 
+          alt={blog.title} 
+          className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
+          fallbackSrc="/images/newlogo.svg?v=2"
+          fallbackClassName="w-full h-full object-contain p-8 opacity-30"
+        />
         {/* Premium Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
