@@ -65,11 +65,12 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
     throw new Error(errMsg);
   }
 
-  // Handle 204 No Content responses safely
-  if (response.status === 204) {
+  // Handle empty bodies safely (including 204 No Content and empty 200 OK)
+  const text = await response.text();
+  if (!text) {
     return {} as T;
   }
 
-  return response.json();
+  return JSON.parse(text);
 }
 
