@@ -98,6 +98,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const [fullName, setFullName] = useState("");
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
+  // 🔐 OTP Verification States
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"ONLINE" | "COD">("ONLINE");
   const [showPaymentSimulator, setShowPaymentSimulator] = useState(false);
   const [paymentErrorMessage, setPaymentErrorMessage] = useState<string | null>(null);
@@ -306,6 +313,9 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
           latitude: undefined,
           longitude: undefined
         });
+        setIsPhoneVerified(false);
+        setOtpSent(false);
+        setOtpCode("");
         setPaymentMethod("ONLINE");
         setShowPaymentSimulator(false);
         setPaymentErrorMessage(null);
@@ -441,17 +451,38 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     return () => clearInterval(intervalId);
   }, [simulatingUpiApp, upiCountdown]);
 
-  const loadProfile = async (phoneNumber: string) => {
+  const handleSendOtp = async () => {
     // 🛡️ Frontend validation: only valid Indian mobile numbers (starting with 6-9)
     const indianMobileRegex = /^[6-9]\d{9}$/;
-    if (!indianMobileRegex.test(phoneNumber)) {
-      showToast("Please enter a valid 10-digit mobile number", "error");
+    if (!indianMobileRegex.test(phone)) {
+      showToast("Please enter a valid 10-digit mobile number starting with 6-9", "error");
       return;
     }
 
-    setIsLoadingProfile(true);
+    setIsSendingOtp(true);
     try {
-      const data = await CustomerService.fetchProfile(phoneNumber);
+      await CustomerService.sendOtp(phone);
+      setOtpSent(true);
+      setOtpCode("");
+      showToast("OTP sent successfully to your phone number! 📲", "success");
+    } catch (error) {
+      console.error("Send OTP failed:", error);
+      const msg = error instanceof Error ? error.message : "Failed to send verification code. Please try again.";
+      showToast(msg, "error");
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpCode.length !== 4) {
+      showToast("Please enter the 4-digit verification code.", "error");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      const data = await CustomerService.verifyOtp(phone, otpCode);
       setProfile(data);
       if (data.fullName) setFullName(data.fullName);
       
@@ -462,15 +493,14 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       } else {
         setIsAddingNew(true);
       }
+      setIsPhoneVerified(true);
+      showToast("Phone number verified successfully! 🎉", "success");
     } catch (error) {
-      console.error("Profile fetch error:", error);
-      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
-      showToast(message, "error");
-      setProfile(null);
-      setSelectedAddressId(null);
-      setIsAddingNew(true);
+      console.error("OTP verification failed:", error);
+      const msg = error instanceof Error ? error.message : "Invalid OTP code. Please try again.";
+      showToast(msg, "error");
     } finally {
-      setIsLoadingProfile(false);
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -501,18 +531,13 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
-  // 🔄 फोन नंबर 10 डिजिट का होते ही प्रोफाइल फेच करो
+  // 🔄 Reset verification if phone changes
   useEffect(() => {
-    if (phone.length === 10) {
-      Promise.resolve().then(() => {
-        loadProfile(phone);
-      });
-    } else {
-      Promise.resolve().then(() => {
-        setProfile(null);
-        setSelectedAddressId(null);
-      });
-    }
+    setIsPhoneVerified(false);
+    setOtpSent(false);
+    setOtpCode("");
+    setProfile(null);
+    setSelectedAddressId(null);
   }, [phone]);
 
   // 🔄 Sync abandoned cart to backend database
@@ -550,6 +575,10 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
     if (!phone || phone.length < 10) {
       showToast("Please enter a valid 10-digit phone number.", "error");
+      return;
+    }
+    if (!isPhoneVerified) {
+      showToast("Please verify your phone number via OTP first.", "error");
       return;
     }
 
@@ -1115,12 +1144,35 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                   {/* Step 1: Contact Info */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">Phone Number</label>
+                      <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold flex items-center justify-between">
+                        <span>Phone Number</span>
+                        {isPhoneVerified ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[8px] bg-green-500/20 text-green-400 border border-green-500/35 px-1.5 py-0.5 rounded uppercase tracking-wider font-extrabold select-none">Verified</span>
+                            <button 
+                              type="button" 
+                              onClick={() => {
+                                setIsPhoneVerified(false);
+                                setOtpSent(false);
+                                setOtpCode("");
+                              }}
+                              className="text-[9px] text-[#D4AF37] hover:underline font-bold"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        ) : null}
+                      </label>
                       <div className="relative">
                         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-500 font-mono">+91</span>
                         <input 
-                          required type="tel" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl pl-12 pr-3 py-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono" placeholder="10-digit number" 
+                          required 
+                          type="tel" 
+                          maxLength={10} 
+                          value={phone} 
+                          disabled={isPhoneVerified}
+                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                          className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl pl-12 pr-3 py-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono disabled:opacity-60 disabled:cursor-not-allowed" placeholder="10-digit number" 
                         />
                         {isLoadingProfile && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#D4AF37]" />}
                       </div>
@@ -1128,15 +1180,19 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     <div>
                       <label className="text-[9px] uppercase tracking-widest text-[#D4AF37] block mb-1.5 font-bold">Full Name</label>
                       <input 
-                        required type="text" value={fullName} onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
-                        className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono" placeholder="Enter your name" 
+                        required 
+                        type="text" 
+                        value={fullName} 
+                        disabled={isPhoneVerified}
+                        onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
+                        className="w-full bg-black/40 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl p-3 text-sm text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/20 outline-none transition-all placeholder-gray-700 font-mono disabled:opacity-60 disabled:cursor-not-allowed" placeholder="Enter your name" 
                       />
                     </div>
                   </div>
      
                   {/* Locked/Guidance State */}
-                  {phone.length < 10 && (
-                    <div className="bg-[#161616]/40 backdrop-blur-md border border-gray-800/80 rounded-2xl p-8 text-center space-y-4 shadow-inner">
+                  {(phone.length < 10 || fullName.trim().length < 2) && (
+                    <div className="bg-[#161616]/40 backdrop-blur-md border border-gray-800/80 rounded-2xl p-8 text-center space-y-4 shadow-inner animate-fadeIn">
                       <MapPin className="h-10 w-10 text-gray-600 mx-auto animate-pulse" />
                       <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Delivery Destination</h4>
                       <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed font-light">
@@ -1145,8 +1201,77 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                     </div>
                   )}
 
+                  {/* 🔐 OTP Verification Flow Box */}
+                  {phone.length === 10 && fullName.trim().length >= 2 && !isPhoneVerified && (
+                    <div className="bg-[#161616]/60 backdrop-blur-md border border-[#D4AF37]/20 rounded-2xl p-6 text-center space-y-4 shadow-md animate-fadeIn">
+                      <div className="text-xs text-gray-400 font-medium">
+                        {!otpSent 
+                          ? "Security Check: We need to verify your phone number before retrieving or saving your addresses."
+                          : `Enter the 4-digit verification code sent to +91 ${phone}`
+                        }
+                      </div>
+
+                      {!otpSent ? (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={isSendingOtp}
+                          className="w-full py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#FDFBF7] transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          {isSendingOtp ? (
+                            <>
+                              <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                              <span>Sending OTP...</span>
+                            </>
+                          ) : (
+                            <span>Send Verification OTP</span>
+                          )}
+                        </button>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex justify-center">
+                            <input
+                              type="text"
+                              maxLength={4}
+                              placeholder="••••"
+                              value={otpCode}
+                              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                              className="bg-black/60 border border-gray-800 focus:border-[#D4AF37]/50 rounded-xl px-6 py-3 text-center text-xl font-bold tracking-[0.7em] text-[#D4AF37] focus:outline-none w-32"
+                            />
+                          </div>
+                          
+                          <div className="flex gap-3">
+                            <button
+                              type="button"
+                              onClick={handleSendOtp}
+                              disabled={isSendingOtp}
+                              className="flex-1 py-3 border border-gray-800 text-gray-400 hover:text-white rounded-xl text-xs uppercase tracking-widest font-bold transition-all disabled:opacity-50"
+                            >
+                              Resend
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleVerifyOtp}
+                              disabled={isVerifyingOtp || otpCode.length !== 4}
+                              className="flex-1 py-3 bg-[#D4AF37] text-[#111111] text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-[#FDFBF7] transition-all active:scale-95 disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                              {isVerifyingOtp ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  <span>Verifying...</span>
+                                </>
+                              ) : (
+                                <span>Verify OTP</span>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Step 2: Address Selection */}
-                  {phone.length === 10 && profile && !isAddingNew && (
+                  {isPhoneVerified && profile && !isAddingNew && (
                     <div className="space-y-4 animate-fadeIn">
                       <div className="flex items-center justify-between">
                         <label className="text-[9px] uppercase tracking-widest text-gray-500 block font-bold">Saved Address</label>
@@ -1219,7 +1344,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                   )}
 
                   {/* Step 3: Add New Address Form (Rendered inline for unified submission) */}
-                  {phone.length === 10 && profile && isAddingNew && (
+                  {isPhoneVerified && profile && isAddingNew && (
                     <div className="space-y-4 animate-fadeIn">
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] uppercase tracking-widest text-[#D4AF37] block font-bold font-serif">Delivery Address</label>

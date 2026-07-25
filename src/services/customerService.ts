@@ -60,6 +60,24 @@ export interface SyncCartPayload {
 
 export const CustomerService = {
   /**
+   * Generates and sends a 4-digit OTP code to the customer's phone number.
+   */
+  sendOtp: async (phone: string): Promise<void> => {
+    return apiClient<void>(`/api/v1/customers/${phone.trim()}/otp/send`, {
+      method: "POST",
+    });
+  },
+
+  /**
+   * Verifies the OTP code and resolves the customer's profile.
+   */
+  verifyOtp: async (phone: string, code: string): Promise<CustomerProfile> => {
+    return apiClient<CustomerProfile>(`/api/v1/customers/${phone.trim()}/otp/verify?code=${encodeURIComponent(code.trim())}`, {
+      method: "POST",
+    });
+  },
+
+  /**
    * Fetches customer profile information and saved addresses by phone number.
    */
   fetchProfile: async (phone: string): Promise<CustomerProfile> => {
