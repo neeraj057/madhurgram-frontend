@@ -166,7 +166,7 @@ function ProductCard({
 
         {/* Dynamic Variant Selector (Pills) */}
         {variants && (
-          <div className="flex gap-2 mt-2 select-none h-7 items-center">
+          <div className="flex gap-2 mt-2 select-none h-9 items-center">
             {variants.map((v) => (
               <button
                 key={v.volume}
@@ -175,7 +175,7 @@ function ProductCard({
                   e.stopPropagation();
                   setSelectedVolume(v.volume);
                 }}
-                className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border ${
+                className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border min-h-[36px] flex items-center justify-center cursor-pointer ${
                   selectedVolume === v.volume
                     ? "bg-[#D4AF37] text-[#111111] border-[#D4AF37] shadow-sm font-extrabold"
                     : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-100"
