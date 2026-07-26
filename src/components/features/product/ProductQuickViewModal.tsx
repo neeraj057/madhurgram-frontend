@@ -234,7 +234,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
           setWhatsappTemplate(data.whatsappTemplate || "");
         }
       } catch (e) {
-        console.error("Error fetching WhatsApp config:", e);
+        // Use console.warn instead of console.error to prevent Next.js dev overlay on network failures (e.g. backend down or adblocker)
+        console.warn("Could not fetch WhatsApp config, using defaults. Error:", (e as Error).message);
       }
     };
     fetchWhatsAppConfig();
