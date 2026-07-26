@@ -104,6 +104,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
   const [otpCode, setOtpCode] = useState("");
   const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", ""]);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [showFinalOtpGate, setShowFinalOtpGate] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<1 | 2 | 3 | 4>(1);
@@ -496,6 +497,7 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
       setOtpSent(true);
       setOtpCode("");
       setOtpDigits(["", "", "", ""]);
+      setResendCooldown(30); // 30s cooldown
       setCheckoutStep(2); // Go to Step 2: OTP Input
       showToast("OTP sent successfully to your phone number!", "success");
     } catch (error) {
@@ -570,7 +572,16 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
     }
   };
 
-  // Ã°Å¸â€â€ž Reset verification if phone changes
+  // ⏳ // ⏳ OTP Resend Cooldown Timer
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCooldown > 0) {
+      timer = setTimeout(() => setResendCooldown(c => c - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
+  // 🔄 Reset verification if phone changes
   useEffect(() => {
     setIsPhoneVerified(false);
     setOtpSent(false);
@@ -1333,10 +1344,10 @@ export default function CheckoutModal({ isOpen, onClose, subtotal, cartItems, on
                         <button
                           type="button"
                           onClick={handleSendOtp}
-                          disabled={isSendingOtp}
-                          className="flex-1 py-3.5 bg-transparent border border-gray-850 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl text-xs uppercase tracking-widest font-bold transition-all cursor-pointer active:scale-95"
+                          disabled={isSendingOtp || resendCooldown > 0}
+                          className="flex-1 py-3.5 bg-transparent border border-gray-850 text-gray-400 hover:text-white hover:bg-gray-800 rounded-xl text-xs uppercase tracking-widest font-bold transition-all cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
-                          Resend
+                          {resendCooldown > 0 ? `Resend in 00:${resendCooldown.toString().padStart(2, '0')}s` : 'Resend'}
                         </button>
                         <button
                           type="button"
