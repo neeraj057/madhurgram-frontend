@@ -6,6 +6,7 @@ import { getProductVariants, getVariantProduct } from '@/utils/productUtils';
 import { Product } from '@/services/productService';
 import { showToast } from '@/components/ui/Toast';
 import { API_ENDPOINTS } from '@/apis/api';
+import { ProductViewStats } from './ProductViewStats';
 
 interface ProductQuickViewModalProps {
   product: Product | null;
@@ -625,6 +626,8 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
 
             </div>
           </div>
+
+          <ProductViewStats productId={displayProduct?.id} />
 
           {/* Bottom Action inside Modal */}
           <div className="mt-5 space-y-3">
