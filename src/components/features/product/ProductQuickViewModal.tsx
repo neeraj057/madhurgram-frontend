@@ -200,6 +200,29 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
       setPincodeResult(null);
     }
   }, [product]);
+
+  // Save to Recently Viewed
+  useEffect(() => {
+    if (product) {
+      try {
+        const currentViewed = JSON.parse(localStorage.getItem('mg_recently_viewed') || '[]');
+        const newProduct = {
+          id: product.id,
+          name: product.name,
+          imageUrl: product.imageUrl,
+          price: product.price,
+          volume: product.volume,
+          stock: product.stock
+        };
+        const filtered = currentViewed.filter((p: any) => p.id !== product.id);
+        filtered.unshift(newProduct);
+        if (filtered.length > 5) filtered.pop();
+        localStorage.setItem('mg_recently_viewed', JSON.stringify(filtered));
+      } catch (e) {
+        console.warn("Could not save to recently viewed");
+      }
+    }
+  }, [product]);
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState("917899999902");
   const [whatsappTemplate, setWhatsappTemplate] = useState("");
@@ -630,7 +653,7 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
           <ProductViewStats productId={displayProduct?.id} />
 
           {/* Bottom Action inside Modal */}
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-3 sticky bottom-0 bg-white/95 backdrop-blur-sm pt-3 pb-2 z-30 border-t border-gray-100 md:static md:bg-transparent md:p-0 md:border-0 md:backdrop-blur-none">
             {showWhatsAppForm ? (
               <div className="flex gap-2">
                 <button
@@ -748,6 +771,24 @@ export default function ProductQuickViewModal({ product, onClose, onAddToCart }:
                 )}
               </>
             )}
+
+            {/* TRUST BADGES */}
+            <div className="flex items-center justify-center gap-5 mt-5 pt-4 border-t border-gray-100/80">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[16px] opacity-80">🔒</span>
+                <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wider text-center leading-tight">100% Secure<br/>Payment</span>
+              </div>
+              <div className="w-px h-8 bg-gray-100"></div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[16px] opacity-80">🌿</span>
+                <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wider text-center leading-tight">Pure &<br/>Organic</span>
+              </div>
+              <div className="w-px h-8 bg-gray-100"></div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[16px] opacity-80">🚚</span>
+                <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wider text-center leading-tight">Fast<br/>Delivery</span>
+              </div>
+            </div>
           </div>
 
         </div>

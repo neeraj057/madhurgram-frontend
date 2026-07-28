@@ -15,6 +15,7 @@ import TestimonialsSection from "@/components/features/feedback/TestimonialsSect
 import TrustStrip from "@/components/common/TrustStrip";
 import VillageAestheticsGrid from "@/components/common/VillageAestheticsGrid";
 import WhatsAppButton from "@/components/common/WhatsAppButton";
+import RecentlyViewed from "@/components/features/product/RecentlyViewed";
 
 import { showToast } from "@/components/ui/Toast";
 
@@ -142,6 +143,8 @@ export default function Home() {
 
       {/* 🌟 Instagram Style Aesthetic Grid */}
       <VillageAestheticsGrid />
+
+      <RecentlyViewed />
 
       <FooterSection onAddToCart={handleAddToCart} />
 

@@ -110,6 +110,35 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem, o
               </button>
             </div>
 
+            {/* FREE SHIPPING PROGRESS BAR */}
+            {cartItems.length > 0 && (
+              <div className="mt-5 mb-1 bg-[#25150E]/50 border border-[#D4AF37]/25 rounded-xl p-3 relative overflow-hidden">
+                {(() => {
+                  const threshold = 500;
+                  const percent = Math.min(100, Math.round((subtotal / threshold) * 100));
+                  const remaining = threshold - subtotal;
+                  return (
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-center mb-2.5">
+                        <span className="text-[11px] text-[#FDFBF7] font-medium tracking-wide">
+                          {subtotal >= threshold 
+                            ? <><span className="text-[#D4AF37] text-sm mr-1">🎉</span> You've unlocked FREE Delivery!</>
+                            : <>Add <span className="text-[#D4AF37] font-bold">₹{remaining}</span> more for FREE Delivery! 🚚</>
+                          }
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-[#150B05] rounded-full overflow-hidden border border-[#D4AF37]/10">
+                        <div 
+                          className="h-full bg-gradient-to-r from-[#D4AF37]/50 to-[#D4AF37] rounded-full transition-all duration-700 ease-out" 
+                          style={{ width: `${percent}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
             {/* DYNAMIC CART ITEMS LIST */}
             {cartItems.length > 0 ? (
               <div className="mt-6 space-y-4 overflow-y-auto max-h-[60vh] pr-2 scrollbar-thin">
